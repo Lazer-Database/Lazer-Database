@@ -1,6 +1,6 @@
 <?php
 
- namespace jsondb\classes;
+ namespace jsondb\classes\core;
 
 defined('JSONDB_SECURE') or die('Permission denied!');
 
