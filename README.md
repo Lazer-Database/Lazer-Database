@@ -39,8 +39,12 @@ In that project I have used namespace but i will skip it in examples.
 - `count()` - returns the number of rows.
 - `find()` - returns one row with specified ID.
 - `find_all()` - returns rows.
-- `save()` - Insert or Update data.
-- `delete()` - Deleting data.
+- `save()` - insert or Update data.
+- `delete()` - deleting data.
+- `config()` - returns object with configuration.
+- `fields()` - returns array with fields name.
+- `fields_type()` - returns assoc array with fields type.
+- `last_id()` - returns last ID from table.
 
 ### Create database
 
