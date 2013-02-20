@@ -104,6 +104,10 @@ It's very smilar to `Inserting`.
 
     JSONDB::factory('table_name')->where('nickname', '=', 'edited_user')->delete();
 
+#### Clear table
+
+    JSONDB::factory('table_name')->delete();
+
 Description
 ------
 

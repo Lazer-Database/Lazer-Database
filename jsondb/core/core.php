@@ -470,6 +470,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          {
              unset($this->_data[$this->_current_key]);
          }
+         elseif (!empty($this->_where_conditions))
+         {
+             $filter = array_filter($this->_data, array($this, '_where'));
+             $this->_data = array_diff_key($this->_data, $filter);
+         }
          else
          {
              $this->_data = array();
@@ -514,7 +519,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              $this->_data = array_filter($this->_data, array($this, '_where'));
          }
 
-         return $this->_data;
+         return array_values($this->_data);
      }
 
  }
