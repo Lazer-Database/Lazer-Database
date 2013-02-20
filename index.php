@@ -1,15 +1,9 @@
 <?php
 
- require_once 'includes/config.php';
- define('JSONDB_DATA_PATH', realpath(dirname(__FILE__)).'/data/');
+ require_once 'jsondb/bootstrap.php';
+ define('JSONDB_DATA_PATH', realpath(dirname(__FILE__)).'/data/'); //Path to folder with tables
 
- $users = Jsondb::factory('users');
- 
- $users->pozdro = 'asd';
- $users->pa = '345';
- 
- $users->save();
- 
+ $users = \jsondb\classes\JSONDB::factory('users')->find_all();
+
  var_dump($users);
-
 ?>
