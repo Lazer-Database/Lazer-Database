@@ -85,10 +85,10 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          $self = new \jsondb\classes\JSONDB();
          $self->_name = $name;
 
-         if (!\jsondb\helpers\Table::exists($self->_name))
+         if (!\jsondb\classes\helpers\Table::exists($self->_name))
              throw new \jsondb\classes\JDBException('Table does not exists');
 
-         $self->_data = \jsondb\helpers\Table::get($self->_name);
+         $self->_data = \jsondb\classes\helpers\Table::get($self->_name);
 
          return $self;
      }
@@ -129,8 +129,8 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function __set($name, $value)
      {
-         if (\jsondb\helpers\Validate::factory($this->_name)->field($name)
-                 && \jsondb\helpers\Validate::factory($this->_name)->type($name, $value))
+         if (\jsondb\classes\helpers\Validate::factory($this->_name)->field($name)
+                 && \jsondb\classes\helpers\Validate::factory($this->_name)->type($name, $value))
          {
              $this->_set->{$name} = $value;
          }
@@ -175,9 +175,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public static function create($name, array $fields)
      {
-         if (\jsondb\helpers\Table::exists($name) && \jsondb\helpers\Config::exists($name))
+         if (\jsondb\classes\helpers\Table::exists($name) && \jsondb\classes\helpers\Config::exists($name))
          {
-             throw new \jsondb\classes\JDBException('\jsondb\helpers\Table already exists');
+             throw new \jsondb\classes\JDBException('\jsondb\classes\helpers\Table already exists');
          }
 
          $names = array_keys($fields);
@@ -194,8 +194,8 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          $data->fields = $names;
          $data->types = $types;
 
-         \jsondb\helpers\Table::put($name, array());
-         \jsondb\helpers\Config::put($name, $data);
+         \jsondb\classes\helpers\Table::put($name, array());
+         \jsondb\classes\helpers\Config::put($name, $data);
      }
 
      /**
@@ -205,7 +205,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public static function remove($name)
      {
-         return \jsondb\helpers\Table::remove($name);
+         return \jsondb\classes\helpers\Table::remove($name);
      }
 
      /**
@@ -214,7 +214,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function config()
      {
-         return \jsondb\helpers\Config::get($this->_name);
+         return \jsondb\classes\helpers\Config::get($this->_name);
      }
 
      /**
@@ -223,7 +223,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function fields()
      {
-         return \jsondb\helpers\Config::fields($this->_name);
+         return \jsondb\classes\helpers\Config::fields($this->_name);
      }
 
      /**
@@ -232,7 +232,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function fields_type()
      {
-         return \jsondb\helpers\Config::fields_type($this->_name);
+         return \jsondb\classes\helpers\Config::fields_type($this->_name);
      }
 
      /**
@@ -241,7 +241,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function last_id()
      {
-         return \jsondb\helpers\Config::last_id($this->_name);
+         return \jsondb\classes\helpers\Config::last_id($this->_name);
      }
 
      /**
@@ -275,7 +275,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function order_by($key, $order = 'ASC')
      {
-         if (\jsondb\helpers\Validate::factory($this->_name)->field($key))
+         if (\jsondb\classes\helpers\Validate::factory($this->_name)->field($key))
          {
              $this->_sort_key = $key;
              $this->_sort_order = $order;
@@ -446,7 +446,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              $this->_set->id = $config->last_id;
              array_push($this->_data, $this->_set);
 
-             \jsondb\helpers\Config::put($this->_name, $config);
+             \jsondb\classes\helpers\Config::put($this->_name, $config);
          }
          else
          {
@@ -454,7 +454,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              $this->_data[$this->_current_key] = $this->_set;
          }
 
-         \jsondb\helpers\Table::put($this->_name, $this->_data);
+         \jsondb\classes\helpers\Table::put($this->_name, $this->_data);
 
          $this->_set = new \stdClass();
          $this->_set->id = null;
@@ -481,7 +481,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          }
          $this->_data = array_values($this->_data);
 
-         return \jsondb\helpers\Table::put($this->_name, $this->_data) ? true : false;
+         return \jsondb\classes\helpers\Table::put($this->_name, $this->_data) ? true : false;
      }
 
      /**
