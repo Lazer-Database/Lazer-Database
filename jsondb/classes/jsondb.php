@@ -16,6 +16,6 @@ defined('JSONDB_SECURE') or die('Permission denied!');
   * @copyright (c) 2013, Grzegorz Kuźnik
   * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
   */
- class JSONDB extends \jsondb\core\Core { }
+ class JSONDB extends Core { }
 
 ?>
