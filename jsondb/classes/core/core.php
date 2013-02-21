@@ -7,7 +7,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
  /**
   * Core class of JSONDB project.
   * 
-  * There are classes to use JSON files like file databes.
+  * There are classes to use JSON files like file database.
   * 
   * Using style was inspired by ORM classes.
   *
@@ -88,18 +88,10 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          if (!\jsondb\classes\helpers\Table::exists($self->_name))
              throw new \jsondb\classes\JDBException('Table does not exists');
 
+         $self->_set_fields();
          $self->_data = \jsondb\classes\helpers\Table::get($self->_name);
 
          return $self;
-     }
-
-     /**
-      * Constructor, setting new data object
-      */
-     public function __construct()
-     {
-         $this->_set = new \stdClass();
-         $this->_set->id = null;
      }
 
      /**
@@ -120,6 +112,22 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              }
          }
          throw new \jsondb\classes\JDBException('No data found');
+     }
+
+     /**
+      * Setting fields with default values
+      */
+     protected function _set_fields()
+     {
+         $this->_set = new \stdClass();
+         $fields = $this->fields_type();
+         foreach ($fields as $field => $type)
+         {
+             if ($type == 'integer' || $type == 'double' AND $field != 'id')
+                 $this->_set->{$field} = 0;
+             else
+                 $this->_set->{$field} = null;
+         }
      }
 
      /**
@@ -456,8 +464,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
          \jsondb\classes\helpers\Table::put($this->_name, $this->_data);
 
-         $this->_set = new \stdClass();
-         $this->_set->id = null;
+         $this->_set_fields();
      }
 
      /**
