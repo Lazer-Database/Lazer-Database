@@ -56,8 +56,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      {
          return self::get($name)->fields;
      }
-     
-     
+
      /**
       * Returning assoc array with types of fields
       * @return array
@@ -67,7 +66,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          $config = self::get($name);
          return array_combine($config->fields, $config->types);
      }
-     
+
      /**
       * Returning last ID from table
       * @param string $name
@@ -77,6 +76,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      {
          return self::get($name)->last_id;
      }
-  }
+
+ }
 
 ?>

@@ -2,6 +2,8 @@
 
  namespace jsondb\classes\helpers;
 
+use jsondb\classes\JDBException as JDBException;
+
 defined('JSONDB_SECURE') or die('Permission denied!');
 
  /**
@@ -35,7 +37,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * Checking that typed field really exist in table
       * @param string $name
       * @return boolean
-      * @throws \jsondb\classes\JDBException If field does not exist
+      * @throws JDBException If field does not exist
       */
      public function field($name)
      {
@@ -43,7 +45,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          {
              return TRUE;
          }
-         throw new \jsondb\classes\JDBException('Field does not exists');
+         throw new JDBException('Field does not exists');
      }
 
      /**
@@ -51,7 +53,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param string $name
       * @param mixed $value
       * @return boolean
-      * @throws \jsondb\classes\JDBException If type is wrong
+      * @throws JDBException If type is wrong
       */
      public function type($name, $value)
      {
@@ -61,7 +63,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              return TRUE;
          }
 
-         throw new \jsondb\classes\JDBException('Wrong data type');
+         throw new JDBException('Wrong data type');
      }
 
  }

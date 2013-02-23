@@ -2,6 +2,8 @@
 
  namespace jsondb\classes\helpers;
 
+use jsondb\classes\JDBException as JDBException;
+
 defined('JSONDB_SECURE') or die('Permission denied!');
 
  /**
@@ -75,10 +77,10 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              if ($table && $config)
                  return TRUE;
 
-             throw new \json\classes\JDBException('Table deleting failed');
+             throw new JDBException('Table deleting failed');
          }
 
-         throw new \json\classes\JDBException('Table does not exists');
+         throw new JDBException('Table does not exists');
      }
 
  }
