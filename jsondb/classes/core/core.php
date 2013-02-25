@@ -77,6 +77,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @var integer 0|1
       */
      protected $_where_type = 0;
+     protected $_pending = array();
 
      /**
       * Factory pattern
@@ -257,48 +258,65 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
      /**
-      * Comparison function for usort() in order_by()
-      * @param object $objA 
-      * @param object $objB
-      * @return integer
+      * Sort an array of objects by more than one field.
       */
-     protected function _sort_cmp($objA, $objB)
+     protected function _order_by()
      {
-         $key = $this->_sort_key;
-         $order = $this->_sort_order;
+         $properties = $this->_pending['order_by'];
+         uasort($this->_data, function($a, $b) use ($properties)
+                 {
+                     foreach ($properties as $column => $direction)
+                     {
+                         if (is_int($column))
+                         {
+                             $column = $direction;
+                             $direction = SORT_ASC;
+                         }
+                         $collapse = function($node, $props)
+                                 {
+                                     if (is_array($props))
+                                     {
+                                         foreach ($props as $prop)
+                                         {
+                                             $node = (!isset($node->$prop)) ? null : $node->$prop;
+                                         }
+                                         return $node;
+                                     }
+                                     else
+                                     {
+                                         return (!isset($node->$props)) ? null : $node->$props;
+                                     }
+                                 };
+                         $aProp = $collapse($a, $column);
+                         $bProp = $collapse($b, $column);
 
-         $a = $objA->{$key};
-         $b = $objB->{$key};
-         if ($order == 'ASC')
-         {
-             return (is_int($a) && is_int($b)) ? $a - $b : strcmp($a, $b);
-         }
-         elseif ($order == 'DESC')
-         {
-             return (is_int($a) && is_int($b)) ? $b - $a : strcmp($b, $a);
-         }
+                         if ($aProp != $bProp)
+                         {
+                             return ($direction == SORT_ASC) ? strnatcasecmp($aProp, $bProp) : strnatcasecmp($bProp, $aProp);
+                         }
+                     }
+                     return FALSE;
+                 });
      }
 
      /**
       * Sorting data by field
       * @param string $key Field name
-      * @param string $order ASC|DESC
+      * @param string $direction ASC|DESC
       * @return \Core
       */
-     public function order_by($key, $order = 'ASC')
+     public function order_by($key, $direction = 'ASC')
      {
          if (helper\Validate::factory($this->_name)->field($key))
          {
-             $this->_sort_key = $key;
-             $this->_sort_order = $order;
-
-             if (is_array($this->_data))
-             {
-                 usort($this->_data, array($this, '_sort_cmp'));
-             }
-
-             return $this;
+             $directions = array(
+                 'ASC' => SORT_ASC,
+                 'DESC' => SORT_DESC
+             );
+             $this->_pending['order_by'][$key] = $directions[$direction];
          }
+
+         return $this;
      }
 
      /**
@@ -316,10 +334,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function where($field, $op, $value)
      {
-         $this->_where_conditions[] = array(
+         $this->_pending['where'][] = array(
              'field' => $field,
              'op' => $op,
-             'value' => $value
+             'value' => $value,
+             'type' => 0
          );
 
          return $this;
@@ -348,8 +367,12 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function or_where($field, $op, $value)
      {
-         $this->_where_type = 1;
-         $this->where($field, $op, $value);
+         $this->_pending['where'][] = array(
+             'field' => $field,
+             'op' => $op,
+             'value' => $value,
+             'type' => 1
+         );
 
          return $this;
      }
@@ -359,7 +382,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param object $row
       * @return boolean
       */
-     protected function _where($row)
+     protected function _where()
      {
          $operator = array(
              '=' => '==',
@@ -370,43 +393,46 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              '<=' => '<=',
          );
 
-         $result = true;
+         $this->_data = array_filter($this->_data, function($row) use ($operator)
+                 {
+                     $result = true;
 
-         foreach ($this->_where_conditions as $condition)
-         {
-             extract($condition);
+                     foreach ($this->_pending['where'] as $condition)
+                     {
+                         extract($condition);
 
-             if (is_array($value))
-             {
-                 if ($op == 'IN')
-                     $exec = in_array($row->{$field}, $value);
-                 elseif ($op == 'NOT IN')
-                     $exec = !in_array($row->{$field}, $value);
-             }
-             else
-             {
-                 eval('$exec = strtolower($row->{$field}) '.$operator[$op].' strtolower($value);');
-             }
+                         if (is_array($value))
+                         {
+                             if ($op == 'IN')
+                                 $exec = in_array($row->{$field}, $value);
+                             elseif ($op == 'NOT IN')
+                                 $exec = !in_array($row->{$field}, $value);
+                         }
+                         else
+                         {
+                             eval('$exec = strtolower($row->{$field}) '.$operator[$op].' strtolower($value);');
+                         }
 
-             if ($exec)
-             {
-                 $result = true;
-                 if ($this->_where_type)
-                     break;
-                 else
-                     continue;
-             }
-             else
-             {
-                 $result = false;
-                 if ($this->_where_type)
-                     continue;
-                 else
-                     break;
-             }
-         }
+                         if ($exec)
+                         {
+                             $result = true;
+                             if ($type)
+                                 break;
+                             else
+                                 continue;
+                         }
+                         else
+                         {
+                             $result = false;
+                             if ($type)
+                                 continue;
+                             else
+                                 break;
+                         }
+                     }
 
-         return $result;
+                     return $result;
+                 });
      }
 
      /**
@@ -525,9 +551,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function find_all()
      {
-         if (!empty($this->_where_conditions))
+         foreach($this->_pending as $func => $args)
          {
-             $this->_data = array_filter($this->_data, array($this, '_where'));
+             call_user_func(array($this, '_'.$func));
          }
 
          return array_values($this->_data);
