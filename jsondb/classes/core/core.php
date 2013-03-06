@@ -53,30 +53,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      protected $_current_key;
 
      /**
-      * Keeping sort order 
-      * @var string ASC|DESC
+      * All pending functions parameters
+      * @var array
       */
-     protected $_sort_order;
-
-     /**
-      * Keeping sort key (field in table)
-      * @var string Name of field
-      */
-     protected $_sort_key;
-
-     /**
-      * Conditions of where statement
-      * @var array 
-      */
-     protected $_where_conditions = array();
-
-     /**
-      * Where type
-      * 0 - AND
-      * 1 - OR
-      * @var integer 0|1
-      */
-     protected $_where_type = 0;
      protected $_pending = array();
 
      /**
@@ -507,10 +486,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          {
              unset($this->_data[$this->_current_key]);
          }
-         elseif (!empty($this->_where_conditions))
+         elseif (isset($this->_pending['where']) && !empty($this->_pending['where']))
          {
-             $filter = array_filter($this->_data, array($this, '_where'));
-             $this->_data = array_diff_key($this->_data, $filter);
+             $old = $this->_data;
+             call_user_func(array($this, '_where'));
+             $this->_data = array_diff_key($old, $this->_data);
          }
          else
          {
@@ -551,7 +531,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function find_all()
      {
-         foreach($this->_pending as $func => $args)
+         foreach ($this->_pending as $func => $args)
          {
              call_user_func(array($this, '_'.$func));
          }
