@@ -4,8 +4,11 @@ File Database based on JSON files
 PHP Library to use JSON files like a FlatFileDatabase.   
 Functionality inspired by ORM's
 
+Requirements
+-------
+- PHP 5.4+
 
-Structure of table files.
+Structure of table files
 -------
 
 `name.data.json` - table file with data   
