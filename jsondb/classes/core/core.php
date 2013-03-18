@@ -53,10 +53,21 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      protected $_current_key;
 
      /**
-      * All pending functions parameters
+      * All pending functions parameters in right order
       * @var array
       */
-     protected $_pending = array();
+     protected $_pending = array(
+         'where' => array(),
+         'order_by' => array(),
+         'group_by' => array(),
+         'as_array' => array()
+     );
+
+     /**
+      * Information about to reset keys in array or not to
+      * @var integer
+      */
+     protected $_values_clear = 1;
 
      /**
       * Factory pattern
@@ -142,6 +153,20 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
      /**
+      * Execute pending functions
+      */
+     protected function _pending()
+     {
+         foreach ($this->_pending as $func => $args)
+         {
+             if (!empty($args))
+             {
+                 call_user_func(array($this, '_'.$func));
+             }
+         }
+     }
+
+     /**
       * Creating new table
       * 
       * For example few fields:
@@ -201,39 +226,55 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
      /**
-      * Returning object with config for table
-      * @return object Config
+      * Grouping results by one field
+      * @param string $column
+      * @return \jsondb\classes\core\Core
       */
-     public function config()
+     public function group_by($column)
      {
-         return helper\Config::get($this->_name);
+         if (helper\Validate::factory($this->_name)->field($column))
+         {
+             $this->_values_clear = 0;
+             $this->_pending[__FUNCTION__] = $column;
+         }
+
+         return $this;
      }
 
      /**
-      * Return array with names of fields
-      * @return array Fields
+      * Grouping array pending method
       */
-     public function fields()
+     protected function _group_by()
      {
-         return helper\Config::fields($this->_name);
+         $column = $this->_pending['group_by'];
+
+         $grouped = array();
+         foreach ($this->_data as $object)
+         {
+             $grouped[$object->{$column}][] = $object;
+         }
+
+         $this->_data = $grouped;
      }
 
      /**
-      * Returning assoc array with types of fields
-      * @return array Fields type
+      * Sorting data by field
+      * @param string $key Field name
+      * @param string $direction ASC|DESC
+      * @return \Core
       */
-     public function fields_type()
+     public function order_by($key, $direction = 'ASC')
      {
-         return helper\Config::fields_type($this->_name);
-     }
+         if (helper\Validate::factory($this->_name)->field($key))
+         {
+             $directions = array(
+                 'ASC' => SORT_ASC,
+                 'DESC' => SORT_DESC
+             );
+             $this->_pending[__FUNCTION__][$key] = $directions[$direction];
+         }
 
-     /**
-      * Returning last ID from table
-      * @return integer Last ID
-      */
-     public function last_id()
-     {
-         return helper\Config::last_id($this->_name);
+         return $this;
      }
 
      /**
@@ -279,26 +320,6 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
      /**
-      * Sorting data by field
-      * @param string $key Field name
-      * @param string $direction ASC|DESC
-      * @return \Core
-      */
-     public function order_by($key, $direction = 'ASC')
-     {
-         if (helper\Validate::factory($this->_name)->field($key))
-         {
-             $directions = array(
-                 'ASC' => SORT_ASC,
-                 'DESC' => SORT_DESC
-             );
-             $this->_pending['order_by'][$key] = $directions[$direction];
-         }
-
-         return $this;
-     }
-
-     /**
       * Where function, like SQL
       * 
       * Operators:
@@ -313,11 +334,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function where($field, $op, $value)
      {
-         $this->_pending['where'][] = array(
+         $this->_pending[__FUNCTION__][] = array(
              'field' => $field,
              'op' => $op,
              'value' => $value,
-             'type' => 0
+             'type' => 'first'
          );
 
          return $this;
@@ -332,7 +353,12 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function and_where($field, $op, $value)
      {
-         $this->where($field, $op, $value);
+         $this->_pending['where'][] = array(
+             'field' => $field,
+             'op' => $op,
+             'value' => $value,
+             'type' => 'and'
+         );
 
          return $this;
      }
@@ -350,7 +376,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              'field' => $field,
              'op' => $op,
              'value' => $value,
-             'type' => 1
+             'type' => 'or'
          );
 
          return $this;
@@ -371,11 +397,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              '>=' => '>=',
              '<=' => '<=',
          );
+         $data = $this->_data;
 
-         $this->_data = array_filter($this->_data, function($row) use ($operator)
+         $this->_data = array_filter($data, function($row) use ($operator)
                  {
                      $result = true;
-
                      foreach ($this->_pending['where'] as $condition)
                      {
                          extract($condition);
@@ -395,7 +421,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
                          if ($exec)
                          {
                              $result = true;
-                             if ($type)
+                             if ($type == 'and' OR $type == 'first')
                                  break;
                              else
                                  continue;
@@ -403,7 +429,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
                          else
                          {
                              $result = false;
-                             if ($type)
+                             if ($type == 'and' OR $type == 'first')
                                  continue;
                              else
                                  break;
@@ -422,6 +448,24 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function as_array($key, $value)
      {
+         if (helper\Validate::factory($this->_name)->field($value))
+         {
+             $this->_values_clear = 0;
+             $this->_pending['as_array'] = array(
+                 'key' => $key,
+                 'value' => $value
+             );
+         }
+         return $this;
+     }
+
+     /**
+      * Pending function for as_array
+      */
+     protected function _as_array()
+     {
+         extract($this->_pending['as_array']);
+
          $datas = array();
          foreach ($this->_data as $data)
          {
@@ -432,8 +476,42 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          }
 
          $this->_data = $datas;
+     }
 
-         return $this;
+     /**
+      * Returning object with config for table
+      * @return object Config
+      */
+     public function config()
+     {
+         return helper\Config::get($this->_name);
+     }
+
+     /**
+      * Return array with names of fields
+      * @return array Fields
+      */
+     public function fields()
+     {
+         return helper\Config::fields($this->_name);
+     }
+
+     /**
+      * Returning assoc array with types of fields
+      * @return array Fields type
+      */
+     public function fields_type()
+     {
+         return helper\Config::fields_type($this->_name);
+     }
+
+     /**
+      * Returning last ID from table
+      * @return integer Last ID
+      */
+     public function last_id()
+     {
+         return helper\Config::last_id($this->_name);
      }
 
      /**
@@ -502,11 +580,26 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
      /**
-      * @return integer Data count
+      * Return count in integer or array of integers (if grouped)
+      * @return mixed 
       */
      public function count()
      {
-         return count($this->_data);
+         $this->_pending();
+         if (!empty($this->_pending['group_by']))
+         {
+             $count = array();
+             foreach ($this->_data as $group => $data)
+             {
+                 $count[$group] = count($data);
+             }
+         }
+         else
+         {
+             $count = count($this->_data);
+         }
+
+         return $count;
      }
 
      /**
@@ -531,12 +624,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function find_all()
      {
-         foreach ($this->_pending as $func => $args)
-         {
-             call_user_func(array($this, '_'.$func));
-         }
+         $this->_pending();
 
-         return array_values($this->_data);
+         return $this->_values_clear ? array_values($this->_data) : $this->_data;
      }
 
  }
