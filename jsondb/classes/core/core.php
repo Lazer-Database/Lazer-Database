@@ -467,12 +467,29 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          extract($this->_pending['as_array']);
 
          $datas = array();
-         foreach ($this->_data as $data)
+
+         if (!empty($this->_pending['group_by']))
          {
-             if (is_null($key))
-                 $datas[] = $data->{$value};
-             else
-                 $datas[$data->{$key}] = $data->{$value};
+             foreach ($this->_data as $array)
+             {
+                 foreach ($array as $data)
+                 {
+                     if (is_null($key))
+                         $datas[] = $data->{$value};
+                     else
+                         $datas[$data->{$key}] = $data->{$value};
+                 }
+             }
+         }
+         else
+         {
+             foreach ($this->_data as $data)
+             {
+                 if (is_null($key))
+                     $datas[] = $data->{$value};
+                 else
+                     $datas[$data->{$key}] = $data->{$value};
+             }
          }
 
          $this->_data = $datas;
