@@ -13,7 +13,7 @@ $find_all = JSONDB::factory('users')->find_all();
  $where[] = JSONDB::factory('users')->where('name', '=', 'gerg0sz')->find_all();
  $where[] = JSONDB::factory('users')->where('id', 'IN', array(1, 14, 24, 25, 30))->find_all();
  $where[] = JSONDB::factory('users')->where('id', '>', 18)->and_where('id', '<', 24)->find_all();
- $where[] = JSONDB::factory('users')->where('name', '=', 'gerg0sz')->or_where('id', '>', 21)->find_all();
+ $where[] = JSONDB::factory('users')->where('name', '=', 'gerg0sz')->or_where('id', '>', 21)->and_where('id', '<=', 29)->find_all();
 
  $order = JSONDB::factory('users')->order_by('name')->order_by('id')->find_all();
 
@@ -21,7 +21,7 @@ $find_all = JSONDB::factory('users')->find_all();
  $limit[] = JSONDB::factory('users')->limit(5, 4)->find_all();
 
  $array[] = JSONDB::factory('users')->as_array(null, 'name')->find_all();
- $array[] = JSONDB::factory('users')->as_array('id', 'name')->find_all();
+ $array[] = JSONDB::factory('users')->group_by('name')->as_array('id', 'name')->find_all();
 ?>
 
 
@@ -109,7 +109,7 @@ $find_all = JSONDB::factory('users')->find_all();
                 <h5>Result:</h5> <pre class="result"><?= print_r($where[3], true) ?></pre>
             </li>
             <li>
-                <h5>Query:</h5> <pre class="query">JSONDB::factory('users')->where('id', '>', 21)->or_where('name', '=', 'gerg0sz')->find_all();</pre>
+                <h5>Query:</h5> <pre class="query">JSONDB::factory('users')->where('name', '=', 'gerg0sz')->or_where('id', '>', 21)->and_where('id', '<=', 29)->find_all();</pre>
                 <h5>Result:</h5> <pre class="result"><?= print_r($where[4], true) ?></pre>
             </li>
         </ol>
@@ -146,7 +146,7 @@ $find_all = JSONDB::factory('users')->find_all();
                 <h5>Result:</h5> <pre class="result"><?= print_r($array[0], true) ?></pre>
             </li>
             <li>
-                <h5>Query:</h5> <pre class="query">JSONDB::factory('users')->->as_array('id', 'name')->find_all();</pre>
+                <h5>Query:</h5> <pre class="query">JSONDB::factory('users')->group_by('name')->as_array('id', 'name')->find_all();</pre>
                 <h5>Result:</h5> <pre class="result"><?= print_r($array[1], true) ?></pre>
             </li>
         </ol>
