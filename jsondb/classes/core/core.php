@@ -417,7 +417,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
                                      $value;
 
                              $op = $operator[$op];
-                             $field = '$row->'.$field.'';
+                             $field = '$row->'.$field;
                          }
 
                          $type = (!$key) ?
