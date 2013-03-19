@@ -279,6 +279,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
      /**
       * Sort an array of objects by more than one field.
+      * @link http://blog.amnuts.com/2011/04/08/sorting-an-array-of-objects-by-one-or-more-object-property/ It's not mine algorithm
       */
      protected function _order_by()
      {
