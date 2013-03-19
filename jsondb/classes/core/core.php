@@ -334,11 +334,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function where($field, $op, $value)
      {
-         $this->_pending[__FUNCTION__][] = array(
+         $this->_pending['where'][] = array(
+             'type' => 'and',
              'field' => $field,
              'op' => $op,
              'value' => $value,
-             'type' => 'first'
          );
 
          return $this;
@@ -353,12 +353,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function and_where($field, $op, $value)
      {
-         $this->_pending['where'][] = array(
-             'field' => $field,
-             'op' => $op,
-             'value' => $value,
-             'type' => 'and'
-         );
+         $this->where($field, $op, $value);
 
          return $this;
      }
@@ -373,10 +368,10 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      public function or_where($field, $op, $value)
      {
          $this->_pending['where'][] = array(
+             'type' => 'or',
              'field' => $field,
              'op' => $op,
              'value' => $value,
-             'type' => 'or'
          );
 
          return $this;
@@ -396,44 +391,41 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              '<' => '<',
              '>=' => '>=',
              '<=' => '<=',
+             'and' => '&&',
+             'or' => '||'
          );
-         $data = $this->_data;
 
-         $this->_data = array_filter($data, function($row) use ($operator)
+         $this->_data = array_filter($this->_data, function($row) use ($operator)
                  {
-                     $result = true;
-                     foreach ($this->_pending['where'] as $condition)
+                     $clause = '';
+
+                     foreach ($this->_pending['where'] as $key => $condition)
                      {
                          extract($condition);
 
                          if (is_array($value))
                          {
-                             if ($op == 'IN')
-                                 $exec = in_array($row->{$field}, $value);
-                             elseif ($op == 'NOT IN')
-                                 $exec = !in_array($row->{$field}, $value);
+                             $value = (in_array($row->{$field}, $value)) ? 1 : 0;
+                             $op = '==';
+                             $field = 1;
                          }
                          else
                          {
-                             eval('$exec = strtolower($row->{$field}) '.$operator[$op].' strtolower($value);');
+                             $value = is_string($value) ?
+                                     '\''.$value.'\'' :
+                                     $value;
+
+                             $op = $operator[$op];
+                             $field = '$row->'.$field.'';
                          }
 
-                         if ($exec)
-                         {
-                             $result = true;
-                             if ($type == 'and' OR $type == 'first')
-                                 break;
-                             else
-                                 continue;
-                         }
-                         else
-                         {
-                             $result = false;
-                             if ($type == 'and' OR $type == 'first')
-                                 continue;
-                             else
-                                 break;
-                         }
+                         $type = (!$key) ?
+                                 null :
+                                 $operator[$type];
+
+                         $query = array($type, $field, $op, $value);
+                         $clause .= implode(' ', $query).' ';
+                         eval('$result = '.$clause.';');
                      }
 
                      return $result;
