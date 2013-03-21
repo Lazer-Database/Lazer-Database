@@ -123,4 +123,4 @@ More informations you can find in PHPDoc. I think it's documented very well.
 Homepage: <http://greg0.ovh.org>   
 E-mail: <gerg0sz92@gmail.com>
 
-If you like and using/want to use my repo I will be greatful for sending me few words on e-mail.
+If you like and using/want to use my repo or you have any suggestions I will be greatful for sending me few words on e-mail.
