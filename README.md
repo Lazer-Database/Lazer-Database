@@ -46,7 +46,7 @@ In that project I have used namespace but i will skip it in examples.
 - `delete()` - deleting data.
 - `config()` - returns object with configuration.
 - `fields()` - returns array with fields name.
-- `fields_type()` - returns assoc array with fields type.
+- `schema()` - returns assoc array with fields name and fields type `field => type`.
 - `last_id()` - returns last ID from table.
 
 ### Create database
