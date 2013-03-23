@@ -20,9 +20,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param string $type
       * @return object Json_decode()
       */
-     public static function get($name)
+     public static function get($name, $assoc=false)
      {
-         return Table::get($name, 'config');
+         return Table::get($name, 'config', $assoc);
      }
 
      /**
@@ -54,17 +54,16 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public static function fields($name)
      {
-         return self::get($name)->fields;
+         return array_keys(self::get($name, true)['schema']);
      }
 
      /**
       * Returning assoc array with types of fields
       * @return array
       */
-     public static function fields_type($name)
+     public static function schema($name)
      {
-         $config = self::get($name);
-         return array_combine($config->fields, $config->types);
+         return self::get($name, true)['schema'];
      }
 
      /**

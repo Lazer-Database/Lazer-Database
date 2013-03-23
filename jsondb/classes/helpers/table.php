@@ -33,9 +33,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param string $type
       * @return object|array Json_decode()
       */
-     public static function get($name, $type = 'data')
+     public static function get($name, $type = 'data', $assoc=false)
      {
-         return json_decode(file_get_contents(self::getPath($name, $type)));
+         return json_decode(file_get_contents(self::getPath($name, $type)), $assoc);
      }
 
      /**

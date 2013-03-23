@@ -57,8 +57,8 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function type($name, $value)
      {
-         $types = Config::fields_type($this->_name);
-         if (array_key_exists($name, $types) && $types[$name] == gettype($value))
+         $schema = Config::schema($this->_name);
+         if (array_key_exists($name, $schema) && $schema[$name] == gettype($value))
          {
              return TRUE;
          }
