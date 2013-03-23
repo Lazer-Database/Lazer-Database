@@ -115,7 +115,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      protected function _set_fields()
      {
          $this->_set = new \stdClass();
-         $fields = $this->fields_type();
+         $fields = $this->schema();
          foreach ($fields as $field => $type)
          {
              if ($type == 'integer' || $type == 'double' AND $field != 'id')
@@ -510,9 +510,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * Returning assoc array with types of fields
       * @return array Fields type
       */
-     public function fields_type()
+     public function schema()
      {
-         return helper\Config::fields_type($this->_name);
+         return helper\Config::schema($this->_name);
      }
 
      /**
@@ -546,7 +546,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          if (!$this->_current_id)
          {
              $config = $this->config();
-             $config->last_id += 1;
+             $config->last_id++;
 
              $this->_set->id = $config->last_id;
              array_push($this->_data, $this->_set);
