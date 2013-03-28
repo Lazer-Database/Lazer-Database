@@ -34,6 +34,80 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
      /**
+      * Checking that field type is numeric
+      * @param array $fields
+      * @return array Fields without ID
+      */
+     public static function is_numeric($type)
+     {
+         $defined = array('integer', 'double');
+
+         if (in_array($type, $defined))
+         {
+             return TRUE;
+         }
+
+         return FALSE;
+     }
+     
+
+     /**
+      * Checking that types from array matching with [boolean, integer, string, double]
+      * @param array $fields
+      * @return array Fields without ID
+      */
+     public static function types(array $types)
+     {
+         $defined = array('boolean', 'integer', 'string', 'double');
+         $diff = array_diff($types, $defined);
+         
+         if (empty($diff))
+         {
+             return TRUE;
+         }
+         throw new JDBException('Wrong types: "'.implode(', ', $diff).'". Available "boolean, integer, string, double"');
+     }
+
+     /**
+      * Delete ID field from arrays
+      * @param array $fields
+      * @return array Fields without ID
+      */
+     public static function filter(array $fields)
+     {
+         if (array_values($fields) === $fields)
+         {
+             if (($key = array_search('id', $fields)) !== false)
+             {
+                 unset($fields[$key]);
+             }
+         }
+         else
+         {
+             unset($fields['id']);
+         }
+         return $fields;
+     }
+
+     /**
+      * Checking that typed field really exist in table
+      * @param string $name
+      * @return boolean
+      * @throws JDBException If field does not exist
+      */
+     public function fields(array $fields)
+     {
+         $fields = self::filter($fields);
+         $diff = array_diff($fields, Config::fields($this->_name));
+
+         if (empty($diff))
+         {
+             return TRUE;
+         }
+         throw new JDBException('Field(s) "'.implode(', ', $diff).'" does not exists');
+     }
+
+     /**
       * Checking that typed field really exist in table
       * @param string $name
       * @return boolean
@@ -45,7 +119,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          {
              return TRUE;
          }
-         throw new JDBException('Field does not exists');
+         throw new JDBException('Field '.$name.' does not exists');
      }
 
      /**
