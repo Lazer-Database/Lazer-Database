@@ -39,6 +39,8 @@ In that project I have used namespace but i will skip it in examples.
 
 ##### Ending methods
 
+- `add_fields()` - append new fields into existing table
+- `delete_fields()` - removing fields from existing table
 - `count()` - returns the number of rows.
 - `find()` - returns one row with specified ID.
 - `find_all()` - returns rows.
