@@ -489,6 +489,51 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
      /**
+      * Limit returned data
+      * 
+      * Should be used at the end of chain, before end method
+      * @param integer $number Limit number
+      * @param integer $offset Offset number
+      * @return \Core
+      */
+     public function limit($number, $offset = 0)
+     {
+         $this->_data = array_slice($this->_data, $offset, $number);
+         return $this;
+     }
+
+     /**
+      * Add new fields to table
+      * @param array $fields New fields and their types
+      */
+     public function add_fields(array $fields)
+     {
+         $table = $this->schema();
+
+         $fields = array_diff_assoc($fields, $table);
+
+         if (!empty($fields))
+         {
+             $config = $this->config();
+             $config->schema = array_merge($table, $fields);
+
+             foreach ($this->_data as $key => $object)
+             {
+                 foreach ($fields as $name => $type)
+                 {
+                     if ($type == 'integer' || $type == 'double')
+                         $this->_data[$key]->{$name} = 0;
+                     else
+                         $this->_data[$key]->{$name} = null;
+                 }
+             }
+
+             helpers\Table::put($this->_name, $this->_data);
+             helpers\Config::put($this->_name, $config);
+         }
+     }
+
+     /**
       * Returning object with config for table
       * @return object Config
       */
@@ -522,20 +567,6 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      public function last_id()
      {
          return helper\Config::last_id($this->_name);
-     }
-
-     /**
-      * Limit returned data
-      * 
-      * Should be used at the end of chain, before end method
-      * @param integer $number Limit number
-      * @param integer $offset Offset number
-      * @return \Core
-      */
-     public function limit($number, $offset = 0)
-     {
-         $this->_data = array_slice($this->_data, $offset, $number);
-         return $this;
      }
 
      /**
