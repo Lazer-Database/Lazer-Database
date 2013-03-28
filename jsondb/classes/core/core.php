@@ -67,7 +67,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * Information about to reset keys in array or not to
       * @var integer
       */
-     protected $_values_clear = 1;
+     protected $_reset_keys = 1;
 
      /**
       * Factory pattern
@@ -193,27 +193,25 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public static function create($name, array $fields)
      {
+         $fields = helper\Validate::arr_to_lower($fields);
+
          if (helper\Table::exists($name) && helper\Config::exists($name))
          {
              throw new JDBException('helper\Table "'.$name.'" already exists');
          }
-         
 
-         $names = array_keys($fields);
          $types = array_values($fields);
-         
+
          helper\Validate::types($types);
 
          if (!array_key_exists('id', $fields))
          {
-             array_unshift($names, 'id');
-             array_unshift($types, 'integer');
+             $fields = array('id' => 'integer') + $fields;
          }
 
          $data = new \stdClass();
          $data->last_id = 0;
-         $data->fields = $names;
-         $data->types = $types;
+         $data->schema = $fields;
 
          helper\Table::put($name, array());
          helper\Config::put($name, $data);
@@ -238,7 +236,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      {
          if (helper\Validate::factory($this->_name)->field($column))
          {
-             $this->_values_clear = 0;
+             $this->_reset_keys = 0;
              $this->_pending[__FUNCTION__] = $column;
          }
 
@@ -447,7 +445,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      {
          if (helper\Validate::factory($this->_name)->field($value))
          {
-             $this->_values_clear = 0;
+             $this->_reset_keys = 0;
              $this->_pending['as_array'] = array(
                  'key' => $key,
                  'value' => $value
@@ -512,6 +510,8 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function add_fields(array $fields)
      {
+         $fields = helper\Validate::arr_to_lower($fields);
+
          helper\Validate::types(array_values($fields));
 
          $schema = $this->schema();
@@ -544,6 +544,8 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function delete_fields(array $fields)
      {
+         $fields = helper\Validate::arr_to_lower($fields);
+
          helper\Validate::factory($this->_name)->fields($fields);
 
          $config = $this->config();
@@ -695,7 +697,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      {
          $this->_pending();
 
-         return $this->_values_clear ? array_values($this->_data) : $this->_data;
+         return $this->_reset_keys ? array_values($this->_data) : $this->_data;
      }
 
  }
