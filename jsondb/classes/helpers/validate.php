@@ -35,8 +35,8 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
      /**
       * Checking that field type is numeric
-      * @param array $fields
-      * @return array Fields without ID
+      * @param string $type
+      * @return boolean
       */
      public static function is_numeric($type)
      {
@@ -49,18 +49,17 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
          return FALSE;
      }
-     
 
      /**
       * Checking that types from array matching with [boolean, integer, string, double]
-      * @param array $fields
+      * @param array $fields Indexed array
       * @return array Fields without ID
       */
      public static function types(array $types)
      {
          $defined = array('boolean', 'integer', 'string', 'double');
          $diff = array_diff($types, $defined);
-         
+
          if (empty($diff))
          {
              return TRUE;
@@ -91,9 +90,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
      /**
       * Checking that typed field really exist in table
-      * @param string $name
+      * @param array $fields Indexed array
       * @return boolean
-      * @throws JDBException If field does not exist
+      * @throws JDBException If field(s) does not exist
       */
      public function fields(array $fields)
      {
