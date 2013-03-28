@@ -81,7 +81,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          $self->_name = $name;
 
          if (!helper\Table::exists($self->_name))
-             throw new JDBException('Table does not exists');
+             throw new JDBException('Table "'.$name.'" does not exists');
 
          $self->_set_fields();
          $self->_data = helper\Table::get($self->_name);
@@ -116,9 +116,10 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      {
          $this->_set = new \stdClass();
          $fields = $this->schema();
+
          foreach ($fields as $field => $type)
          {
-             if ($type == 'integer' || $type == 'double' AND $field != 'id')
+             if (helper\Validate::is_numeric($type) AND $field != 'id')
                  $this->_set->{$field} = 0;
              else
                  $this->_set->{$field} = null;
@@ -194,11 +195,14 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      {
          if (helper\Table::exists($name) && helper\Config::exists($name))
          {
-             throw new JDBException('helper\Table already exists');
+             throw new JDBException('helper\Table "'.$name.'" already exists');
          }
+         
 
          $names = array_keys($fields);
          $types = array_values($fields);
+         
+         helper\Validate::types($types);
 
          if (!array_key_exists('id', $fields))
          {
@@ -503,34 +507,58 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
      /**
-      * Add new fields to table
+      * Add new fields to table, array schema like in create() function
       * @param array $fields New fields and their types
       */
      public function add_fields(array $fields)
      {
-         $table = $this->schema();
+         helper\Validate::types(array_values($fields));
 
-         $fields = array_diff_assoc($fields, $table);
+         $schema = $this->schema();
+         $fields = array_diff_assoc($fields, $schema);
 
          if (!empty($fields))
          {
              $config = $this->config();
-             $config->schema = array_merge($table, $fields);
+             $config->schema = array_merge($schema, $fields);
 
              foreach ($this->_data as $key => $object)
              {
                  foreach ($fields as $name => $type)
                  {
-                     if ($type == 'integer' || $type == 'double')
+                     if (helper\Validate::is_numeric($type))
                          $this->_data[$key]->{$name} = 0;
                      else
                          $this->_data[$key]->{$name} = null;
                  }
              }
 
-             helpers\Table::put($this->_name, $this->_data);
-             helpers\Config::put($this->_name, $config);
+             helper\Table::put($this->_name, $this->_data);
+             helper\Config::put($this->_name, $config);
          }
+     }
+
+     /**
+      * Delete fields from array
+      * @param array $fields
+      */
+     public function delete_fields(array $fields)
+     {
+         helper\Validate::factory($this->_name)->fields($fields);
+
+         $config = $this->config();
+         $config->schema = array_diff_key($this->schema(), array_flip($fields));
+
+         foreach ($this->_data as $key => $object)
+         {
+             foreach ($fields as $name)
+             {
+                 unset($this->_data[$key]->{$name});
+             }
+         }
+
+         helper\Table::put($this->_name, $this->_data);
+         helper\Config::put($this->_name, $config);
      }
 
      /**
