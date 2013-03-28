@@ -89,6 +89,19 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
      /**
+      * Change keys and values case to lower
+      * @param array $array
+      * @return array
+      */
+     public static function arr_to_lower(array $array)
+     {
+         $array = array_change_key_case($array);
+         $array = array_map('strtolower', $array);
+
+         return $array;
+     }
+
+     /**
       * Checking that typed field really exist in table
       * @param array $fields Indexed array
       * @return boolean
