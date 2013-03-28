@@ -508,7 +508,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
      /**
       * Add new fields to table, array schema like in create() function
-      * @param array $fields New fields and their types
+      * @param array $fields Associative array
       */
      public function add_fields(array $fields)
      {
@@ -540,7 +540,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
      /**
       * Delete fields from array
-      * @param array $fields
+      * @param array $fields Indexed array
       */
      public function delete_fields(array $fields)
      {
