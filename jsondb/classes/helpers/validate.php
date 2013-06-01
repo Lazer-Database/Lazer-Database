@@ -117,7 +117,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          {
              return TRUE;
          }
-         throw new JDBException('Field(s) "'.implode(', ', $diff).'" does not exists');
+         throw new JDBException('Field(s) "'.implode(', ', $diff).'" does not exists in table "'.$this->_name.'"');
      }
 
      /**
@@ -132,7 +132,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          {
              return TRUE;
          }
-         throw new JDBException('Field '.$name.' does not exists');
+         throw new JDBException('Field '.$name.' does not exists in table "'.$this->_name.'"');
      }
      
      public function exists()
