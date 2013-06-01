@@ -21,15 +21,10 @@ use jsondb\classes\JSONDB as JSONDB;
 
      public function __construct($local, $foreign)
      {
-         if (!helper\Data::name($local)->exists())
-             throw new JDBException('Table "'.$local.'" does not exists');
-
-         if (!helper\Data::name($foreign)->exists())
-             throw new JDBException('Table "'.$foreign.'" does not exists');
-
-         if (!helper\Validate::relation($local, $foreign))
-             throw new JDBException('Relation '.$local.'-'.$foreign.' does not exists');
-
+         helper\Validate::name($local)->exists();
+         helper\Validate::name($foreign)->exists();
+         helper\Validate::relation($local, $foreign);
+             
          $this->_local = $local;
          $this->_foreign = $foreign;
          $this->set_relation();
@@ -107,6 +102,11 @@ use jsondb\classes\JSONDB as JSONDB;
              }
          }
          return $return;
+     }
+     
+     public static function get_relations()
+     {
+         return array_keys($this->_relations);
      }
 
  }

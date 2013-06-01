@@ -3,6 +3,7 @@
  namespace jsondb\classes\helpers;
 
 use jsondb\classes\JDBException as JDBException;
+use \jsondb\classes\core\Relation as Relation;
 
 defined('JSONDB_SECURE') or die('Permission denied!');
 
@@ -102,7 +103,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
      /**
-      * Checking that typed field really exist in table
+      * Checking that typed fields really exist in table
       * @param array $fields Indexed array
       * @return boolean
       * @throws JDBException If field(s) does not exist
@@ -133,6 +134,17 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          }
          throw new JDBException('Field '.$name.' does not exists');
      }
+     
+     public function exists()
+     {
+         if (!helper\Data::name($name)->exists())
+             throw new JDBException('Table "'.$name.'" does not exists');
+         
+         if (!helper\Config::name($name)->exists())
+             throw new JDBException('Config "'.$name.'" does not exists');
+
+         return TRUE;
+     }
 
      /**
       * Checking that typed field have correct type of value
@@ -151,7 +163,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
          throw new JDBException('Wrong data type');
      }
-     
+
      /**
       * Checking that relation between tables exists
       * @param string $local local table
@@ -161,8 +173,29 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      public static function relation($local, $foreign)
      {
          $relations = Config::name($local)->relations();
-         return isset($relations->{$foreign});
+         if (isset($relations->{$foreign}))
+         {
+             return TRUE;
+         }
+         
+         throw new JDBException('Relation '.$local.'-'.$foreign.' does not exists');
      }
-  }
+
+     /**
+      * Checking that relation type is correct
+      * @param string $type 
+      * @return type
+      */
+     public static function relation_type($type)
+     {
+         if (in_array($type, Relation::get_relations()))
+         {
+             return TRUE;
+         }
+         
+         throw new JDBException('Wrong relation type');
+     }
+
+ }
 
 ?>
