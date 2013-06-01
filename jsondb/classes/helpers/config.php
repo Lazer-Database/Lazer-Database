@@ -40,7 +40,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function __call($name, $arguments)
      {
-         call_user_func(array(self::$file, $name), $arguments[0]);
+         $param = (isset($arguments[0])) ? $arguments[0] : null;
+
+         call_user_func(array(self::$file, $name), $param);
      }
 
      /**
