@@ -96,6 +96,26 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          throw new JDBException($type.': File does not exists');
      }
 
+     /**
+      * Finds file from data folder
+      * @param array $names
+      * @param type $type
+      * @return boolean
+      */
+     public static function find_file(array $names, $type='config')
+     {
+         $names = implode(',', $names);
+         $pattern = './data/{'.$names.'}.'.$type.'.json';
+         $found = glob($pattern, GLOB_BRACE);
+         if (!empty($found))
+         {
+             preg_match('#./data/(.*).'.$type.'.json#', $found[0], $found_filename);
+             return $found_filename[1];
+         }
+
+         return false;
+     }
+
  }
 
 ?>
