@@ -152,10 +152,16 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          throw new JDBException('Wrong data type');
      }
      
+     /**
+      * Checking that relation between tables exists
+      * @param string $local local table
+      * @param string $foreign related table
+      * @throws JDBException
+      */
      public static function relation($local, $foreign)
      {
          $relations = Config::name($local)->relations();
-         if(!isset($relations->comments))
+         if(!isset($relations->{$foreign}))
          {
              throw new JDBException('Relation '.$local.'-'.$foreign.' does not exists');
          }
