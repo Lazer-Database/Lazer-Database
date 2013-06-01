@@ -193,7 +193,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public static function relation_type($type)
      {
-         if (in_array($type, Relation::get_relations()))
+         if (in_array($type, Relation::get_relations_types()))
          {
              return TRUE;
          }
