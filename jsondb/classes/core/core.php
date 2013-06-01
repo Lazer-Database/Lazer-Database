@@ -60,6 +60,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          'where' => array(),
          'order_by' => array(),
          'group_by' => array(),
+         'with' => array(),
          'as_array' => array()
      );
 
@@ -259,6 +260,40 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          }
 
          $this->_data = $grouped;
+     }
+
+     /**
+      * JOIN other tables
+      * @param string $table relations separated by :
+      * @return \jsondb\classes\core\Core
+      */
+     public function with($table)
+     {
+         $this->_pending['with'][] = explode(':', $table);
+         return $this;
+     }
+
+     /**
+      * Pending function for with(), joining other tables to current
+      */
+     protected function _with()
+     {
+         $joins = $this->_pending['with'];
+         foreach ($joins as $join)
+         {
+             $local = (count($join) > 1) ? array_slice($join, -2, 1)[0] : $this->_name;
+             $foreign = end($join);
+
+             $relation = new Relation($local, $foreign);
+
+             $path = array_map('ucfirst', $join);
+             $array = $this->_data;
+
+             foreach ($path as $part)
+             {
+                 $array = $relation->build($array, $part);
+             }
+         }
      }
 
      /**
