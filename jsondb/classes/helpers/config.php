@@ -13,7 +13,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
   * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
   */
  class Config {
-    
+
      /**
       * File class
       * @var object
@@ -27,12 +27,12 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public static function name($name)
      {
-         
+
          self::$file = new File($name, 'config');
-         
+
          return new Config();
      }
-     
+
      /**
       * Calls File methods
       * @param string $name
@@ -52,7 +52,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      public function get($field = null, $assoc = false)
      {
          $return = self::$file->get($assoc);
-         
+
          if ($field !== null)
              return $assoc ? $return[$field] : $return->{$field};
 
@@ -72,8 +72,13 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * Return relations configure
       * @return array|object
       */
-     public function relations($assoc=true)
+     public function relations($table = null, $assoc = false)
      {
+         if ($table !== null)
+         {
+             return $this->get('relations', $assoc)->{$table};
+         }
+
          return $this->get('relations', $assoc);
      }
 
