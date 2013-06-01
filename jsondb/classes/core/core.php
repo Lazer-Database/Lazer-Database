@@ -78,8 +78,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public static function factory($name)
      {
-         if (!helper\Data::name($name)->exists())
-             throw new JDBException('Table "'.$name.'" does not exists');
+         helper\Validate::name($name)->exists();
 
          $self = new JSONDB();
          $self->_name = $name;
@@ -212,6 +211,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          $data = new \stdClass();
          $data->last_id = 0;
          $data->schema = $fields;
+         $data->relations = new \stdClass();
 
          helper\Data::name($name)->put(array());
          helper\Config::name($name)->put($data);
@@ -611,6 +611,62 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
      /**
+      * Adding relation to table
+      * 
+      * Available relations type:
+      * - belongs_to
+      * - has_many
+      * - has_and_belongs_to_many
+      * 
+      * @param type $type
+      * @param type $table
+      * @param type $local_key
+      * @param type $foreign_key
+      */
+     public function add_relation($type, $table, $local_key, $foreign_key)
+     {
+         helper\Validate::relation_type($type);
+         helper\Validate::name($table)->exists();
+         helper\Validate::name($table)->field($foreign_key);
+         helper\Validate::name($this->_name)->field($local_key);
+
+         $relation = array(
+             $table => array(
+                 'type' => $type,
+                 'keys' => array(
+                     'local' => $local_key,
+                     'foreign' => $foreign_key
+                 )
+             )
+         );
+
+         $config = $this->config();
+         $config->relations = array_merge($this->relations(), $relation);
+
+         helper\Config::name($this->_name)->put($config);
+
+         return $this;
+     }
+
+     /**
+      * removing relation with tables
+      * @param type $table
+      */
+     public function delete_relations(array $tables)
+     {
+         foreach ($tables as $table)
+         {
+             helper\Validate::name($table)->exists();
+             helper\Validate::name($table)->relation($this->_name, $table);
+         }
+
+         $config = $this->config();
+         $config->relations = array_diff_key($this->relations(), array_flip($tables));
+
+         helper\Config::name($this->_name)->put($config);
+     }
+
+     /**
       * Returning object with config for table
       * @return object Config
       */
@@ -635,6 +691,15 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      public function schema()
      {
          return helper\Config::name($this->_name)->schema();
+     }
+
+     /**
+      * Returning assoc array with types of fields
+      * @return array Fields type
+      */
+     public function relations()
+     {
+         return helper\Config::name($this->_name)->relations(null, true);
      }
 
      /**
