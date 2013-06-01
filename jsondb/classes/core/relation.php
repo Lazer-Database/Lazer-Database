@@ -11,7 +11,7 @@ use jsondb\classes\JSONDB as JSONDB;
      private $_local;
      private $_foreign;
      private $_junction;
-     private $_relations = array(
+     private static $relations = array(
          'belongs_to' => 1,
          'has_many' => 2,
          'has_and_belongs_to_many' => 3
@@ -34,7 +34,7 @@ use jsondb\classes\JSONDB as JSONDB;
      private function set_relation()
      {
          $relation = helper\Config::name($this->_local)->relations($this->_foreign)->type;
-         $this->_relation = $this->_relations[$relation];
+         $this->_relation = self::$relations[$relation];
 
          if ($this->_relation === 3)
          {
@@ -106,7 +106,7 @@ use jsondb\classes\JSONDB as JSONDB;
      
      public static function get_relations()
      {
-         return array_keys($this->_relations);
+         return array_keys(self::$relations);
      }
 
  }
