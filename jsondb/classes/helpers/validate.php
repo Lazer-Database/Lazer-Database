@@ -135,6 +135,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          throw new JDBException('Field '.$name.' does not exists in table "'.$this->_name.'"');
      }
      
+     /**
+      * Checking that Table and Config exists and throw exceptions if not
+      * @return boolean
+      * @throws JDBException
+      */
      public function exists()
      {
          if (!Data::name($this->_name)->exists())
