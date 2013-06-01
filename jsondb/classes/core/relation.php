@@ -104,7 +104,7 @@ use jsondb\classes\JSONDB as JSONDB;
          return $return;
      }
      
-     public static function get_relations()
+     public static function get_relations_types()
      {
          return array_keys(self::$relations);
      }
