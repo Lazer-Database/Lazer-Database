@@ -82,7 +82,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
          $self = new JSONDB();
          $self->_name = $name;
-         
+
          $self->_set_fields();
          $self->_data = helper\Data::name($self->_name)->get();
 
@@ -710,6 +710,53 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          $this->_pending();
 
          return $this->_reset_keys ? array_values($this->_data) : $this->_data;
+     }
+
+     /**
+      * Debug functions, prints whole query with values
+      */
+     public function debug()
+     {
+         $print = "JSONDB::factory(".$this->_name.")\n";
+         foreach ($this->_pending as $function => $values)
+         {
+             if (!empty($values))
+             {
+
+                 if (is_array($values))
+                 {
+                     if (is_array(reset($values)))
+                     {
+                         foreach ($values as $value)
+                         {
+                             if ($function == 'where')
+                             {
+                                 array_shift($value);
+                             }
+                             if ($function == 'with')
+                             {
+                                 $params = implode(':', $value);
+                             }
+                             else
+                             {
+                                 $params = implode(', ', $value);
+                             }
+                             $print .= "\t".'->'.$function.'('.$params.')'."\n";
+                         }
+                     }
+                     else
+                     {
+                         $params = implode(', ', $values);
+                         $print .= "\t".'->'.$function.'('.$params.')'."\n";
+                     }
+                 }
+                 else
+                 {
+                     $print .= "\t".'->'.$function.'('.$values.')'."\n";
+                 }
+             }
+         }
+         echo '<pre>'.print_r($print, true).'</pre>';
      }
 
  }
