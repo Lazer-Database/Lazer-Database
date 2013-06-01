@@ -27,7 +27,8 @@ use jsondb\classes\JSONDB as JSONDB;
          if (!helper\Data::name($foreign)->exists())
              throw new JDBException('Table "'.$foreign.'" does not exists');
 
-         helper\Validate::relation($local, $foreign);
+         if (!helper\Validate::relation($local, $foreign))
+             throw new JDBException('Relation '.$local.'-'.$foreign.' does not exists');
 
          $this->_local = $local;
          $this->_foreign = $foreign;
