@@ -19,10 +19,10 @@ Usage
 ------
 
 First of all you should include `jsondb/bootstrap.php` file (Example autoloader) and define constant `JSONDB_DATA_PATH` containing absolute path to folder with JSON files:
-
-      require_once 'jsondb/bootstrap.php';
-      define('JSONDB_DATA_PATH', realpath(dirname(__FILE__)).'/data/'); //Path to folder with tables
-
+```php
+require_once 'jsondb/bootstrap.php';
+define('JSONDB_DATA_PATH', realpath(dirname(__FILE__)).'/data/'); //Path to folder with tables
+```
 #### Assumptions
 
 In that project I have used namespace but i will skip it in examples.
@@ -52,71 +52,71 @@ In that project I have used namespace but i will skip it in examples.
 - `last_id()` - returns last ID from table.
 
 ### Create database
-
-    JSONDB::create('table_name', array(
-     'id' => 'integer',
-     'nickname' => 'string',
-     {field_name} => {field_type}
-    ));
-
+```php
+JSONDB::create('table_name', array(
+    'id' => 'integer',
+    'nickname' => 'string',
+    {field_name} => {field_type}
+));
+```
 More informations about field types and usage in PHPDoc
 	
 ### Remove database
-
-    JSONDB::remove('table_name');
-
+```php
+JSONDB::remove('table_name');
+```
 ### Select
 
 #### Multiple select
-
-    $table = JSONDB::factory('table_name')->find_all();
+```php
+$table = JSONDB::factory('table_name')->find_all();
     
-    foreach($table as $row)
-    {
-      echo $row->id;
-    }
-
-#### Single record select
-
-    $row = JSONDB::factory('table_name')->find(1);
-
+foreach($table as $row)
+{
     echo $row->id;
+}
+```
+#### Single record select
+```php
+$row = JSONDB::factory('table_name')->find(1);
 
+echo $row->id;
+```
 Type ID of row in `find()` method.
 
 ### Insert
+```php
+$row = JSONDB::factory('table_name');
 
-    $row = JSONDB::factory('table_name');
-    
-    $row->nickname = 'new_user';
-    $row->save();
-
+$row->nickname = 'new_user';
+$row->save();
+```
 Don't set the ID.
 
 ### Update
 
 It's very smilar to `Inserting`.
+```php
+$row = JSONDB::factory('table_name')->find(1); //Will edit row with ID 1
 
-    $row = JSONDB::factory('table_name')->find(1); //Will edit row with ID 1
+$row->nickname = 'edited_user';
 
-    $row->nickname = 'edited_user';
-
-    $row->save();
-
+$row->save();
+```
 ### Remove
 
 #### Single record deleting
-
-    JSONDB::factory('table_name')->find(1)->delete(); //Will remove row with ID 1
-
+```php
+JSONDB::factory('table_name')->find(1)->delete(); //Will remove row with ID 1
+```
 #### Multiple records deleting
-
-    JSONDB::factory('table_name')->where('nickname', '=', 'edited_user')->delete();
-
+```php
+JSONDB::factory('table_name')->where('nickname', '=', 'edited_user')->delete();
+```
 #### Clear table
-
-    JSONDB::factory('table_name')->delete();
-
+```php
+JSONDB::factory('table_name')->delete();
+```
 Description
 ------
 
