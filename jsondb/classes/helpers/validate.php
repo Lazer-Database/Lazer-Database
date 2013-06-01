@@ -26,7 +26,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param string $name
       * @return \jsondb\helpers\Validate
       */
-     public static function factory($name)
+     public static function name($name)
      {
          $validate = new Validate();
          $validate->_name = $name;
@@ -110,7 +110,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      public function fields(array $fields)
      {
          $fields = self::filter($fields);
-         $diff = array_diff($fields, Config::fields($this->_name));
+         $diff = array_diff($fields, Config::name($this->_name)->fields());
 
          if (empty($diff))
          {
@@ -127,7 +127,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function field($name)
      {
-         if (in_array($name, Config::fields($this->_name)))
+         if (in_array($name, Config::name($this->_name)->fields()))
          {
              return TRUE;
          }
@@ -143,7 +143,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function type($name, $value)
      {
-         $schema = Config::schema($this->_name);
+         $schema = Config::name($this->_name)->schema();
          if (array_key_exists($name, $schema) && $schema[$name] == gettype($value))
          {
              return TRUE;
