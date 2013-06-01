@@ -5,7 +5,7 @@
 defined('JSONDB_SECURE') or die('Permission denied!');
 
  /**
-  * Proxy pattern for Table helper {@uses Table}
+  * Config managing class adapter of File class
   *
   * @category Helpers
   * @author Grzegorz Kuźnik
@@ -13,6 +13,35 @@ defined('JSONDB_SECURE') or die('Permission denied!');
   * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
   */
  class Config {
+    
+     /**
+      * File class
+      * @var object
+      */
+     private static $file;
+
+     /**
+      * Setting name of table
+      * @param string $name
+      * @return \jsondb\classes\helpers\File
+      */
+     public static function name($name)
+     {
+         
+         self::$file = new File($name, 'config');
+         
+         return new Config();
+     }
+     
+     /**
+      * Calls File methods
+      * @param string $name
+      * @param mixed $arguments
+      */
+     public function __call($name, $arguments)
+     {
+         call_user_func(array(self::$file, $name), $arguments[0]);
+     }
 
      /**
       * Getting decoded JSON
@@ -20,50 +49,41 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param string $type
       * @return object Json_decode()
       */
-     public static function get($name, $assoc=false)
+     public function get($field = null, $assoc = false)
      {
-         return Table::get($name, 'config', $assoc);
-     }
+         $return = self::$file->get($assoc);
+         
+         if ($field !== null)
+             return $assoc ? $return[$field] : $return->{$field};
 
-     /**
-      * Saving encoded JSON to file
-      * @param string $name
-      * @param object $data
-      * @param string $type
-      * @return boolean
-      */
-     public static function put($name, $data)
-     {
-         return Table::put($name, $data, 'config');
-     }
-
-     /**
-      * Checking that config file exists
-      * @param string $name
-      * @param string $type
-      * @return boolean
-      */
-     public static function exists($name)
-     {
-         return Table::exists($name, 'config');
+         return $return;
      }
 
      /**
       * Return array with names of fields
       * @return array
       */
-     public static function fields($name)
+     public function fields()
      {
-         return array_keys(self::get($name, true)['schema']);
+         return array_keys($this->get('schema', true));
+     }
+
+     /**
+      * Return relations configure
+      * @return array|object
+      */
+     public function relations($assoc=true)
+     {
+         return $this->get('relations', $assoc);
      }
 
      /**
       * Returning assoc array with types of fields
       * @return array
       */
-     public static function schema($name)
+     public function schema()
      {
-         return self::get($name, true)['schema'];
+         return $this->get('schema', true);
      }
 
      /**
@@ -71,9 +91,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param string $name
       * @return integer
       */
-     public static function last_id($name)
+     public function last_id()
      {
-         return self::get($name)->last_id;
+         return $this->get('last_id');
      }
 
  }
