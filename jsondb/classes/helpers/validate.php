@@ -137,11 +137,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      
      public function exists()
      {
-         if (!helper\Data::name($name)->exists())
-             throw new JDBException('Table "'.$name.'" does not exists');
+         if (!Data::name($this->_name)->exists())
+             throw new JDBException('Table "'.$this->_name.'" does not exists');
          
-         if (!helper\Config::name($name)->exists())
-             throw new JDBException('Config "'.$name.'" does not exists');
+         if (!Config::name($this->_name)->exists())
+             throw new JDBException('Config "'.$this->_name.'" does not exists');
 
          return TRUE;
      }
