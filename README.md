@@ -32,6 +32,7 @@ In that project I have used namespace but i will skip it in examples.
 ##### Filter chain methods in multiple select
 
 - `order_by()` - sort rows by key in order, can order by more than one field (just chain it). 
+- `group_by()` - group rows by field.
 - `where()` - filter records. Alias: `and_where()`.
 - `or_where()` - other type of filtering results. 
 - `limit()` - returns results between a certain number range. Should be used right before ending method `find_all()`.
