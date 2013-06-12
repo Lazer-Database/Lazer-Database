@@ -1,3 +1,11 @@
+It's build version, many things may not work 
+==============
+
+In this set i'm working about manage relations between tables.
+
+I won't update readme in that branch. 
+There are builded files, mainly for me to easily write between 2 computers.
+
 File Database based on JSON files
 =============
 
