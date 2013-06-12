@@ -22,6 +22,7 @@ $find_all = JSONDB::factory('users')->find_all();
 
  $array[] = JSONDB::factory('users')->as_array(null, 'name')->find_all();
  $array[] = JSONDB::factory('users')->group_by('name')->as_array('id', 'name')->find_all();
+ $array[] = JSONDB::factory('users')->group_by('name')->as_array('name', 'id')->find_all();
 ?>
 
 
@@ -148,6 +149,10 @@ $find_all = JSONDB::factory('users')->find_all();
             <li>
                 <h5>Query:</h5> <pre class="query">JSONDB::factory('users')->group_by('name')->as_array('id', 'name')->find_all();</pre>
                 <h5>Result:</h5> <pre class="result"><?= print_r($array[1], true) ?></pre>
+            </li>
+            <li>
+                <h5>Query:</h5> <pre class="query">JSONDB::factory('users')->group_by('name')->as_array('name', 'id')->find_all();</pre>
+                <h5>Result:</h5> <pre class="result"><?= print_r($array[2], true) ?></pre>
             </li>
         </ol>
     </div>
