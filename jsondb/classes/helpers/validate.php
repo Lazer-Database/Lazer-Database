@@ -183,7 +183,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              return TRUE;
          }
          
-         throw new JDBException('Relation '.$local.'-'.$foreign.' does not exists');
+         throw new JDBException('Relation '.$local.' - '.$foreign.' does not exists');
      }
 
      /**
