@@ -21,18 +21,18 @@ use jsondb\classes\JSONDB as JSONDB;
 
      public function __construct($local, $foreign)
      {
-         helper\Validate::name($local)->exists();
-         helper\Validate::name($foreign)->exists();
-         helper\Validate::relation($local, $foreign);
-             
+         helper\Validate::name($this->_local)->exists();
+         helper\Validate::name($this->_foreign)->exists();
          $this->_local = $local;
          $this->_foreign = $foreign;
-         $this->set_relation();
-         $this->set_keys();
      }
 
-     private function set_relation()
+     public function get()
      {
+         helper\Validate::relation($this->_local, $this->_foreign);
+
+         $this->set_keys();
+
          $relation = helper\Config::name($this->_local)->relations($this->_foreign)->type;
          $this->_relation = self::$relations[$relation];
 
@@ -70,13 +70,11 @@ use jsondb\classes\JSONDB as JSONDB;
                  return array();
 
              return JSONDB::factory($this->_foreign)
-                             ->where($keys['foreign']->local, 'IN', $join[$row->{$keys['local']->local}])
-                             ->find_all();
+                             ->where($keys['foreign']->local, 'IN', $join[$row->{$keys['local']->local}]);
          }
 
          return JSONDB::factory($this->_foreign)
-                         ->where($keys['foreign']->local, '=', $row->{$keys['local']->local})
-                         ->find_all();
+                         ->where($keys['foreign']->local, '=', $row->{$keys['local']->local});
      }
 
      public function build($array, $part)
@@ -86,15 +84,30 @@ use jsondb\classes\JSONDB as JSONDB;
          {
              if (is_object($row))
              {
-                 if (!isset($row->{$part}))
+                 if ($row instanceof \stdClass)
                  {
-                     $query = $this->join($row);
+                     $part = ucfirst($part);
+                     
+                     if (!isset($row->{$part}))
+                     {
+                         $query = $this->join($row);
+                         
+                         if ($this->_relation == 1)
+                         {
+                             $query = $query->find_all();
+                             $query = reset($query);
+                         }
+                         
+                         $row->{$part} = $query;
+                     }
 
-                     $row->{$part} = ($this->_relation == 1) ? reset($query) : $query;
+                     $array[$key] = $row->{$part};
+                     $return[] = $row->{$part};
                  }
-
-                 $array[$key] = $row->{$part};
-                 $return[] = $row->{$part};
+                 else
+                 {
+                     $row->with($part);
+                 }
              }
              else
              {
@@ -103,7 +116,8 @@ use jsondb\classes\JSONDB as JSONDB;
          }
          return $return;
      }
-     
+
+
      public static function get_relations_types()
      {
          return array_keys(self::$relations);

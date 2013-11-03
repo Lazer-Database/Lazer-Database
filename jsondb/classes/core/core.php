@@ -285,11 +285,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              $foreign = end($join);
 
              $relation = new Relation($local, $foreign);
-
-             $path = array_map('ucfirst', $join);
+             $relation->get();
+             
              $array = $this->_data;
-
-             foreach ($path as $part)
+             
+             foreach ($join as $part)
              {
                  $array = $relation->build($array, $part);
              }
