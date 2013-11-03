@@ -21,8 +21,9 @@ use jsondb\classes\JSONDB as JSONDB;
 
      public function __construct($local, $foreign)
      {
-         helper\Validate::name($this->_local)->exists();
-         helper\Validate::name($this->_foreign)->exists();
+         helper\Validate::name($local)->exists();
+         helper\Validate::name($foreign)->exists();
+
          $this->_local = $local;
          $this->_foreign = $foreign;
      }
@@ -87,17 +88,17 @@ use jsondb\classes\JSONDB as JSONDB;
                  if ($row instanceof \stdClass)
                  {
                      $part = ucfirst($part);
-                     
+
                      if (!isset($row->{$part}))
                      {
                          $query = $this->join($row);
-                         
+
                          if ($this->_relation == 1)
                          {
                              $query = $query->find_all();
                              $query = reset($query);
                          }
-                         
+
                          $row->{$part} = $query;
                      }
 
@@ -116,7 +117,6 @@ use jsondb\classes\JSONDB as JSONDB;
          }
          return $return;
      }
-
 
      public static function get_relations_types()
      {
