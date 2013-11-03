@@ -22,10 +22,21 @@ use \jsondb\classes\JSONDB as JSONDB;
 // $models[14] = array('Golf', 'Passat', 'Polo');
 // $models[15] = array('440', 'FH');
 //
-$car = JSONDB::factory('cars')->with('marques')->find_all();
-
-
-echo'<pre>';
-print_r($car);
-
+echo '<pre>';
+$cars = JSONDB::factory('cars')->with('marques')->with('marques:cars')->with('marques:cars:marques')->find_all();
 ?>
+<ol>
+<?php
+foreach($cars as $car)
+{
+    echo '<li>'.$car->model.' ('.$car->Marques->name.') <ul>';
+     
+    foreach($car->Marques->Cars->find_all() as $c)
+    {
+        echo '<li>'.$c->model.'('.$car->Marques->name.')</li>';
+    }
+
+echo'</ul></li>';
+}
+?>
+</ol>
