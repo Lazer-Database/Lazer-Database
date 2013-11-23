@@ -26,10 +26,15 @@ Structure of table files
 Usage
 ------
 
-First of all you should include `jsondb/bootstrap.php` file (Example autoloader) and define constant `JSONDB_DATA_PATH` containing absolute path to folder with JSON files:
+First of all you should open `JSONDb/bootstrap.php` file and define constant `JSONDB_DATA_PATH` containing absolute path to folder with JSON files:
+```php
+define('JSONDB_DATA_PATH', realpath(dirname(__FILE__)).'/data/'); //Path to folder with tables
+```
+
+Then include it in your file end set up using of namespace:
 ```php
 require_once 'jsondb/bootstrap.php';
-define('JSONDB_DATA_PATH', realpath(dirname(__FILE__)).'/data/'); //Path to folder with tables
+use JSONDb\Classes\Database as JSONDB; // example
 ```
 #### Assumptions
 
