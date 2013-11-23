@@ -1,0 +1,1 @@
+{"last_id":15,"schema":{"id":"integer","name":"string"},"relations":{"cars":{"type":"has_many","keys":{"local":"id","foreign":"marque_id"}}}}
