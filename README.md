@@ -31,7 +31,7 @@ First of all you should open `JSONDb/bootstrap.php` file and define constant `JS
 define('JSONDB_DATA_PATH', realpath(dirname(__FILE__)).'/data/'); //Path to folder with tables
 ```
 
-Then include it in your file end set up using of namespace:
+Then include it in your file and set up namespace:
 ```php
 require_once 'jsondb/bootstrap.php';
 use JSONDb\Classes\Database as JSONDB; // example
