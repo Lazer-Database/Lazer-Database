@@ -1,21 +1,19 @@
 <?php
 
- namespace jsondb\classes\helpers;
-
-use jsondb\classes\JDBException as JDBException;
+ namespace JSONDb\Classes\Helpers;
 
 defined('JSONDB_SECURE') or die('Permission denied!');
 
  /**
-  * Data managing class adapter of File class
+  * Data managing class
   *
   * @category Helpers
   * @author Grzegorz Kuźnik
   * @copyright (c) 2013, Grzegorz Kuźnik
   * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
   */
- class Data {
-     
+ class Data extends File {
+
      /**
       * Setting name of table
       * @param string $name
@@ -23,9 +21,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public static function name($name)
      {
-         $table = new File($name, 'data');
+         $file = new Data;
+         $file->_name = $name;
+         $file->setType('data');
          
-         return $table;
+         return $file;
      }
 
  }
