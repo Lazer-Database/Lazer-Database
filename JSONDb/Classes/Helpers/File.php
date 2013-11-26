@@ -35,7 +35,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
          return $file;
      }
-     
+
      public final function setType($type)
      {
          $this->_type = $type;
@@ -104,4 +104,3 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
  }
 
-?>

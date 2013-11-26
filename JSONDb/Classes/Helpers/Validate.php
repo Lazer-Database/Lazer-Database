@@ -1,6 +1,6 @@
 <?php
 
-namespace JSONDb\Classes\Helpers;
+ namespace JSONDb\Classes\Helpers;
 
 use JSONDb\Classes\Exception;
 use JSONDb\Classes\Relation;
@@ -134,7 +134,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          }
          throw new Exception('Field '.$name.' does not exists in table "'.$this->_name.'"');
      }
-     
+
      /**
       * Checking that Table and Config exists and throw exceptions if not
       * @return boolean
@@ -144,7 +144,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      {
          if (!Data::name($this->_name)->exists())
              throw new Exception('Table "'.$this->_name.'" does not exists');
-         
+
          if (!Config::name($this->_name)->exists())
              throw new Exception('Config "'.$this->_name.'" does not exists');
 
@@ -182,7 +182,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          {
              return TRUE;
          }
-         
+
          throw new Exception('Relation '.$local.' - '.$foreign.' does not exists');
      }
 
@@ -197,10 +197,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          {
              return TRUE;
          }
-         
+
          throw new Exception('Wrong relation type');
      }
 
  }
- 
-?>
+

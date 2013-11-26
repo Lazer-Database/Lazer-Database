@@ -19,10 +19,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          $file = new Data;
          $file->_name = $name;
          $file->setType('data');
-         
+
          return $file;
      }
 
  }
-
-?>
+ 

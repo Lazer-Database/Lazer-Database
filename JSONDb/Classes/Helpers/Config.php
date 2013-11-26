@@ -29,11 +29,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param type $assoc
       * @return mixed
       */
-     public function getKey($field, $assoc=false)
+     public function getKey($field, $assoc = false)
      {
          return $assoc ? $this->get($assoc)[$field] : $this->get($assoc)->{$field};
      }
-     
+
      /**
       * Return array with names of fields
       * @return array
@@ -77,5 +77,4 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
  }
-
-?>
+ 

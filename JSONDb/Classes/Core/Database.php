@@ -107,7 +107,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
                  break;
              }
          }
-         throw new Exception('No data found');
+         throw new Exception('No data found with ID: '.$id);
      }
 
      /**
@@ -121,9 +121,13 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          foreach ($schema as $field => $type)
          {
              if (Helpers\Validate::is_numeric($type) AND $field != 'id')
+             {
                  $this->_set->{$field} = 0;
+             }
              else
+             {
                  $this->_set->{$field} = null;
+             }
          }
      }
 
@@ -325,39 +329,39 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      {
          $properties = $this->_pending['order_by'];
          uasort($this->_data, function($a, $b) use ($properties)
+         {
+             foreach ($properties as $column => $direction)
+             {
+                 if (is_int($column))
                  {
-                     foreach ($properties as $column => $direction)
+                     $column = $direction;
+                     $direction = SORT_ASC;
+                 }
+                 $collapse = function($node, $props)
+                 {
+                     if (is_array($props))
                      {
-                         if (is_int($column))
+                         foreach ($props as $prop)
                          {
-                             $column = $direction;
-                             $direction = SORT_ASC;
+                             $node = (!isset($node->$prop)) ? null : $node->$prop;
                          }
-                         $collapse = function($node, $props)
-                                 {
-                                     if (is_array($props))
-                                     {
-                                         foreach ($props as $prop)
-                                         {
-                                             $node = (!isset($node->$prop)) ? null : $node->$prop;
-                                         }
-                                         return $node;
-                                     }
-                                     else
-                                     {
-                                         return (!isset($node->$props)) ? null : $node->$props;
-                                     }
-                                 };
-                         $aProp = $collapse($a, $column);
-                         $bProp = $collapse($b, $column);
-
-                         if ($aProp != $bProp)
-                         {
-                             return ($direction == SORT_ASC) ? strnatcasecmp($aProp, $bProp) : strnatcasecmp($bProp, $aProp);
-                         }
+                         return $node;
                      }
-                     return FALSE;
-                 });
+                     else
+                     {
+                         return (!isset($node->$props)) ? null : $node->$props;
+                     }
+                 };
+                 $aProp = $collapse($a, $column);
+                 $bProp = $collapse($b, $column);
+
+                 if ($aProp != $bProp)
+                 {
+                     return ($direction == SORT_ASC) ? strnatcasecmp($aProp, $bProp) : strnatcasecmp($bProp, $aProp);
+                 }
+             }
+             return FALSE;
+         });
      }
 
      /**
@@ -437,40 +441,40 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          );
 
          $this->_data = array_filter($this->_data, function($row) use ($operator)
+         {
+             $clause = '';
+
+             foreach ($this->_pending['where'] as $key => $condition)
+             {
+                 extract($condition);
+
+                 if (is_array($value))
                  {
-                     $clause = '';
+                     $value = (in_array($row->{$field}, $value)) ? 1 : 0;
+                     $op = '==';
+                     $field = 1;
+                 }
+                 else
+                 {
+                     $value = is_string($value) ?
+                             '\''.$value.'\'' :
+                             $value;
 
-                     foreach ($this->_pending['where'] as $key => $condition)
-                     {
-                         extract($condition);
+                     $op = $operator[$op];
+                     $field = '$row->'.$field;
+                 }
 
-                         if (is_array($value))
-                         {
-                             $value = (in_array($row->{$field}, $value)) ? 1 : 0;
-                             $op = '==';
-                             $field = 1;
-                         }
-                         else
-                         {
-                             $value = is_string($value) ?
-                                     '\''.$value.'\'' :
-                                     $value;
+                 $type = (!$key) ?
+                         null :
+                         $operator[$type];
 
-                             $op = $operator[$op];
-                             $field = '$row->'.$field;
-                         }
+                 $query = array($type, $field, $op, $value);
+                 $clause .= implode(' ', $query).' ';
+                 eval('$result = '.$clause.';');
+             }
 
-                         $type = (!$key) ?
-                                 null :
-                                 $operator[$type];
-
-                         $query = array($type, $field, $op, $value);
-                         $clause .= implode(' ', $query).' ';
-                         eval('$result = '.$clause.';');
-                     }
-
-                     return $result;
-                 });
+             return $result;
+         });
      }
 
      /**
@@ -871,5 +875,4 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
  }
-
-?>
+ 

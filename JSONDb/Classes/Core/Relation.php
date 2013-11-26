@@ -123,5 +123,4 @@ use JSONDb\Classes\Database;
      }
 
  }
-
-?>
+ 

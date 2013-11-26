@@ -5,8 +5,7 @@
 defined('JSONDB_SECURE') or die('Permission denied!');
 
  interface FileInterface {
-     
-     
+
      /**
       * Setting name of table
       * @param string $name
@@ -19,7 +18,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param string $type File type (data|config)
       */
      public function setType($type);
-     
+
      /**
       * Returning path to file
       * @return string Path to file
@@ -54,5 +53,4 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function remove();
  }
-
-?>
+ 

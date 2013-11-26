@@ -4,5 +4,3 @@
 
  
  class Relation extends Core_Relation { }
-
-?>
