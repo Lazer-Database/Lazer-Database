@@ -45,13 +45,27 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
      /**
       * Return relations configure
+      * @param mixed $tableName null-all tables;array-few tables;string-one table relation informations
+      * @param boolean $assoc Object or associative array
       * @return array|object
       */
-     public function relations($table = null, $assoc = false)
+     public function relations($tableName = null, $assoc = false)
      {
-         if ($table !== null)
+         if (is_array($tableName))
          {
-             return $this->getKey('relations', $assoc)->{$table};
+             $relations = $this->getKey('relations', $assoc);
+             if($assoc)
+             {
+                return array_intersect_key($relations, array_flip($tableName));
+             }
+             else
+             {
+                return (object) array_intersect_key((array) $relations, array_flip($tableName));
+             }
+         }
+         elseif ($tableName !== null)
+         {
+             return $assoc ? $this->getKey('relations', $assoc)[$tableName] : $this->getKey('relations', $assoc)->{$tableName};
          }
 
          return $this->getKey('relations', $assoc);
