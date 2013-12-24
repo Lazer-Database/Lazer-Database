@@ -78,7 +78,15 @@ use JSONDb\Classes\Exception;
 
          return $this;
      }
-     
+
+     public function hasAndBelongsToMany($table)
+     {
+         $this->setTable('foreign', $table);
+         $this->_relationType = __FUNCTION__;
+
+         return $this;
+     }
+
      public function with($table)
      {
          $this->setTable('foreign', $table);
@@ -96,35 +104,69 @@ use JSONDb\Classes\Exception;
              throw new Exception('Tables name or keys missing');
          }
      }
-     
+
      public function get()
      {
          $config = Config::name($this->_tables['local'])->get(true);
-         if($this->exist())
+         if ($this->exist())
          {
              return $config['relations'][$this->_tables['foreign']];
          }
      }
-     
+
      public function exist()
      {
          $config = Config::name($this->_tables['local'])->get();
-         if(property_exists($config->relations, $this->_tables['foreign']))
+         if (property_exists($config->relations, $this->_tables['foreign']))
          {
              return true;
          }
-             throw new Exception('Relation "'.$this->_tables['local'].'" to "'.$this->_tables['foreign'].'" doesn\'t exist');
+         throw new Exception('Relation "'.$this->_tables['local'].'" to "'.$this->_tables['foreign'].'" doesn\'t exist');
      }
 
      private function createRelation()
      {
-         $config = Config::name($this->_tables['local']);
+         if ($this->_relationType == 'hasAndBelongsToMany')
+         {
+             $junction = $this->getJunction();
+             
+             if (!Validate::name($junction)->exists())
+             {
+                 Database::create($junction, array(
+                     $this->_tables['local'].'_id' => 'integer',
+                     $this->_tables['foreign'].'_id' => 'integer',
+                 ));
+
+                 $this->addRelation($junction, $this->_tables['local'], 'hasMany', array(
+                     'local' => $this->_tables['local'].'_id',
+                     'foreign' => $this->_keys['local']
+                 ));
+
+                 $this->addRelation($junction, $this->_tables['foreign'], 'hasMany', array(
+                     'local' => $this->_tables['foreign'].'_id',
+                     'foreign' => $this->_keys['foreign']
+                 ));
+             }
+         }
+         $this->addRelation($this->_tables['local'], $this->_tables['foreign'], $this->_relationType, $this->_keys);
+     }
+
+     private function addRelation($from, $to, $type, array $keys)
+     {
+         $config = Config::name($from);
          $content = $config->get();
-         $content->relations->{$this->_tables['foreign']} = array(
-             'type' => $this->_relationType,
-             'keys' => $this->_keys,
+         $content->relations->{$to} = array(
+             'type' => $type,
+             'keys' => $keys,
          );
          $config->put($content);
+     }
+
+     public function getJunction()
+     {
+         $tables = $this->_tables;
+         sort($tables);
+         return implode('_', $tables);
      }
 
      public static function relations()

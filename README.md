@@ -9,8 +9,9 @@ There are builded files, mainly for me to easily write between 2 computers.
 TODO
 =============
 - <del>Creating relations one2many and vice versa</del>
-- Creating relations many2many
+- <del>Creating relations many2many</del>
 - <del>Implement getting relationed data</del>
+- Using relations one2many, many2one and many2many
 - Make everything nice and easy
 - Document methods very well
 
