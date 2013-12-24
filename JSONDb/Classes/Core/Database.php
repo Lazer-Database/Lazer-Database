@@ -77,7 +77,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @return \Jsondb
       * @throws Exception If there's problems with load file
       */
-     public static function factory($name)
+     public static function select($name)
      {
          Helpers\Validate::name($name)->exists();
 
@@ -718,12 +718,12 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
      /**
-      * Returning assoc array with types of fields
+      * Returning assoc array with relationed tables
       * @return array Fields type
       */
-     public function relations()
+     public function relations($tableName=null)
      {
-         return Helpers\Config::name($this->_name)->relations(null, true);
+         return Helpers\Config::name($this->_name)->relations($tableName, true);
      }
 
      /**
