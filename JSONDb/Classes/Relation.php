@@ -1,40 +1,111 @@
 <?php
 
  namespace JSONDb\Classes;
- 
+
 use JSONDb\Classes\Helpers\Validate;
+use JSONDb\Classes\Helpers\Config;
 use JSONDb\Classes\Database;
- 
+use JSONDb\Classes\Exception;
+
  class Relation extends Core_Relation {
-     
-     private $tables = array();
-     private $keys = array();
-     private static $relations = array(
-         'belongs_to' => 1,
-         'has_many' => 2,
-         'has_and_belongs_to_many' => 3
+
+     private $_tables = array(
+         'local' => null,
+         'foreign' => null
      );
-     
-     public function __construct($table_st, $table_nd)
+     private $_keys = array(
+         'local' => null,
+         'foreign' => null
+     );
+     private $_relationType;
+     private static $relations = array(
+         'belongsTo' => 1,
+         'hasMany' => 2,
+         'hasAndBelongsToMany' => 3
+     );
+
+     public static function table($name)
      {
-         $this->tables = array($table_st, $table_nd);
+         Validate::name($name)->exists();
+
+         $self = new Relation;
+         $self->_tables['local'] = $name;
+
+         return $self;
      }
-     
-     public function set($relation_st, $relation_nd)
+
+     private function setKey($type, $key)
      {
-         if(Validate::relation_type(array_keys($relation_st)[0]) && Validate::relation_type(array_keys($relation_nd)[0]))
+         if (!in_array(null, $this->_tables))
          {
-             $this->keys = array($relation_st, $relation_nd);
+             Validate::name($this->_tables[$type])->field($key);
+
+             $this->_keys[$type] = $key;
+             return $this;
+         }
+         
+         throw new Exception('First you must define tables name');
+     }
+
+     public function localKey($key)
+     {
+         return $this->setKey('local', $key);
+     }
+
+     public function foreignKey($key)
+     {
+         return $this->setKey('foreign', $key);
+     }
+
+     private function setTable($type, $name)
+     {
+         Validate::name($name)->exists();
+         $this->_tables[$type] = $name;
+     }
+
+     public function belongsTo($table)
+     {
+         $this->setTable('foreign', $table);
+         $this->_relationType = __FUNCTION__;
+
+         return $this;
+     }
+
+     public function hasMany($table)
+     {
+         $this->setTable('foreign', $table);
+         $this->_relationType = __FUNCTION__;
+
+         return $this;
+     }
+
+     public function save()
+     {
+         if(!in_array(null, $this->_tables) && !in_array(null, $this->_keys))
+         {
+            $this->createRelation();
+         }
+         else
+         {
+             throw new Exception('Tables name or keys missing');
          }
      }
-     
+
+     private function createRelation()
+     {
+         $config = Config::name($this->_tables['local']);
+         $content = $config->get();
+         $content->relations->{$this->_tables['foreign']} = array(
+             'type' => $this->_relationType,
+             'keys' => $this->_keys,
+         );
+         $config->put($content);
+     }
+
      public static function relations()
      {
          return array_keys(self::$relations);
      }
-     
-     public function confirm() {}
-     
-     
-     
+
  }
+ 
