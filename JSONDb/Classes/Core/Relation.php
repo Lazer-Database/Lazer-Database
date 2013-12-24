@@ -6,7 +6,6 @@ use JSONDb\Classes\Helpers;
 use JSONDb\Classes\Database;
 
  abstract class Core_Relation {
-
 //     private $_local;
 //     private $_foreign;
 //     private $_junction;
@@ -121,6 +120,5 @@ use JSONDb\Classes\Database;
 //     {
 //         return array_keys(self::$relations);
 //     }
-
  }
  
