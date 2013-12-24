@@ -12,6 +12,7 @@ TODO
 - Creating relations many2many
 - <del>Implement getting relationed data</del>
 - Make everything nice and easy
+- Document methods very well
 
 File Database based on JSON files
 =============
