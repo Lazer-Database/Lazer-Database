@@ -43,7 +43,7 @@ use JSONDb\Classes\Exception;
              $this->_keys[$type] = $key;
              return $this;
          }
-         
+
          throw new Exception('First you must define tables name');
      }
 
@@ -78,17 +78,42 @@ use JSONDb\Classes\Exception;
 
          return $this;
      }
-
-     public function save()
+     
+     public function with($table)
      {
-         if(!in_array(null, $this->_tables) && !in_array(null, $this->_keys))
+         $this->setTable('foreign', $table);
+         return $this;
+     }
+
+     public function set()
+     {
+         if (!in_array(null, $this->_tables) && !in_array(null, $this->_keys))
          {
-            $this->createRelation();
+             $this->createRelation();
          }
          else
          {
              throw new Exception('Tables name or keys missing');
          }
+     }
+     
+     public function get()
+     {
+         $config = Config::name($this->_tables['local'])->get(true);
+         if($this->exist())
+         {
+             return $config['relations'][$this->_tables['foreign']];
+         }
+     }
+     
+     public function exist()
+     {
+         $config = Config::name($this->_tables['local'])->get();
+         if(property_exists($config->relations, $this->_tables['foreign']))
+         {
+             return true;
+         }
+             throw new Exception('Relation "'.$this->_tables['local'].'" to "'.$this->_tables['foreign'].'" doesn\'t exist');
      }
 
      private function createRelation()
