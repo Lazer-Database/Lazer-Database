@@ -6,6 +6,13 @@ In this set i'm working about manage relations between tables.
 I won't update readme in that branch. 
 There are builded files, mainly for me to easily write between 2 computers.
 
+TODO
+=============
+- <del>Creating relations one2many and vice versa</del>
+- Creating relations many2many
+- <del>Implement getting relationed data</del>
+- Make everything nice and easy
+
 File Database based on JSON files
 =============
 
