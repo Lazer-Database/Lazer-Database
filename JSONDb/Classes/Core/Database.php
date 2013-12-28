@@ -77,7 +77,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @return \Jsondb
       * @throws Exception If there's problems with load file
       */
-     public static function select($name)
+     public static function table($name)
      {
          Helpers\Validate::name($name)->exists();
 
