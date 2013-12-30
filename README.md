@@ -15,6 +15,7 @@ TODO
 - Reformat names of methods and fields
 - Make everything nice and easy
 - Document methods very well
+- Rewrite `Usage` from README
 
 File Database based on JSON files
 =============
