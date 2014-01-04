@@ -301,13 +301,8 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
              $relation = Relation::table($local)->with($foreign);
 
-
-
-//             $relation = new Relation($local, $foreign);
-//             $relation->get();
-//
              $data = $this->_data;
-//
+
              foreach ($join as $part)
              {
                  $data = $relation->build($data, $part);
@@ -499,7 +494,14 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function as_array($key = null, $value = null)
      {
-//         Helpers\Validate::name($this->_name)->field($value);
+         if (!is_null($key))
+         {
+             Helpers\Validate::name($this->_name)->field($key);
+         }
+         if (!is_null($value))
+         {
+             Helpers\Validate::name($this->_name)->field($value);
+         }
 
          $datas = array();
          if (!empty($this->_pending['group_by']))
