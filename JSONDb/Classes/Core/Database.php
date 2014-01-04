@@ -89,12 +89,12 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
          return $self;
      }
-     
+
      protected function _get_data()
      {
          return Helpers\Data::name($this->_name)->get();
      }
-     
+
      protected function _set_data()
      {
          $this->_data = $this->_get_data();
@@ -299,14 +299,18 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              $local = (count($join) > 1) ? array_slice($join, -2, 1)[0] : $this->_name;
              $foreign = end($join);
 
-             $relation = new Relation($local, $foreign);
-             $relation->get();
+             $relation = Relation::table($local)->with($foreign);
 
-             $array = $this->_data;
 
+
+//             $relation = new Relation($local, $foreign);
+//             $relation->get();
+//
+             $data = $this->_data;
+//
              foreach ($join as $part)
              {
-                 $array = $relation->build($array, $part);
+                 $data = $relation->build($data, $part);
              }
          }
      }
@@ -493,12 +497,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param string $value Field that will be the value
       * @return array
       */
-     public function as_array($key, $value)
+     public function as_array($key = null, $value = null)
      {
-         Helpers\Validate::name($this->_name)->field($value);
-         
-         $datas = array();
+//         Helpers\Validate::name($this->_name)->field($value);
 
+         $datas = array();
          if (!empty($this->_pending['group_by']))
          {
 
@@ -506,8 +509,25 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              {
                  foreach ($array as $data)
                  {
-                     if (is_null($key))
+                     if (is_null($key) && is_null($value))
+                     {
+                         $datas[] = $data;
+                     }
+                     elseif (is_null($key))
+                     {
                          $datas[] = $data->{$value};
+                     }
+                     elseif (is_null($value))
+                     {
+                         if ($this->_pending['group_by'] == $key)
+                         {
+                             $datas[$data->{$key}][] = $data;
+                         }
+                         else
+                         {
+                             $datas[$data->{$key}] = $data;
+                         }
+                     }
                      else
                      {
                          if ($this->_pending['group_by'] == $key)
@@ -526,10 +546,22 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          {
              foreach ($this->_data as $data)
              {
-                 if (is_null($key))
+                 if (is_null($key) && is_null($value))
+                 {
+                     $datas[] = $data;
+                 }
+                 elseif (is_null($key))
+                 {
                      $datas[] = $data->{$value};
+                 }
+                 elseif (is_null($value))
+                 {
+                     $datas[$data->{$key}] = $data;
+                 }
                  else
+                 {
                      $datas[$data->{$key}] = $data->{$value};
+                 }
              }
          }
 
@@ -581,7 +613,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          {
              $config = $this->config();
              $config->schema = array_merge($schema, $fields);
-             
+
              $data = $this->_get_data();
              foreach ($data as $key => $object)
              {
@@ -721,7 +753,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * Returning assoc array with relationed tables
       * @return array Fields type
       */
-     public function relations($tableName=null)
+     public function relations($tableName = null)
      {
          return Helpers\Config::name($this->_name)->relations($tableName, true);
      }
@@ -855,7 +887,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function debug()
      {
-         $print = "JSONDB::factory(".$this->_name.")\n";
+         $print = "JSONDB::table(".$this->_name.")\n";
          foreach ($this->_pending as $function => $values)
          {
              if (!empty($values))
