@@ -11,7 +11,7 @@ TODO
 - <del>Creating relations one2many and vice versa</del>
 - <del>Creating relations many2many</del>
 - <del>Implement getting relationed data</del>
-- Using relations one2many, many2one and many2many
+- <del>Using relations one2many, many2one and many2many</del>
 - Reformat names of methods and fields
 - Make everything nice and easy
 - Document methods very well
