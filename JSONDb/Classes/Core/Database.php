@@ -506,7 +506,6 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          $datas = array();
          if (!empty($this->_pending['group_by']))
          {
-
              foreach ($this->_data as $array)
              {
                  foreach ($array as $data)
