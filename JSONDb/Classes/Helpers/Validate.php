@@ -182,8 +182,8 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          {
              return TRUE;
          }
-
-         throw new Exception('Relation '.$local.' - '.$foreign.' does not exists');
+         
+         throw new Exception('Relation "'.$this->_tables['local'].'" to "'.$this->_tables['foreign'].'" doesn\'t exist');
      }
 
      /**
