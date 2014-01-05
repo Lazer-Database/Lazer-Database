@@ -27,41 +27,41 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * Contain returned data from file as object or array of objects
       * @var mixed Data from table
       */
-     protected $_data;
+     protected $data;
 
      /**
       * Name of file (table)
       * @var string Name of table
       */
-     protected $_name;
+     protected $name;
 
      /**
       * Object with setted data
       * @var object Setted data
       */
-     protected $_set;
+     protected $set;
 
      /**
       * ID of current row if setted
       * @var integer Current ID
       */
-     protected $_current_id;
+     protected $currentId;
 
      /**
       * Key if current row if setted
       * @var integer Current key
       */
-     protected $_current_key;
+     protected $currentKey;
 
      /**
       * All pending functions parameters in right order
       * @var array
       */
-     protected $_pending = array(
+     protected $pending = array(
          'where' => array(),
-         'order_by' => array(),
+         'orderBy' => array(),
          'limit' => array(),
-         'group_by' => array(),
+         'groupBy' => array(),
          'with' => array(),
      );
 
@@ -69,7 +69,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * Information about to reset keys in array or not to
       * @var integer
       */
-     protected $_reset_keys = 1;
+     protected $resetKeys = 1;
 
      /**
       * Factory pattern
@@ -79,25 +79,25 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public static function table($name)
      {
-         Helpers\Validate::name($name)->exists();
+         Helpers\Validate::table($name)->exists();
 
          $self = new Database;
-         $self->_name = $name;
+         $self->name = $name;
 
-         $self->_set_fields();
-//         $self->_data = Helpers\Data::name($self->_name)->get();
+         $self->setFields();
+//         $self->_data = Helpers\Data::table($self->_name)->get();
 
          return $self;
      }
 
-     protected function _get_data()
+     protected function getData()
      {
-         return Helpers\Data::name($this->_name)->get();
+         return Helpers\Data::table($this->name)->get();
      }
 
-     protected function _set_data()
+     protected function setData()
      {
-         $this->_data = $this->_get_data();
+         $this->data = $this->getData();
      }
 
      /**
@@ -106,9 +106,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @return integer Row key
       * @throws Exception If there's no data with that ID
       */
-     protected function _get_row_key($id)
+     protected function getRowKey($id)
      {
-         foreach ($this->_get_data() as $key => $data)
+         foreach ($this->getData() as $key => $data)
          {
              if ($data->id == $id)
              {
@@ -122,20 +122,20 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      /**
       * Setting fields with default values
       */
-     protected function _set_fields()
+     protected function setFields()
      {
-         $this->_set = new \stdClass();
+         $this->set = new \stdClass();
          $schema = $this->schema();
 
          foreach ($schema as $field => $type)
          {
-             if (Helpers\Validate::is_numeric($type) AND $field != 'id')
+             if (Helpers\Validate::isNumeric($type) AND $field != 'id')
              {
-                 $this->_set->{$field} = 0;
+                 $this->set->{$field} = 0;
              }
              else
              {
-                 $this->_set->{$field} = null;
+                 $this->set->{$field} = null;
              }
          }
      }
@@ -147,9 +147,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function __set($name, $value)
      {
-         if (Helpers\Validate::name($this->_name)->field($name) && Helpers\Validate::name($this->_name)->type($name, $value))
+         if (Helpers\Validate::table($this->name)->field($name) && Helpers\Validate::table($this->name)->type($name, $value))
          {
-             $this->_set->{$name} = $value;
+             $this->set->{$name} = $value;
          }
      }
 
@@ -160,8 +160,8 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function __get($name)
      {
-         if (isset($this->_set->{$name}))
-             return $this->_set->{$name};
+         if (isset($this->set->{$name}))
+             return $this->set->{$name};
 
          throw new Exception('There is no data');
      }
@@ -169,14 +169,14 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      /**
       * Execute pending functions
       */
-     protected function _pending()
+     protected function pending()
      {
-         $this->_set_data();
-         foreach ($this->_pending as $func => $args)
+         $this->setData();
+         foreach ($this->pending as $func => $args)
          {
              if (!empty($args))
              {
-                 call_user_func(array($this, '_'.$func));
+                 call_user_func(array($this, $func.'Pending'));
              }
          }
      }
@@ -207,9 +207,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public static function create($name, array $fields)
      {
-         $fields = Helpers\Validate::arr_to_lower($fields);
+         $fields = Helpers\Validate::arrToLower($fields);
 
-         if (Helpers\Data::name($name)->exists() && Helpers\Config::name($name)->exists())
+         if (Helpers\Data::table($name)->exists() && Helpers\Config::table($name)->exists())
          {
              throw new Exception('helper\Table "'.$name.'" already exists');
          }
@@ -228,8 +228,8 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          $data->schema = $fields;
          $data->relations = new \stdClass();
 
-         Helpers\Data::name($name)->put(array());
-         Helpers\Config::name($name)->put($data);
+         Helpers\Data::table($name)->put(array());
+         Helpers\Config::table($name)->put($data);
      }
 
      /**
@@ -239,7 +239,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public static function remove($name)
      {
-         if (Helpers\Data::name($name)->remove() && Helpers\Config::name($name)->remove())
+         if (Helpers\Data::table($name)->remove() && Helpers\Config::table($name)->remove())
          {
              return TRUE;
          }
@@ -250,12 +250,12 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param string $column
       * @return \jsondb\classes\core\Core
       */
-     public function group_by($column)
+     public function groupBy($column)
      {
-         if (Helpers\Validate::name($this->_name)->field($column))
+         if (Helpers\Validate::table($this->name)->field($column))
          {
-             $this->_reset_keys = 0;
-             $this->_pending[__FUNCTION__] = $column;
+             $this->resetKeys = 0;
+             $this->pending[__FUNCTION__] = $column;
          }
 
          return $this;
@@ -264,17 +264,17 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      /**
       * Grouping array pending method
       */
-     protected function _group_by()
+     protected function groupByPending()
      {
-         $column = $this->_pending['group_by'];
+         $column = $this->pending['groupBy'];
 
          $grouped = array();
-         foreach ($this->_data as $object)
+         foreach ($this->data as $object)
          {
              $grouped[$object->{$column}][] = $object;
          }
 
-         $this->_data = $grouped;
+         $this->data = $grouped;
      }
 
      /**
@@ -284,24 +284,24 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function with($table)
      {
-         $this->_pending['with'][] = explode(':', $table);
+         $this->pending['with'][] = explode(':', $table);
          return $this;
      }
 
      /**
       * Pending function for with(), joining other tables to current
       */
-     protected function _with()
+     protected function withPending()
      {
-         $joins = $this->_pending['with'];
+         $joins = $this->pending['with'];
          foreach ($joins as $join)
          {
-             $local = (count($join) > 1) ? array_slice($join, -2, 1)[0] : $this->_name;
+             $local = (count($join) > 1) ? array_slice($join, -2, 1)[0] : $this->name;
              $foreign = end($join);
 
              $relation = Relation::table($local)->with($foreign);
 
-             $data = $this->_data;
+             $data = $this->data;
 
              foreach ($join as $part)
              {
@@ -316,15 +316,15 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param string $direction ASC|DESC
       * @return \Core
       */
-     public function order_by($key, $direction = 'ASC')
+     public function orderBy($key, $direction = 'ASC')
      {
-         if (Helpers\Validate::name($this->_name)->field($key))
+         if (Helpers\Validate::table($this->name)->field($key))
          {
              $directions = array(
                  'ASC' => SORT_ASC,
                  'DESC' => SORT_DESC
              );
-             $this->_pending[__FUNCTION__][$key] = $directions[$direction];
+             $this->pending[__FUNCTION__][$key] = $directions[$direction];
          }
 
          return $this;
@@ -334,10 +334,10 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * Sort an array of objects by more than one field.
       * @link http://blog.amnuts.com/2011/04/08/sorting-an-array-of-objects-by-one-or-more-object-property/ It's not mine algorithm
       */
-     protected function _order_by()
+     protected function orderByPending()
      {
-         $properties = $this->_pending['order_by'];
-         uasort($this->_data, function($a, $b) use ($properties)
+         $properties = $this->pending['orderBy'];
+         uasort($this->data, function($a, $b) use ($properties)
          {
              foreach ($properties as $column => $direction)
              {
@@ -388,7 +388,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function where($field, $op, $value)
      {
-         $this->_pending['where'][] = array(
+         $this->pending['where'][] = array(
              'type' => 'and',
              'field' => $field,
              'op' => $op,
@@ -405,7 +405,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param mixed $value Field value
       * @return \jsondb\core\Core
       */
-     public function and_where($field, $op, $value)
+     public function andWhere($field, $op, $value)
      {
          $this->where($field, $op, $value);
 
@@ -419,9 +419,9 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param mixed $value Field value
       * @return \jsondb\core\Core
       */
-     public function or_where($field, $op, $value)
+     public function orWhere($field, $op, $value)
      {
-         $this->_pending['where'][] = array(
+         $this->pending['where'][] = array(
              'type' => 'or',
              'field' => $field,
              'op' => $op,
@@ -436,7 +436,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param object $row
       * @return boolean
       */
-     protected function _where()
+     protected function wherePending()
      {
          $operator = array(
              '=' => '==',
@@ -449,11 +449,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              'or' => '||'
          );
 
-         $this->_data = array_filter($this->_data, function($row) use ($operator)
+         $this->data = array_filter($this->data, function($row) use ($operator)
          {
              $clause = '';
 
-             foreach ($this->_pending['where'] as $key => $condition)
+             foreach ($this->pending['where'] as $key => $condition)
              {
                  extract($condition);
 
@@ -492,21 +492,21 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param string $value Field that will be the value
       * @return array
       */
-     public function as_array($key = null, $value = null)
+     public function asArray($key = null, $value = null)
      {
          if (!is_null($key))
          {
-             Helpers\Validate::name($this->_name)->field($key);
+             Helpers\Validate::table($this->name)->field($key);
          }
          if (!is_null($value))
          {
-             Helpers\Validate::name($this->_name)->field($value);
+             Helpers\Validate::table($this->name)->field($value);
          }
 
          $datas = array();
-         if (!empty($this->_pending['group_by']))
+         if (!empty($this->pending['groupBy']))
          {
-             foreach ($this->_data as $array)
+             foreach ($this->data as $array)
              {
                  foreach ($array as $data)
                  {
@@ -520,7 +520,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
                      }
                      elseif (is_null($value))
                      {
-                         if ($this->_pending['group_by'] == $key)
+                         if ($this->pending['groupBy'] == $key)
                          {
                              $datas[$data->{$key}][] = $data;
                          }
@@ -531,7 +531,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
                      }
                      else
                      {
-                         if ($this->_pending['group_by'] == $key)
+                         if ($this->pending['groupBy'] == $key)
                          {
                              $datas[$data->{$key}][] = $data->{$value};
                          }
@@ -545,7 +545,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          }
          else
          {
-             foreach ($this->_data as $data)
+             foreach ($this->data as $data)
              {
                  if (is_null($key) && is_null($value))
                  {
@@ -579,7 +579,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function limit($number, $offset = 0)
      {
-         $this->_pending['limit'] = array(
+         $this->pending['limit'] = array(
              'offset' => $offset,
              'number' => $number
          );
@@ -590,20 +590,20 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      /**
       * Pending function for limit()
       */
-     protected function _limit()
+     protected function limitPending()
      {
-         $offset = $this->_pending['limit']['offset'];
-         $num = $this->_pending['limit']['number'];
-         $this->_data = array_slice($this->_data, $offset, $num);
+         $offset = $this->pending['limit']['offset'];
+         $num = $this->pending['limit']['number'];
+         $this->data = array_slice($this->data, $offset, $num);
      }
 
      /**
       * Add new fields to table, array schema like in create() function
       * @param array $fields Associative array
       */
-     public function add_fields(array $fields)
+     public function addFields(array $fields)
      {
-         $fields = Helpers\Validate::arr_to_lower($fields);
+         $fields = Helpers\Validate::arrToLower($fields);
 
          Helpers\Validate::types(array_values($fields));
 
@@ -615,20 +615,20 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              $config = $this->config();
              $config->schema = array_merge($schema, $fields);
 
-             $data = $this->_get_data();
+             $data = $this->getData();
              foreach ($data as $key => $object)
              {
                  foreach ($fields as $name => $type)
                  {
-                     if (Helpers\Validate::is_numeric($type))
+                     if (Helpers\Validate::isNumeric($type))
                          $data[$key]->{$name} = 0;
                      else
                          $data[$key]->{$name} = null;
                  }
              }
 
-             Helpers\Data::name($this->_name)->put($data);
-             Helpers\Config::name($this->_name)->put($config);
+             Helpers\Data::table($this->name)->put($data);
+             Helpers\Config::table($this->name)->put($config);
          }
      }
 
@@ -636,16 +636,16 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * Delete fields from array
       * @param array $fields Indexed array
       */
-     public function delete_fields(array $fields)
+     public function deleteFields(array $fields)
      {
-         $fields = Helpers\Validate::arr_to_lower($fields);
+         $fields = Helpers\Validate::arrToLower($fields);
 
-         Helpers\Validate::name($this->_name)->fields($fields);
+         Helpers\Validate::table($this->name)->fields($fields);
 
          $config = $this->config();
          $config->schema = array_diff_key($this->schema(), array_flip($fields));
 
-         $data = $this->_get_data();
+         $data = $this->getData();
          foreach ($data as $key => $object)
          {
              foreach ($fields as $name)
@@ -654,8 +654,8 @@ defined('JSONDB_SECURE') or die('Permission denied!');
              }
          }
 
-         Helpers\Data::name($this->_name)->put($data);
-         Helpers\Config::name($this->_name)->put($config);
+         Helpers\Data::table($this->name)->put($data);
+         Helpers\Config::table($this->name)->put($config);
      }
 
      /**
@@ -671,12 +671,12 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param type $local_key
       * @param type $foreign_key
       */
-     public function add_relation($type, $table, $local_key, $foreign_key)
+     public function addRelation($type, $table, $local_key, $foreign_key)
      {
          Helpers\Validate::relation_type($type);
-         Helpers\Validate::name($table)->exists();
-         Helpers\Validate::name($table)->field($foreign_key);
-         Helpers\Validate::name($this->_name)->field($local_key);
+         Helpers\Validate::table($table)->exists();
+         Helpers\Validate::table($table)->field($foreign_key);
+         Helpers\Validate::table($this->name)->field($local_key);
 
          $relation = array(
              $table => array(
@@ -691,7 +691,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
          $config = $this->config();
          $config->relations = array_merge($this->relations(), $relation);
 
-         Helpers\Config::name($this->_name)->put($config);
+         Helpers\Config::table($this->name)->put($config);
 
          return $this;
      }
@@ -700,18 +700,18 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * removing relation with tables
       * @param type $table
       */
-     public function delete_relations(array $tables)
+     public function deleteRelations(array $tables)
      {
          foreach ($tables as $table)
          {
-             Helpers\Validate::name($table)->exists();
-             Helpers\Validate::name($table)->relation($this->_name, $table);
+             Helpers\Validate::table($table)->exists();
+             Helpers\Validate::table($table)->relation($this->name, $table);
          }
 
          $config = $this->config();
          $config->relations = array_diff_key($this->relations(), array_flip($tables));
 
-         Helpers\Config::name($this->_name)->put($config);
+         Helpers\Config::table($this->name)->put($config);
      }
 
      /**
@@ -720,7 +720,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function name()
      {
-         return $this->_name;
+         return $this->name;
      }
 
      /**
@@ -729,7 +729,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function config()
      {
-         return Helpers\Config::name($this->_name)->get();
+         return Helpers\Config::table($this->name)->get();
      }
 
      /**
@@ -738,7 +738,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function fields()
      {
-         return Helpers\Config::name($this->_name)->fields();
+         return Helpers\Config::table($this->name)->fields();
      }
 
      /**
@@ -747,7 +747,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function schema()
      {
-         return Helpers\Config::name($this->_name)->schema();
+         return Helpers\Config::table($this->name)->schema();
      }
 
      /**
@@ -756,16 +756,16 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function relations($tableName = null)
      {
-         return Helpers\Config::name($this->_name)->relations($tableName, true);
+         return Helpers\Config::table($this->name)->relations($tableName, true);
      }
 
      /**
       * Returning last ID from table
       * @return integer Last ID
       */
-     public function last_id()
+     public function lastId()
      {
-         return Helpers\Config::name($this->_name)->last_id();
+         return Helpers\Config::table($this->name)->lastId();
      }
 
      /**
@@ -773,26 +773,26 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function save()
      {
-         $data = $this->_get_data();
-         if (!$this->_current_id)
+         $data = $this->getData();
+         if (!$this->currentId)
          {
              $config = $this->config();
              $config->last_id++;
 
-             $this->_set->id = $config->last_id;
-             array_push($data, $this->_set);
+             $this->set->id = $config->last_id;
+             array_push($data, $this->set);
 
-             Helpers\Config::name($this->_name)->put($config);
+             Helpers\Config::table($this->name)->put($config);
          }
          else
          {
-             $this->_set->id = $this->_current_id;
-             $data[$this->_current_key] = $this->_set;
+             $this->set->id = $this->currentId;
+             $data[$this->currentKey] = $this->set;
          }
 
-         Helpers\Data::name($this->_name)->put($data);
+         Helpers\Data::table($this->name)->put($data);
 
-//         $this->_set_fields();
+//         $this->setFields();
      }
 
      /**
@@ -801,25 +801,25 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function delete()
      {
-         $data = $this->_get_data();
-         if (isset($this->_current_id))
+         $data = $this->getData();
+         if (isset($this->currentId))
          {
-             unset($data[$this->_current_key]);
+             unset($data[$this->currentKey]);
          }
-         elseif (isset($this->_pending['where']) && !empty($this->_pending['where']))
+         elseif (isset($this->pending['where']) && !empty($this->pending['where']))
          {
-             $this->_data = $data;
-             $old = $this->_data;
+             $this->data = $data;
+             $old = $this->data;
              call_user_func(array($this, '_where'));
-             $data = array_diff_key($old, $this->_data);
+             $data = array_diff_key($old, $this->data);
          }
          else
          {
              $data = array();
          }
-         $this->_data = array_values($data);
+         $this->data = array_values($data);
 
-         return Helpers\Data::name($this->_name)->put($this->_data) ? true : false;
+         return Helpers\Data::table($this->name)->put($this->data) ? true : false;
      }
 
      /**
@@ -828,18 +828,18 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function count()
      {
-         $this->_pending();
-         if (!empty($this->_pending['group_by']))
+         $this->pending();
+         if (!empty($this->pending['groupBy']))
          {
              $count = array();
-             foreach ($this->_data as $group => $data)
+             foreach ($this->data as $group => $data)
              {
                  $count[$group] = count($data);
              }
          }
          else
          {
-             $count = count($this->_data);
+             $count = count($this->data);
          }
 
          return $count;
@@ -852,10 +852,10 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function find($id)
      {
-         $data = $this->_get_data();
-         $this->_current_id = $id;
-         $this->_current_key = $this->_get_row_key($id);
-         foreach ($data[$this->_current_key] as $field => $value)
+         $data = $this->getData();
+         $this->currentId = $id;
+         $this->currentKey = $this->getRowKey($id);
+         foreach ($data[$this->currentKey] as $field => $value)
          {
              $this->{$field} = $value;
          }
@@ -866,10 +866,10 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      /**
       * Make data ready to read
       */
-     public function find_all()
+     public function findAll()
      {
-         $this->_pending();
-         $this->_data = $this->_reset_keys ? array_values($this->_data) : $this->_data;
+         $this->pending();
+         $this->data = $this->resetKeys ? array_values($this->data) : $this->data;
 
          return $this;
      }
@@ -880,7 +880,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function getIterator()
      {
-         return new \ArrayIterator($this->_data);
+         return new \ArrayIterator($this->data);
      }
 
      /**
@@ -888,8 +888,8 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function debug()
      {
-         $print = "JSONDB::table(".$this->_name.")\n";
-         foreach ($this->_pending as $function => $values)
+         $print = "JSONDB::table(".$this->name.")\n";
+         foreach ($this->pending as $function => $values)
          {
              if (!empty($values))
              {

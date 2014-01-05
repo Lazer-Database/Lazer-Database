@@ -12,7 +12,7 @@ TODO
 - <del>Creating relations many2many</del>
 - <del>Implement getting relationed data</del>
 - <del>Using relations one2many, many2one and many2many</del>
-- Reformat names of methods and fields
+- <del>Reformat names of methods and fields</del>
 - Make everything nice and easy
 - Document methods very well
 - Rewrite `Usage` from README

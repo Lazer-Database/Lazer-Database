@@ -21,16 +21,17 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * Name of table
       * @var string
       */
-     private $_name;
+     private $name;
 
      /**
+      * Table name
       * @param string $name
       * @return \jsondb\helpers\Validate
       */
-     public static function name($name)
+     public static function table($name)
      {
          $validate = new Validate();
-         $validate->_name = $name;
+         $validate->name = $name;
          return $validate;
      }
 
@@ -39,7 +40,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param string $type
       * @return boolean
       */
-     public static function is_numeric($type)
+     public static function isNumeric($type)
      {
          $defined = array('integer', 'double');
 
@@ -94,7 +95,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param array $array
       * @return array
       */
-     public static function arr_to_lower(array $array)
+     public static function arrToLower(array $array)
      {
          $array = array_change_key_case($array);
          $array = array_map('strtolower', $array);
@@ -111,13 +112,13 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      public function fields(array $fields)
      {
          $fields = self::filter($fields);
-         $diff = array_diff($fields, Config::name($this->_name)->fields());
+         $diff = array_diff($fields, Config::table($this->name)->fields());
 
          if (empty($diff))
          {
              return TRUE;
          }
-         throw new Exception('Field(s) "'.implode(', ', $diff).'" does not exists in table "'.$this->_name.'"');
+         throw new Exception('Field(s) "'.implode(', ', $diff).'" does not exists in table "'.$this->name.'"');
      }
 
      /**
@@ -128,11 +129,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function field($name)
      {
-         if (in_array($name, Config::name($this->_name)->fields()))
+         if (in_array($name, Config::table($this->name)->fields()))
          {
              return TRUE;
          }
-         throw new Exception('Field '.$name.' does not exists in table "'.$this->_name.'"');
+         throw new Exception('Field '.$name.' does not exists in table "'.$this->name.'"');
      }
 
      /**
@@ -142,11 +143,11 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function exists()
      {
-         if (!Data::name($this->_name)->exists())
-             throw new Exception('Table "'.$this->_name.'" does not exists');
+         if (!Data::table($this->name)->exists())
+             throw new Exception('Table "'.$this->name.'" does not exists');
 
-         if (!Config::name($this->_name)->exists())
-             throw new Exception('Config "'.$this->_name.'" does not exists');
+         if (!Config::table($this->name)->exists())
+             throw new Exception('Config "'.$this->name.'" does not exists');
 
          return TRUE;
      }
@@ -160,7 +161,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public function type($name, $value)
      {
-         $schema = Config::name($this->_name)->schema();
+         $schema = Config::table($this->name)->schema();
          if (array_key_exists($name, $schema) && $schema[$name] == gettype($value))
          {
              return TRUE;
@@ -177,13 +178,13 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       */
      public static function relation($local, $foreign)
      {
-         $relations = Config::name($local)->relations();
+         $relations = Config::table($local)->relations();
          if (isset($relations->{$foreign}))
          {
              return TRUE;
          }
          
-         throw new Exception('Relation "'.$this->_tables['local'].'" to "'.$this->_tables['foreign'].'" doesn\'t exist');
+         throw new Exception('Relation "'.$local.'" to "'.$foreign.'" doesn\'t exist');
      }
 
      /**

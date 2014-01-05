@@ -14,10 +14,10 @@ defined('JSONDB_SECURE') or die('Permission denied!');
   */
  class Config extends File {
 
-     public static function name($name)
+     public static function table($name)
      {
          $file = new Config;
-         $file->_name = $name;
+         $file->name = $name;
          $file->setType('config');
 
          return $file;
@@ -85,7 +85,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param string $name
       * @return integer
       */
-     public function last_id()
+     public function lastId()
      {
          return $this->getKey('last_id');
      }

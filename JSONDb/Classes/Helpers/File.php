@@ -20,32 +20,32 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * File name
       * @var string
       */
-     protected $_name;
+     protected $name;
 
      /**
       * File type (data|config)
       * @var string
       */
-     protected $_type;
+     protected $type;
 
-     public static function name($name)
+     public static function table($name)
      {
          $file = new File;
-         $file->_name = $name;
+         $file->name = $name;
 
          return $file;
      }
 
      public final function setType($type)
      {
-         $this->_type = $type;
+         $this->type = $type;
      }
 
      public final function getPath()
      {
-         if (!empty($this->_type))
+         if (!empty($this->type))
          {
-             return JSONDB_DATA_PATH.$this->_name.'.'.$this->_type.'.json';
+             return JSONDB_DATA_PATH.$this->name.'.'.$this->type.'.json';
          }
          else
          {
@@ -70,7 +70,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
      public final function remove()
      {
-         $type = ucfirst($this->_type);
+         $type = ucfirst($this->type);
          if ($this->exists())
          {
              if (unlink($this->getPath()))
@@ -81,26 +81,5 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
          throw new Exception($type.': File does not exists');
      }
-
-     /**
-      * Finds file from data folder
-      * @param array $names
-      * @param type $type
-      * @return boolean
-      */
-     public static function find_file(array $names, $type = 'config')
-     {
-         $names = implode(',', $names);
-         $pattern = './data/{'.$names.'}.'.$type.'.json';
-         $found = glob($pattern, GLOB_BRACE);
-         if (!empty($found))
-         {
-             preg_match('#./data/(.*).'.$type.'.json#', $found[0], $found_filename);
-             return $found_filename[1];
-         }
-
-         return false;
-     }
-
  }
 

@@ -11,7 +11,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
       * @param string $name
       * @return \jsondb\classes\helpers\File
       */
-     public static function name($name);
+     public static function table($name);
 
      /**
       * Set the file type
