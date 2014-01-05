@@ -186,7 +186,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
       * 
       * For example few fields:
       * 
-      * LAZER::create('news', array(
+      * Database::create('news', array(
       *  'title' => 'string',
       *  'content' => 'string',
       *  'rating' => 'double',
