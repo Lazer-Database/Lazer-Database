@@ -659,62 +659,6 @@ defined('JSONDB_SECURE') or die('Permission denied!');
      }
 
      /**
-      * Adding relation to table
-      * 
-      * Available relations type:
-      * - belongs_to
-      * - has_many
-      * - has_and_belongs_to_many
-      * 
-      * @param type $type
-      * @param type $table
-      * @param type $local_key
-      * @param type $foreign_key
-      */
-     public function addRelation($type, $table, $local_key, $foreign_key)
-     {
-         Helpers\Validate::relation_type($type);
-         Helpers\Validate::table($table)->exists();
-         Helpers\Validate::table($table)->field($foreign_key);
-         Helpers\Validate::table($this->name)->field($local_key);
-
-         $relation = array(
-             $table => array(
-                 'type' => $type,
-                 'keys' => array(
-                     'local' => $local_key,
-                     'foreign' => $foreign_key
-                 )
-             )
-         );
-
-         $config = $this->config();
-         $config->relations = array_merge($this->relations(), $relation);
-
-         Helpers\Config::table($this->name)->put($config);
-
-         return $this;
-     }
-
-     /**
-      * removing relation with tables
-      * @param type $table
-      */
-     public function deleteRelations(array $tables)
-     {
-         foreach ($tables as $table)
-         {
-             Helpers\Validate::table($table)->exists();
-             Helpers\Validate::table($table)->relation($this->name, $table);
-         }
-
-         $config = $this->config();
-         $config->relations = array_diff_key($this->relations(), array_flip($tables));
-
-         Helpers\Config::table($this->name)->put($config);
-     }
-
-     /**
       * Returns table name
       * @return string table name
       */
