@@ -2,7 +2,7 @@
 
  namespace Lazer\Classes\Helpers;
 
-use Lazer\Classes\Exception;
+use Lazer\Classes\LazerException;
 
 defined('LAZER_SECURE') or die('Permission denied!');
 
@@ -49,7 +49,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
          }
          else
          {
-             throw new Exception('You must specify the type of file in class: '.__);
+             throw new LazerException('You must specify the type of file in class: '.__);
          }
      }
 
@@ -76,10 +76,10 @@ defined('LAZER_SECURE') or die('Permission denied!');
              if (unlink($this->getPath()))
                  return TRUE;
 
-             throw new Exception($type.': Deleting failed');
+             throw new LazerException($type.': Deleting failed');
          }
 
-         throw new Exception($type.': File does not exists');
+         throw new LazerException($type.': File does not exists');
      }
  }
 

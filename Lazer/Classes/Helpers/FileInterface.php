@@ -22,7 +22,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
      /**
       * Returning path to file
       * @return string Path to file
-      * @throws Exception You must specify the type of file
+      * @throws LazerException You must specify the type of file
       */
      public function getPath();
 
@@ -49,7 +49,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
      /**
       * Removing file
       * @return boolean
-      * @throws Exception If file doesn't exists or there's problems with deleting files
+      * @throws LazerException If file doesn't exists or there's problems with deleting files
       */
      public function remove();
  }

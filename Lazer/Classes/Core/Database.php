@@ -2,7 +2,7 @@
 
  namespace Lazer\Classes;
 
-use Lazer\Classes\Exception;
+use Lazer\Classes\LazerException;
 use Lazer\Classes\Database;
 use Lazer\Classes\Relation;
 use Lazer\Classes\Helpers;
@@ -75,7 +75,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
       * Factory pattern
       * @param string $name Name of table
       * @return \Jsondb
-      * @throws Exception If there's problems with load file
+      * @throws LazerException If there's problems with load file
       */
      public static function table($name)
      {
@@ -104,7 +104,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
       * Returns array key of row with specified ID
       * @param integer $id Row ID
       * @return integer Row key
-      * @throws Exception If there's no data with that ID
+      * @throws LazerException If there's no data with that ID
       */
      protected function getRowKey($id)
      {
@@ -116,7 +116,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
                  break;
              }
          }
-         throw new Exception('No data found with ID: '.$id);
+         throw new LazerException('No data found with ID: '.$id);
      }
 
      /**
@@ -163,7 +163,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
          if (isset($this->set->{$name}))
              return $this->set->{$name};
 
-         throw new Exception('There is no data');
+         throw new LazerException('There is no data');
      }
 
      /**
@@ -203,7 +203,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
       * 
       * @param string $name Table name
       * @param array $fields Field configuration
-      * @throws Exception If table exist
+      * @throws LazerException If table exist
       */
      public static function create($name, array $fields)
      {
@@ -211,7 +211,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
 
          if (Helpers\Data::table($name)->exists() && Helpers\Config::table($name)->exists())
          {
-             throw new Exception('helper\Table "'.$name.'" already exists');
+             throw new LazerException('helper\Table "'.$name.'" already exists');
          }
 
          $types = array_values($fields);
@@ -235,7 +235,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
      /**
       * Removing table with config
       * @param string $name Table name
-      * @return boolean|Exception
+      * @return boolean|LazerException
       */
      public static function remove($name)
      {

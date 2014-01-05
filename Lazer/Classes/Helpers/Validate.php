@@ -2,7 +2,7 @@
 
  namespace Lazer\Classes\Helpers;
 
-use Lazer\Classes\Exception;
+use Lazer\Classes\LazerException;
 use Lazer\Classes\Relation;
 
 defined('LAZER_SECURE') or die('Permission denied!');
@@ -66,7 +66,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
          {
              return TRUE;
          }
-         throw new Exception('Wrong types: "'.implode(', ', $diff).'". Available "boolean, integer, string, double"');
+         throw new LazerException('Wrong types: "'.implode(', ', $diff).'". Available "boolean, integer, string, double"');
      }
 
      /**
@@ -107,7 +107,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
       * Checking that typed fields really exist in table
       * @param array $fields Indexed array
       * @return boolean
-      * @throws Exception If field(s) does not exist
+      * @throws LazerException If field(s) does not exist
       */
      public function fields(array $fields)
      {
@@ -118,14 +118,14 @@ defined('LAZER_SECURE') or die('Permission denied!');
          {
              return TRUE;
          }
-         throw new Exception('Field(s) "'.implode(', ', $diff).'" does not exists in table "'.$this->name.'"');
+         throw new LazerException('Field(s) "'.implode(', ', $diff).'" does not exists in table "'.$this->name.'"');
      }
 
      /**
       * Checking that typed field really exist in table
       * @param string $name
       * @return boolean
-      * @throws Exception If field does not exist
+      * @throws LazerException If field does not exist
       */
      public function field($name)
      {
@@ -133,21 +133,21 @@ defined('LAZER_SECURE') or die('Permission denied!');
          {
              return TRUE;
          }
-         throw new Exception('Field '.$name.' does not exists in table "'.$this->name.'"');
+         throw new LazerException('Field '.$name.' does not exists in table "'.$this->name.'"');
      }
 
      /**
       * Checking that Table and Config exists and throw exceptions if not
       * @return boolean
-      * @throws Exception
+      * @throws LazerException
       */
      public function exists()
      {
          if (!Data::table($this->name)->exists())
-             throw new Exception('Table "'.$this->name.'" does not exists');
+             throw new LazerException('Table "'.$this->name.'" does not exists');
 
          if (!Config::table($this->name)->exists())
-             throw new Exception('Config "'.$this->name.'" does not exists');
+             throw new LazerException('Config "'.$this->name.'" does not exists');
 
          return TRUE;
      }
@@ -157,7 +157,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
       * @param string $name
       * @param mixed $value
       * @return boolean
-      * @throws Exception If type is wrong
+      * @throws LazerException If type is wrong
       */
      public function type($name, $value)
      {
@@ -167,14 +167,14 @@ defined('LAZER_SECURE') or die('Permission denied!');
              return TRUE;
          }
 
-         throw new Exception('Wrong data type');
+         throw new LazerException('Wrong data type');
      }
 
      /**
       * Checking that relation between tables exists
       * @param string $local local table
       * @param string $foreign related table
-      * @throws Exception
+      * @throws LazerException
       */
      public static function relation($local, $foreign)
      {
@@ -184,7 +184,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
              return TRUE;
          }
          
-         throw new Exception('Relation "'.$local.'" to "'.$foreign.'" doesn\'t exist');
+         throw new LazerException('Relation "'.$local.'" to "'.$foreign.'" doesn\'t exist');
      }
 
      /**
@@ -199,7 +199,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
              return true;
          }
 
-         throw new Exception('Wrong relation type');
+         throw new LazerException('Wrong relation type');
      }
 
  }

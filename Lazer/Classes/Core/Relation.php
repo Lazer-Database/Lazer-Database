@@ -5,7 +5,7 @@
 use Lazer\Classes\Helpers\Validate;
 use Lazer\Classes\Helpers\Config;
 use Lazer\Classes\Database;
-use Lazer\Classes\Exception;
+use Lazer\Classes\LazerException;
 
  /**
   * Relation class of LAZER project.
@@ -103,7 +103,7 @@ use Lazer\Classes\Exception;
       * @param string $type local or foreign
       * @param string $key key name
       * @return \Lazer\Classes\Core_Relation
-      * @throws Exception First you must define tables name
+      * @throws LazerException First you must define tables name
       */
      protected function setKey($type, $key)
      {
@@ -115,14 +115,14 @@ use Lazer\Classes\Exception;
              return $this;
          }
 
-         throw new Exception('First you must define tables name');
+         throw new LazerException('First you must define tables name');
      }
 
      /**
       * Set local key name
       * @param string $key key name
       * @return \Lazer\Classes\Core_Relation
-      * @throws Exception First you must define tables name
+      * @throws LazerException First you must define tables name
       */
      public function localKey($key)
      {
@@ -133,7 +133,7 @@ use Lazer\Classes\Exception;
       * Set foreign key name
       * @param string $key key name
       * @return \Lazer\Classes\Core_Relation
-      * @throws Exception First you must define tables name
+      * @throws LazerException First you must define tables name
       */
      public function foreignKey($key)
      {
@@ -197,7 +197,7 @@ use Lazer\Classes\Exception;
 
      /**
       * Set specified relation
-      * @throws Exception Tables names or keys missing
+      * @throws LazerException Tables names or keys missing
       */
      public function setRelation()
      {
@@ -208,7 +208,7 @@ use Lazer\Classes\Exception;
          }
          else
          {
-             throw new Exception('Tables names or keys missing');
+             throw new LazerException('Tables names or keys missing');
          }
      }
 
@@ -252,7 +252,7 @@ use Lazer\Classes\Exception;
              try {
                  Validate::table($junction)->exists();
              }
-             catch (Exception $e) {
+             catch (LazerException $e) {
                  Database::create($junction, array(
                      $this->tables['local'].'_id' => 'integer',
                      $this->tables['foreign'].'_id' => 'integer',
