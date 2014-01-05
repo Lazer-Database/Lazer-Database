@@ -57,7 +57,7 @@ use JSONDb\Classes\Exception;
          Validate::name($name)->exists();
 
          $self = new Relation;
-         $self->_tables['local'] = $name;
+         $self->tables['local'] = $name;
 
          return $self;
      }
@@ -68,9 +68,9 @@ use JSONDb\Classes\Exception;
       */
      public function getJunction()
      {
-         if ($this->_relationType == 'hasAndBelongsToMany')
+         if ($this->relationType == 'hasAndBelongsToMany')
          {
-             $tables = $this->_tables;
+             $tables = $this->table;
              sort($tables);
              return implode('_', $tables);
          }
@@ -81,10 +81,10 @@ use JSONDb\Classes\Exception;
       * Set relation type to field
       * @param string $relation Name of relation
       */
-     protected function setRelation($relation)
+     protected function setRelationType($relation)
      {
          Validate::relation_type($relation);
-         $this->_relationType = $relation;
+         $this->relationType = $relation;
      }
 
      /**
@@ -95,7 +95,7 @@ use JSONDb\Classes\Exception;
      protected function setTable($type, $name)
      {
          Validate::name($name)->exists();
-         $this->_tables[$type] = $name;
+         $this->table[$type] = $name;
      }
 
      /**
@@ -107,11 +107,11 @@ use JSONDb\Classes\Exception;
       */
      protected function setKey($type, $key)
      {
-         if (!in_array(null, $this->_tables))
+         if (!in_array(null, $this->table))
          {
-             Validate::name($this->_tables[$type])->field($key);
+             Validate::name($this->table[$type])->field($key);
 
-             $this->_keys[$type] = $key;
+             $this->keys[$type] = $key;
              return $this;
          }
 
@@ -148,7 +148,7 @@ use JSONDb\Classes\Exception;
      public function belongsTo($table)
      {
          $this->setTable('foreign', $table);
-         $this->setRelation(__FUNCTION__);
+         $this->setRelationType(__FUNCTION__);
 
          return $this;
      }
@@ -161,11 +161,10 @@ use JSONDb\Classes\Exception;
      public function hasMany($table)
      {
          $this->setTable('foreign', $table);
-         $this->setRelation(__FUNCTION__);
+         $this->setRelationType(__FUNCTION__);
 
          return $this;
      }
-     
 
      /**
       * Set relation many2many to table 
@@ -175,11 +174,10 @@ use JSONDb\Classes\Exception;
      public function hasAndBelongsToMany($table)
      {
          $this->setTable('foreign', $table);
-         $this->setRelation(__FUNCTION__);
+         $this->setRelationType(__FUNCTION__);
 
          return $this;
      }
-
 
      /**
       * Use relation to table
@@ -189,9 +187,9 @@ use JSONDb\Classes\Exception;
      public function with($table)
      {
          $this->setTable('foreign', $table);
-         $this->setRelation(Config::name($this->_tables['local'])->relations($this->_tables['foreign'])->type);
-         $this->setKey('local', Config::name($this->_tables['local'])->relations($this->_tables['foreign'])->keys->local);
-         $this->setKey('foreign', Config::name($this->_tables['local'])->relations($this->_tables['foreign'])->keys->foreign);
+         $this->setRelationType(Config::name($this->table['local'])->relations($this->table['foreign'])->type);
+         $this->setKey('local', Config::name($this->table['local'])->relations($this->table['foreign'])->keys->local);
+         $this->setKey('foreign', Config::name($this->table['local'])->relations($this->table['foreign'])->keys->foreign);
 
          return $this;
      }
@@ -200,11 +198,11 @@ use JSONDb\Classes\Exception;
       * Set specified relation
       * @throws Exception Tables names or keys missing
       */
-     public function set()
+     public function setRelation()
      {
-         if (!in_array(null, $this->_tables) && !in_array(null, $this->_keys))
+         if (!in_array(null, $this->table) && !in_array(null, $this->keys))
          {
-             $this->createRelation();
+             $this->addRelation();
          }
          else
          {
@@ -216,21 +214,21 @@ use JSONDb\Classes\Exception;
       * Get relation information
       * @return array relation information
       */
-     public function get()
+     public function getRelation()
      {
          return array(
-             'tables' => $this->_tables,
-             'keys' => $this->_keys,
-             'type' => $this->_relationType
+             'tables' => $this->table,
+             'keys' => $this->keys,
+             'type' => $this->relationType
          );
      }
 
      /**
       * Add data to configs and create all necessary files
       */
-     protected function createRelation()
+     protected function addRelation()
      {
-         if ($this->_relationType == 'hasAndBelongsToMany')
+         if ($this->relationType == 'hasAndBelongsToMany')
          {
              $junction = $this->getJunction();
 
@@ -239,25 +237,32 @@ use JSONDb\Classes\Exception;
              }
              catch (Exception $e) {
                  Database::create($junction, array(
-                     $this->_tables['local'].'_id' => 'integer',
-                     $this->_tables['foreign'].'_id' => 'integer',
+                     $this->table['local'].'_id' => 'integer',
+                     $this->table['foreign'].'_id' => 'integer',
                  ));
 
-                 $this->addRelation($junction, $this->_tables['local'], 'hasMany', array(
-                     'local' => $this->_tables['local'].'_id',
-                     'foreign' => $this->_keys['local']
+                 $this->insertRelationData($junction, $this->table['local'], 'hasMany', array(
+                     'local' => $this->table['local'].'_id',
+                     'foreign' => $this->keys['local']
                  ));
 
-                 $this->addRelation($junction, $this->_tables['foreign'], 'hasMany', array(
-                     'local' => $this->_tables['foreign'].'_id',
-                     'foreign' => $this->_keys['foreign']
+                 $this->insertRelationData($junction, $this->table['foreign'], 'hasMany', array(
+                     'local' => $this->table['foreign'].'_id',
+                     'foreign' => $this->keys['foreign']
                  ));
              }
          }
-         $this->addRelation($this->_tables['local'], $this->_tables['foreign'], $this->_relationType, $this->_keys);
+         $this->insertRelationData($this->table['local'], $this->table['foreign'], $this->relationType, $this->keys);
      }
 
-     protected function addRelation($from, $to, $type, array $keys)
+     /**
+      * Inserts relation data to config file
+      * @param string $from Local table
+      * @param string $to Related table
+      * @param string $type Relation type
+      * @param array $keys Relationed keys
+      */
+     protected function insertRelationData($from, $to, $type, array $keys)
      {
          $config = Config::name($from);
          $content = $config->get();
@@ -268,32 +273,43 @@ use JSONDb\Classes\Exception;
          $config->put($content);
      }
 
+     /**
+      * Process query with joined data
+      * @param object $row One row of data
+      * @return Database
+      */
      protected function join($row)
      {
-         $keys['local'] = $this->_keys['local'];
-         $keys['foreign'] = $this->_keys['foreign'];
+         $keys['local'] = $this->keys['local'];
+         $keys['foreign'] = $this->keys['foreign'];
 
-         if ($this->_relationType == 'hasAndBelongsToMany')
+         if ($this->relationType == 'hasAndBelongsToMany')
          {
              $join = Database::table($this->getJunction())
-                     ->group_by($this->_tables['local'].'_id')
-                     ->where($this->_tables['local'].'_id', '=', $row->{$keys['local']})
+                     ->group_by($this->table['local'].'_id')
+                     ->where($this->table['local'].'_id', '=', $row->{$keys['local']})
                      ->find_all()
-                     ->as_array($this->_tables['local'].'_id', $this->_tables['foreign'].'_id');
+                     ->as_array($this->table['local'].'_id', $this->table['foreign'].'_id');
 
 
              if (empty($join))
                  return array();
 
-             return Database::table($this->_tables['foreign'])
+             return Database::table($this->table['foreign'])
                              ->where($keys['foreign'], 'IN', $join[$row->{$keys['local']}]);
          }
 
-         return Database::table($this->_tables['foreign'])
+         return Database::table($this->table['foreign'])
                          ->where($keys['foreign'], '=', $row->{$keys['local']});
      }
 
-     public function build($array, $part)
+     /**
+      * 
+      * @param array $array
+      * @param string $part
+      * @return array
+      */
+     public function build(array $array, $part)
      {
          $return = array();
          foreach ($array as $key => $row)
@@ -308,7 +324,7 @@ use JSONDb\Classes\Exception;
                      {
                          $query = $this->join($row);
 
-                         if ($this->_relationType == 'belongsTo')
+                         if ($this->relationType == 'belongsTo')
                          {
                              $query = $query->find_all();
                              $query = reset($query)[0];
@@ -333,6 +349,10 @@ use JSONDb\Classes\Exception;
          return $return;
      }
 
+     /**
+      * Get relations types
+      * @return array
+      */
      public static function relations()
      {
          return self::$relations;
