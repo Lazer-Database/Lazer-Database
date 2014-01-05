@@ -186,6 +186,7 @@ use JSONDb\Classes\Exception;
       */
      public function with($table)
      {
+         Validate::relation($this->tables['local'], $table);
          $this->setTable('foreign', $table);
          $this->setRelationType(Config::table($this->tables['local'])->relations($this->tables['foreign'])->type);
          $this->setKey('local', Config::table($this->tables['local'])->relations($this->tables['foreign'])->keys->local);
