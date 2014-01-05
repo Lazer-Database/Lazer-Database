@@ -203,6 +203,7 @@ use JSONDb\Classes\Exception;
          if (!in_array(null, $this->tables) && !in_array(null, $this->keys))
          {
              $this->addRelation();
+             return true;
          }
          else
          {
@@ -221,6 +222,21 @@ use JSONDb\Classes\Exception;
              'keys' => $this->keys,
              'type' => $this->relationType
          );
+     }
+
+     /**
+      * Remove relation
+      */
+     public function removeRelation()
+     {
+         if ($this->relationType == 'hasAndBelongsToMany')
+         {
+             $junction = $this->getJunction();
+
+             $this->deleteRelationData($junction, $this->tables['local']);
+             $this->deleteRelationData($junction, $this->tables['foreign']);
+         }
+         $this->deleteRelationData($this->tables['local'], $this->tables['foreign']);
      }
 
      /**
@@ -270,6 +286,21 @@ use JSONDb\Classes\Exception;
              'type' => $type,
              'keys' => $keys,
          );
+         $config->put($content);
+     }
+
+     /**
+      * Inserts relation data to config file
+      * @param string $from Local table
+      * @param string $to Related table
+      * @param string $type Relation type
+      * @param array $keys Relationed keys
+      */
+     protected function deleteRelationData($from, $to)
+     {
+         $config = Config::table($from);
+         $content = $config->get();
+         unset($content->relations->{$to});
          $config->put($content);
      }
 
