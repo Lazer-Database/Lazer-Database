@@ -1,0 +1,1 @@
+{"last_id":68,"schema":{"id":"integer","marque_id":"integer","model":"string","color":"string"},"relations":{"marques":{"type":"belongsTo","keys":{"local":"marque_id","foreign":"id"}}}}
