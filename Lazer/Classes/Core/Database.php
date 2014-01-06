@@ -74,7 +74,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
      /**
       * Factory pattern
       * @param string $name Name of table
-      * @return \Jsondb
+      * @return \Lazer\Classes\Database
       * @throws LazerException If there's problems with load file
       */
      public static function table($name)
@@ -90,11 +90,19 @@ defined('LAZER_SECURE') or die('Permission denied!');
          return $self;
      }
 
+     /**
+      * Get rows from table
+      * @uses Lazer\Classes\Helpers\Data::get() to get data from file
+      * @return array
+      */
      protected function getData()
      {
          return Helpers\Data::table($this->name)->get();
      }
 
+     /**
+      * Setting data to Database::$data
+      */
      protected function setData()
      {
          $this->data = $this->getData();
@@ -121,6 +129,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
 
      /**
       * Setting fields with default values
+      * @uses Lazer\Classes\Helpers\Validate::isNumeric() to check if type of field is numeric
       */
      protected function setFields()
      {
@@ -142,6 +151,8 @@ defined('LAZER_SECURE') or die('Permission denied!');
 
      /**
       * Validating fields and setting variables to current operations
+      * @uses Lazer\Classes\Helpers\Validate::field() to check that field exist
+      * @uses Lazer\Classes\Helpers\Validate::type() to check that field type is correct
       * @param string $name Field name
       * @param mixed $value Field value
       */
@@ -201,6 +212,12 @@ defined('LAZER_SECURE') or die('Permission denied!');
       * 
       * ID field isn't required (it will be created automatically) but you can specify it at first place.
       * 
+      * @uses Lazer\Classes\Helpers\Data::arrToLower() to lower case keys and values of array
+      * @uses Lazer\Classes\Helpers\Data::exists() to check if data file exists
+      * @uses Lazer\Classes\Helpers\Config::exists() to check if config file exists
+      * @uses Lazer\Classes\Helpers\Validate::types() to check if type of fields are correct
+      * @uses Lazer\Classes\Helpers\Data::put() to save data file
+      * @uses Lazer\Classes\Helpers\Config::put() to save config file
       * @param string $name Table name
       * @param array $fields Field configuration
       * @throws LazerException If table exist
@@ -234,6 +251,8 @@ defined('LAZER_SECURE') or die('Permission denied!');
 
      /**
       * Removing table with config
+      * @uses Lazer\Classes\Helpers\Data::remove() to remove data file
+      * @uses Lazer\Classes\Helpers\Config::remove() to remove config file
       * @param string $name Table name
       * @return boolean|LazerException
       */
@@ -248,7 +267,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
      /**
       * Grouping results by one field
       * @param string $column
-      * @return \jsondb\classes\core\Core
+      * @return \Lazer\Classes\Core_Database
       */
      public function groupBy($column)
      {
@@ -280,7 +299,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
      /**
       * JOIN other tables
       * @param string $table relations separated by :
-      * @return \jsondb\classes\core\Core
+      * @return \Lazer\Classes\Core_Database
       */
      public function with($table)
      {
@@ -314,7 +333,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
       * Sorting data by field
       * @param string $key Field name
       * @param string $direction ASC|DESC
-      * @return \Core
+      * @return \Lazer\Classes\Core_Database
       */
      public function orderBy($key, $direction = 'ASC')
      {
@@ -384,7 +403,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
       * @param string $field Field name
       * @param string $op Operator
       * @param mixed $value Field value
-      * @return \jsondb\core\Core
+      * @return \Lazer\Classes\Core_Database
       */
      public function where($field, $op, $value)
      {
@@ -403,7 +422,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
       * @param string $field Field name
       * @param string $op Operator
       * @param mixed $value Field value
-      * @return \jsondb\core\Core
+      * @return \Lazer\Classes\Core_Database
       */
      public function andWhere($field, $op, $value)
      {
@@ -417,7 +436,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
       * @param string $field Field name
       * @param string $op Operator
       * @param mixed $value Field value
-      * @return \jsondb\core\Core
+      * @return \Lazer\Classes\Core_Database
       */
      public function orWhere($field, $op, $value)
      {
@@ -575,7 +594,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
       * Should be used at the end of chain, before end method
       * @param integer $number Limit number
       * @param integer $offset Offset number
-      * @return \Core
+      * @return \Lazer\Classes\Core_Database
       */
      public function limit($number, $offset = 0)
      {
@@ -792,7 +811,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
      /**
       * Returns one row with specified ID
       * @param integer $id Row ID
-      * @return \Core
+      * @return \Lazer\Classes\Core_Database
       */
      public function find($id)
      {
@@ -832,7 +851,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
       */
      public function debug()
      {
-         $print = "LAZER::table(".$this->name.")\n";
+         $print = "Lazer::table(".$this->name.")\n";
          foreach ($this->pending as $function => $values)
          {
              if (!empty($values))
