@@ -78,7 +78,7 @@ $table = Lazer::table('table_name')->findAll();
     
 foreach($table as $row)
 {
-    echo $row->id;
+    print_r($row);
 }
 ```
 #### Single record select
