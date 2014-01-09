@@ -351,6 +351,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
 
      /**
       * Sort an array of objects by more than one field.
+      * @
       * @link http://blog.amnuts.com/2011/04/08/sorting-an-array-of-objects-by-one-or-more-object-property/ It's not mine algorithm
       */
      protected function orderByPending()
@@ -526,42 +527,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
          $datas = array();
          if (!empty($this->pending['groupBy']))
          {
-             foreach ($this->data as $array)
-             {
-                 foreach ($array as $data)
-                 {
-                     if (is_null($key) && is_null($value))
-                     {
-                         $datas[] = $data;
-                     }
-                     elseif (is_null($key))
-                     {
-                         $datas[] = $data->{$value};
-                     }
-                     elseif (is_null($value))
-                     {
-                         if ($this->pending['groupBy'] == $key)
-                         {
-                             $datas[$data->{$key}][] = $data;
-                         }
-                         else
-                         {
-                             $datas[$data->{$key}] = $data;
-                         }
-                     }
-                     else
-                     {
-                         if ($this->pending['groupBy'] == $key)
-                         {
-                             $datas[$data->{$key}][] = $data->{$value};
-                         }
-                         else
-                         {
-                             $datas[$data->{$key}] = $data->{$value};
-                         }
-                     }
-                 }
-             }
+             return $this->data;
          }
          else
          {
