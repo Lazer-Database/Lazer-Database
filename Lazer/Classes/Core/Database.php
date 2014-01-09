@@ -471,18 +471,19 @@ defined('LAZER_SECURE') or die('Permission denied!');
          $this->data = array_filter($this->data, function($row) use ($operator)
          {
              $clause = '';
+             $result = true;
 
              foreach ($this->pending['where'] as $key => $condition)
              {
                  extract($condition);
 
-                 if (is_array($value))
+                 if (is_array($value) && $op == 'IN')
                  {
                      $value = (in_array($row->{$field}, $value)) ? 1 : 0;
                      $op = '==';
                      $field = 1;
                  }
-                 else
+                 elseif (!is_array($value) && $op != 'IN')
                  {
                      $value = is_string($value) ?
                              '\''.$value.'\'' :
