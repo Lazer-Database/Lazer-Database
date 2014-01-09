@@ -527,27 +527,55 @@ defined('LAZER_SECURE') or die('Permission denied!');
          $datas = array();
          if (!empty($this->pending['groupBy']))
          {
-             return $this->data;
+             if (is_null($key) && is_null($value))
+             {
+                 return $this->data;
+             }
+             else
+             {
+                 foreach ($this->data as $rowKey => $data)
+                 {
+                     $datas[$rowKey] = array();
+                     foreach($data as $row)
+                     {
+                         if (is_null($key))
+                         {
+                             $datas[$rowKey][] = $row->{$value};
+                         }
+                         elseif (is_null($value))
+                         {
+                             $datas[$rowKey][$row->{$key}] = $row;
+                         }
+                         else
+                         {
+                             $datas[$rowKey][$row->{$key}] = $row->{$value};
+                         }
+                     }
+                 }
+             }
          }
          else
          {
-             foreach ($this->data as $data)
+             if (is_null($key) && is_null($value))
              {
-                 if (is_null($key) && is_null($value))
+                 return $this->data;
+             }
+             else
+             {
+                 foreach ($this->data as $data)
                  {
-                     $datas[] = $data;
-                 }
-                 elseif (is_null($key))
-                 {
-                     $datas[] = $data->{$value};
-                 }
-                 elseif (is_null($value))
-                 {
-                     $datas[$data->{$key}] = $data;
-                 }
-                 else
-                 {
-                     $datas[$data->{$key}] = $data->{$value};
+                     if (is_null($key))
+                     {
+                         $datas[] = $data->{$value};
+                     }
+                     elseif (is_null($value))
+                     {
+                         $datas[$data->{$key}] = $data;
+                     }
+                     else
+                     {
+                         $datas[$data->{$key}] = $data->{$value};
+                     }
                  }
              }
          }
