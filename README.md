@@ -1,4 +1,4 @@
-Lazer - file database based on JSON files
+Lazer - database based on JSON files
 =============
 
 PHP Library to use JSON files like a FlatFileDatabase.   
@@ -91,7 +91,7 @@ Type ID of row in `find()` method.
 
 ### Insert
 ```php
-$row = LAZER::table('table_name');
+$row = Lazer::table('table_name');
 
 $row->nickname = 'new_user';
 $row->save();
