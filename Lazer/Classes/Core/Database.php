@@ -343,7 +343,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
                  'ASC' => SORT_ASC,
                  'DESC' => SORT_DESC
              );
-             $this->pending[__FUNCTION__][$key] = $directions[$direction];
+             $this->pending[__FUNCTION__][$key] = isset($directions[$direction]) ? $directions[$direction] : 'ASC';
          }
 
          return $this;
