@@ -61,8 +61,8 @@ defined('LAZER_SECURE') or die('Permission denied!');
          'where' => array(),
          'orderBy' => array(),
          'limit' => array(),
-         'groupBy' => array(),
          'with' => array(),
+         'groupBy' => array(),
      );
 
      /**
@@ -536,7 +536,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
                  foreach ($this->data as $rowKey => $data)
                  {
                      $datas[$rowKey] = array();
-                     foreach($data as $row)
+                     foreach ($data as $row)
                      {
                          if (is_null($key))
                          {
