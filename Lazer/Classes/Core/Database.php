@@ -479,7 +479,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
 
                  if (is_array($value) && $op == 'IN')
                  {
-                     $value = (in_array($row->{$field}, $value)) ? 1 : 0;
+                     $value = (in_array($row->{$field}, $value)) ? true : false;
                      $op = '==';
                      $field = 1;
                  }
