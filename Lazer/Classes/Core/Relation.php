@@ -321,12 +321,12 @@ use Lazer\Classes\LazerException;
                      ->groupBy($this->tables['local'].'_id')
                      ->where($this->tables['local'].'_id', '=', $row->{$keys['local']})
                      ->findAll()
-                     ->asArray($this->tables['local'].'_id', $this->tables['foreign'].'_id');
-
+                     ->asArray(null, $this->tables['foreign'].'_id');
+             
 
              if (empty($join))
                  return array();
-
+             
              return Database::table($this->tables['foreign'])
                              ->where($keys['foreign'], 'IN', $join[$row->{$keys['local']}]);
          }
