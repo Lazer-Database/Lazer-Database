@@ -480,7 +480,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
 
                  if (is_array($value) && $op == 'IN')
                  {
-                     $value = (in_array($row->{$field}, $value)) ? true : false;
+                     $value = (in_array($row->{$field}, $value)) ? 1 : 0;
                      $op = '==';
                      $field = 1;
                  }
@@ -500,6 +500,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
 
                  $query = array($type, $field, $op, $value);
                  $clause .= implode(' ', $query).' ';
+                 var_dump($clause);
                  eval('$result = '.$clause.';');
              }
 
