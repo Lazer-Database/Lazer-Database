@@ -500,7 +500,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
 
                  $query = array($type, $field, $op, $value);
                  $clause .= implode(' ', $query).' ';
-                 var_dump($clause);
+                 
                  eval('$result = '.$clause.';');
              }
 
