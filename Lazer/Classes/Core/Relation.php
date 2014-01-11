@@ -358,7 +358,7 @@ use Lazer\Classes\LazerException;
 
                          if ($this->relationType == 'belongsTo')
                          {
-                             $query = $query->find_all();
+                             $query = $query->findAll();
                              $query = reset($query)[0];
                          }
 
