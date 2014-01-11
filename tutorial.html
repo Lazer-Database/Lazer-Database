@@ -51,24 +51,24 @@ html { height: 100%; width: 100%; } body { font-family: Source Sans Pro; font-si
 use Lazer\Classes\Database as Lazer; /* I will skip this line in rest of code samples */
 
 Lazer::create('users', array(
-    'name' => 'string',
-    'email' => 'string',
+    'name' =&gt; 'string',
+    'email' =&gt; 'string',
 ));
 
 Lazer::create('news', array(
-    'topic' => 'string',
-    'content' => 'string',
-    'author_id' => 'integer'
+    'topic' =&gt; 'string',
+    'content' =&gt; 'string',
+    'author_id' =&gt; 'integer'
 ));
 
 Lazer::create('comments', array(
-    'content' => 'string',
-    'author_id' => 'integer'
-    'news_id' => 'integer'
+    'content' =&gt; 'string',
+    'author_id' =&gt; 'integer'
+    'news_id' =&gt; 'integer'
 ));
 
 Lazer::create('tags', array(
-    'name' => 'string'
+    'name' =&gt; 'string'
 ));</code></pre>
         <hr />
         
