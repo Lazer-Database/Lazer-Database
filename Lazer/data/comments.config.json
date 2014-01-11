@@ -1,1 +1,0 @@
-{"last_id":3,"schema":{"id":"integer","content":"string","author_id":"integer","news_id":"integer"},"relations":{"news":{"type":"belongsTo","keys":{"local":"author_id","foreign":"id"}},"users":{"type":"belongsTo","keys":{"local":"author_id","foreign":"id"}}}}

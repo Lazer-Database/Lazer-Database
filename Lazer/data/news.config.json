@@ -1,1 +1,0 @@
-{"last_id":2,"schema":{"id":"integer","topic":"string","content":"string","author_id":"integer"},"relations":{"users":{"type":"belongsTo","keys":{"local":"author_id","foreign":"id"}},"comments":{"type":"hasMany","keys":{"local":"id","foreign":"news_id"}},"tags":{"type":"hasAndBelongsToMany","keys":{"local":"id","foreign":"id"}}}}
