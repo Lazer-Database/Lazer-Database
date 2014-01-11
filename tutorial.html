@@ -114,6 +114,7 @@ $user-&gt;save();
 $user-&gt;name = 'Paul';
 $user-&gt;email = 'paul@example.com';
 $user-&gt;save();</code></pre>
+        
         <h3>News:</h3>
         <pre><code>$news = Lazer::table('news');
 
@@ -126,7 +127,6 @@ $news-&gt;topic = 'Some breaking news';
 $news-&gt;content = 'Some content of breaking news. Pellentesque facilisis. Nulla imperdiet sit amet magna. Vestibulum dapibus, mauris nec malesuada fames ac turpis velit, rhoncus eu.';
 $news-&gt;author_id = 3; /* Larry */
 $news-&gt;save();</code></pre>
-        <hr />
         
         <h3>Tags:</h3>
         <pre><code>$tag = Lazer::table('tags');
@@ -142,27 +142,6 @@ $tag-&gt;save();
 
 $tag-&gt;name = 'ipsum';
 $tag-&gt;save();</code></pre>
-        <hr />
-        
-        <h3>Join tags to news:</h3>
-        <pre><code>$tag_join = Lazer::table('news_tags');
-
-$tag_join-&gt;news_id = 1; /* "Lorem..." news */
-$tag_join-&gt;tags_id = 3; /* "lorem" tag */
-$tag_join-&gt;save();
-
-$tag_join-&gt;news_id = 1;
-$tag_join-&gt;tags_id = 4; /* "ipsum" tag */
-$tag_join-&gt;save();
-
-$tag_join-&gt;news_id = 2; /* "Breaking..." news */
-$tag_join-&gt;tags_id = 1; /* "news" tag */
-$tag_join-&gt;save();
-
-$tag_join-&gt;news_id = 2;
-$tag_join-&gt;tags_id = 2; /* "breaking" tag */
-$tag_join-&gt;save();</code></pre>
-        <hr />
         
         <h3>Comments:</h3>
         <pre><code>$commment = Lazer::table('comments');
@@ -181,6 +160,26 @@ $commment-&gt;content = 'Terrible';
 $commment-&gt;author_id = 4; /* Paul */
 $commment-&gt;news_id = 2; /* "Breaking..." news */
 $commment-&gt;save();</code></pre>
+        <p>Now we will insert records into junction table (created automatically) between News and Tags:
+        <h3>Join tags to news:</h3>
+        <pre><code>$junction = Relation::table('users')->with('tags')->getJunction();
+$tag_join = Lazer::table($junction);
+
+$tag_join-&gt;news_id = 1; /* "Lorem..." news */
+$tag_join-&gt;tags_id = 3; /* "lorem" tag */
+$tag_join-&gt;save();
+
+$tag_join-&gt;news_id = 1;
+$tag_join-&gt;tags_id = 4; /* "ipsum" tag */
+$tag_join-&gt;save();
+
+$tag_join-&gt;news_id = 2; /* "Breaking..." news */
+$tag_join-&gt;tags_id = 1; /* "news" tag */
+$tag_join-&gt;save();
+
+$tag_join-&gt;news_id = 2;
+$tag_join-&gt;tags_id = 2; /* "breaking" tag */
+$tag_join-&gt;save();</code></pre>
         <hr />
         
         <h2 id="finish">Finish, display it!:</h2>
