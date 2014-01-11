@@ -156,6 +156,7 @@ use Lazer\Classes\Relation; // example
 ```php
 Relation::table('table1')->belongsTo('table2')->localKey('table2_id')->foreignKey('id')->setRelation();
 Relation::table('table2')->hasMany('table1')->localKey('id')->foreignKey('table2_id')->setRelation();
+Relation::table('table2')->hasAndBelongsToMany('table1')->localKey('id')->foreignKey('id')->setRelation(); // Junction table will be crete automaticly
 ```
 
 #### Remove relation
@@ -172,7 +173,7 @@ Lazer::table('table1')->relations('table2'); // relation with specified table
 
 Description
 ------
-For some examples please check index.php file.
+For some examples please check index.html file.
 More informations you can find in PHPDoc, I think it's documented very well.
 
 Homepage: <http://greg0.ovh.org>   
