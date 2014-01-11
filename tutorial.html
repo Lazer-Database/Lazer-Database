@@ -162,7 +162,7 @@ $commment-&gt;news_id = 2; /* "Breaking..." news */
 $commment-&gt;save();</code></pre>
         <p>Now we will insert records into junction table (created automatically) between News and Tags:
         <h3>Join tags to news:</h3>
-        <pre><code>$junction = Relation::table('users')->with('tags')->getJunction();
+        <pre><code>$junction = Relation::table('news')->with('tags')->getJunction();
 $tag_join = Lazer::table($junction);
 
 $tag_join-&gt;news_id = 1; /* "Lorem..." news */
