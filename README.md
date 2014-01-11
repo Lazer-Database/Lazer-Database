@@ -1,4 +1,4 @@
-File Database based on JSON files
+Lazer - database based on JSON files
 =============
 
 PHP Library to use JSON files like a FlatFileDatabase.   
@@ -11,116 +11,169 @@ Requirements
 Structure of table files
 -------
 
-`name.data.json` - table file with data   
-`name.config.json` - file with configuration of table
+`table_name.data.json` - table file with data   
+`table_name.config.json` - table file with configuration 
 
     
-Usage
+Basic Usage
 ------
 
-First of all you should include `jsondb/bootstrap.php` file (Example autoloader) and define constant `JSONDB_DATA_PATH` containing absolute path to folder with JSON files:
+First of all you should open `Lazer/bootstrap.php` file and define constant `LAZER_DATA_PATH` containing absolute path to folder with JSON files:
+```php
+define('LAZER_DATA_PATH', realpath(dirname(__FILE__)).'/data/'); //Path to folder with tables
+```
 
-      require_once 'jsondb/bootstrap.php';
-      define('JSONDB_DATA_PATH', realpath(dirname(__FILE__)).'/data/'); //Path to folder with tables
-
-#### Assumptions
-
-In that project I have used namespace but i will skip it in examples.
+Then include it in your file and set up namespace:
+```php
+require_once 'Lazer/bootstrap.php';
+use Lazer\Classes\Database as Lazer; // example
+```
 
 ### Methods
 
-##### Filter chain methods in multiple select
+##### Chain methods
 
-- `order_by()` - sort rows by key in order, can order by more than one field (just chain it). 
-- `where()` - filter records. Alias: `and_where()`.
-- `or_where()` - other type of filtering results. 
 - `limit()` - returns results between a certain number range. Should be used right before ending method `find_all()`.
-- `as_array()` - returns data as indexed or assoc array: `['field_name' => 'field_name']`. Should be used right before ending method `find_all()` or `limit()` if setted.
+- `orderBy()` - sort rows by key in order, can order by more than one field (just chain it). 
+- `groupBy()` - group rows by field.
+- `where()` - filter records. Alias: `and_where()`.
+- `orWhere()` - other type of filtering results. 
+- `with()` - join other tables by defined relations
 
 ##### Ending methods
 
-- `add_fields()` - append new fields into existing table
-- `delete_fields()` - removing fields from existing table
-- `count()` - returns the number of rows.
-- `find()` - returns one row with specified ID.
-- `find_all()` - returns rows.
+- `addFields()` - append new fields into existing table
+- `deleteFields()` - removing fields from existing table
 - `save()` - insert or Update data.
 - `delete()` - deleting data.
+- `relations()` - returns array with table relations
 - `config()` - returns object with configuration.
 - `fields()` - returns array with fields name.
 - `schema()` - returns assoc array with fields name and fields type `field => type`.
-- `last_id()` - returns last ID from table.
+- `lastId()` - returns last ID from table.
+- `count()` - returns the number of rows.
+- `find()` - returns one row with specified ID.
+- `findAll()` - returns rows.
+- `asArray()` - returns data as indexed or assoc array: `['field_name' => 'field_name']`. Should be used after ending method `find_all()`.
 
 ### Create database
-
-    JSONDB::create('table_name', array(
-     'id' => 'integer',
-     'nickname' => 'string',
-     {field_name} => {field_type}
-    ));
-
+```php
+Lazer::create('table_name', array(
+    'id' => 'integer',
+    'nickname' => 'string',
+    {field_name} => {field_type}
+));
+```
 More informations about field types and usage in PHPDoc
 	
 ### Remove database
-
-    JSONDB::remove('table_name');
-
+```php
+Lazer::remove('table_name');
+```
 ### Select
 
 #### Multiple select
-
-    $table = JSONDB::factory('table_name')->find_all();
+```php
+$table = Lazer::table('table_name')->findAll();
     
-    foreach($table as $row)
-    {
-      echo $row->id;
-    }
-
+foreach($table as $row)
+{
+    print_r($row);
+}
+```
 #### Single record select
+```php
+$row = Lazer::table('table_name')->find(1);
 
-    $row = JSONDB::factory('table_name')->find(1);
-
-    echo $row->id;
-
+echo $row->id;
+```
 Type ID of row in `find()` method.
 
 ### Insert
+```php
+$row = Lazer::table('table_name');
 
-    $row = JSONDB::factory('table_name');
-    
-    $row->nickname = 'new_user';
-    $row->save();
-
-Don't set the ID.
+$row->nickname = 'new_user';
+$row->save();
+```
+Do not set the ID.
 
 ### Update
 
 It's very smilar to `Inserting`.
+```php
+$row = Lazer::table('table_name')->find(1); //Edit row with ID 1
 
-    $row = JSONDB::factory('table_name')->find(1); //Will edit row with ID 1
+$row->nickname = 'edited_user';
 
-    $row->nickname = 'edited_user';
-
-    $row->save();
-
+$row->save();
+```
 ### Remove
 
 #### Single record deleting
-
-    JSONDB::factory('table_name')->find(1)->delete(); //Will remove row with ID 1
-
+```php
+Lazer::table('table_name')->find(1)->delete(); //Will remove row with ID 1
+```
 #### Multiple records deleting
-
-    JSONDB::factory('table_name')->where('nickname', '=', 'edited_user')->delete();
-
+```php
+Lazer::table('table_name')->where('nickname', '=', 'edited_user')->delete();
+```
 #### Clear table
+```php
+Lazer::table('table_name')->delete();
+```
+### Relations
 
-    JSONDB::factory('table_name')->delete();
+To work with relations use class Relation
+```php
+use Lazer\Classes\Relation; // example
+```
+
+#### Relation types
+
+- `belongsTo` - relation many to one
+- `hasMany` - relation one to many
+- `hasAndBelongsToMany` - relation many to many
+
+#### Methods
+
+##### Chain methods
+
+- `belongsTo()` - set relation belongsTo
+- `hasMany()` - set relation hasMany
+- `hasAndBelongsToMany()` - set relation hasAndBelongsToMany
+- `localKey()` - set relation local key
+- `foreignKey()` - set relation foreign key
+- `with()` - allow to work on existing relation
+
+##### Ending methods
+
+- `setRelation()` - creating specified relation
+- `removeRelation()` - creating specified relation
+- `getRelation()` - return informations about relation
+
+#### Create relation
+```php
+Relation::table('table1')->belongsTo('table2')->localKey('table2_id')->foreignKey('id')->setRelation();
+Relation::table('table2')->hasMany('table1')->localKey('id')->foreignKey('table2_id')->setRelation();
+```
+
+#### Remove relation
+```php
+Relation::table('table1')->with('table2')->removeRelation();
+```
+#### Get relation information
+You can do it by two ways. Use Standard Database class or Relation but results will be different.
+```php
+Relation::table('table1')->with('table2')->getRelation(); // relation with specified table
+Lazer::table('table1')->relations(); // all relations
+Lazer::table('table1')->relations('table2'); // relation with specified table
+```
 
 Description
 ------
-
-More informations you can find in PHPDoc. I think it's documented very well.
+For some examples please check index.php file.
+More informations you can find in PHPDoc, I think it's documented very well.
 
 Homepage: <http://greg0.ovh.org>   
 E-mail: <gerg0sz92@gmail.com>

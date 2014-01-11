@@ -1,8 +1,8 @@
 <?php
 
- namespace jsondb\classes;
+  namespace Lazer\Classes;
 
-defined('JSONDB_SECURE') or die('Permission denied!');
+defined('LAZER_SECURE') or die('Permission denied!');
 
  /**
   * Exception extend
@@ -12,7 +12,7 @@ defined('JSONDB_SECURE') or die('Permission denied!');
   * @copyright (c) 2013, Grzegorz Kuźnik
   * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
   */
- class JDBException extends \Exception {
+ class LazerException extends \Exception {
 
      public function __construct($message, $code = 0)
      {
@@ -26,4 +26,4 @@ defined('JSONDB_SECURE') or die('Permission denied!');
 
  }
 
-?>
+ 
