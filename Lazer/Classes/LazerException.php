@@ -10,7 +10,6 @@ defined('LAZER_SECURE') or die('Permission denied!');
   * @category Exceptions
   * @author Grzegorz Kuźnik
   * @copyright (c) 2013, Grzegorz Kuźnik
-  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License
   */
  class LazerException extends \Exception {
 
