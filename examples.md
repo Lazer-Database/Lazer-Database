@@ -109,3 +109,10 @@ In queries you can use all of features, simple example
 ```php
 $post->Comments->orderBy('author_id')->limit(5)->findAll(); /* news comments */
 ```
+
+### Conclusion
+
+Of course all of these examples can be used together
+```php
+Lazer::table('users')->with('comments')->where('id', '!=', 1)->orderBy('name')->limit(15)->findAll()->asArray();
+``` 
