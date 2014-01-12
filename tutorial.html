@@ -173,6 +173,10 @@ $tag_join-&gt;news_id = 1;
 $tag_join-&gt;tags_id = 4; /* "ipsum" tag */
 $tag_join-&gt;save();
 
+$tag_join-&gt;news_id = 1; /* "Lorem..." news */
+$tag_join-&gt;tags_id = 1; /* "news" tag */
+$tag_join-&gt;save();
+
 $tag_join-&gt;news_id = 2; /* "Breaking..." news */
 $tag_join-&gt;tags_id = 1; /* "news" tag */
 $tag_join-&gt;save();
