@@ -1,9 +1,9 @@
 Welcome
-------
+----
 Hi, on this page you will find some example of use my database.
 
 Find All
-------
+----
 ##### Query:
 ```php
 $result = Lazer::table('users')->findAll();
@@ -13,14 +13,14 @@ foreach($result as $row)
 }
 ```
 Limit
-------
+----
 ##### Query:
 ```php
 Lazer::table('users')->limit(5)->findAll(); /* Get five records */
 Lazer::table('users')->limit(10, 5)->findAll(); /* Get five records from 10th */
 ```
 Order By
-------
+----
 ##### Query:
 ```php
 Lazer::table('users')->orderBy('id')->findAll();
@@ -28,7 +28,7 @@ Lazer::table('users')->orderBy('id', 'DESC')->findAll();
 Lazer::table('users')->orderBy('id')->orderBy('name')->findAll();
 ```
 Where
-------
+----
 ##### Query:
 ```php
 Lazer::table('users')->where('id', '=', 1)->findAll();
@@ -38,13 +38,13 @@ Lazer::table('users')->where('id', '>=', 2)->andWhere('id', '<=', 7)->findAll();
 Lazer::table('users')->where('id', '=', 1)->orWhere('id', '=', 3)->findAll();
 ```
 Group By
-------
+----
 ##### Query:
 ```php
 Lazer::table('news')->groupBy('category_id')->findAll();
 ```
 Count
-------
+----
 ##### Query:
 ```php
 Lazer::table('users')->count(); /* Number of rows */
@@ -61,7 +61,7 @@ Lazer::table('news')->where('id', '=', 2)->count();
 Lazer::table('news')->groupBy('category_id')->count();
 ```
 As Array
-------
+----
  Use when you want to get array with results, not an object to iterate. 
 ##### Query:
 ```php
@@ -71,7 +71,7 @@ Lazer::table('users')->findAll()->asArray(null, 'id'); /* value of row will be a
 Lazer::table('users')->findAll()->asArray('id', 'name'); /* key of row will be an ID and value will be a name of user */
 ```
 With (JOIN)
-------
+----
 <b>Caution! First letter of relationed table name is always uppercase.</b>
 
 For example you can get News with it Comments. 
