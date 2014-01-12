@@ -1,7 +1,7 @@
 Lazer - database based on JSON files
 =============
 
-PHP Library to use JSON files like a FlatFileDatabase.   
+PHP Library to use JSON files like a database.   
 Functionality inspired by ORM's
 
 Requirements
