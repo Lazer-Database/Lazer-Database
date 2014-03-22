@@ -14,6 +14,7 @@ use Lazer\Classes\LazerException;
   * @author Grzegorz Kuźnik
   * @copyright (c) 2013, Grzegorz Kuźnik
   * @license http://opensource.org/licenses/MIT The MIT License
+  * @link https://github.com/Greg0/Lazer-Database GitHub Repository
   */
  abstract class Core_Relation {
 
