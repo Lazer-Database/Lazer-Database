@@ -11,6 +11,7 @@ defined('LAZER_SECURE') or die('Permission denied!');
   * @author Grzegorz Kuźnik
   * @copyright (c) 2013, Grzegorz Kuźnik
   * @license http://opensource.org/licenses/MIT The MIT License
+  * @link https://github.com/Greg0/Lazer-Database GitHub Repository
   */
  class Data extends File {
 
