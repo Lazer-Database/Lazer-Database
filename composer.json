@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Greg0\\Lazer\\": "Lazer/Classes"
+            "Greg0\\Lazer\\": "Lazer/Classes/"
         }
     }
 }
