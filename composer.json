@@ -14,8 +14,8 @@
         "php": ">=5.4"
     },
     "autoload": {
-        "psr-0": {
-            "Lazer": "src"
+        "psr-4": {
+            "Greg0\\Lazer\\": "Lazer/Classes"
         }
     }
 }
