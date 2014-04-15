@@ -1,0 +1,21 @@
+{
+    "name": "greg0/lazer-database",
+    "description": "PHP library to use JSON files like flat-file database",
+    "keywords": ["lazer", "simple", "json", "flat", "file", "database", "db"],
+    "homepage": "http://github.com/Greg0/Lazer-Database",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Grzegorz Kuźnik",
+            "email": "gerg0sz92@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4"
+    },
+    "autoload": {
+        "psr-0": {
+            "Lazer": "src"
+        }
+    }
+}
