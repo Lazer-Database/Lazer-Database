@@ -7,6 +7,7 @@ Functionality inspired by ORM's
 Requirements
 -------
 - PHP 5.4+
+- Composer
 
 Structure of table files
 -------
