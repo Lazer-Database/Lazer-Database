@@ -8,6 +8,7 @@
   * @param string class name
   * @link https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md#example-implementation
   */
+ /*
  function __autoload($className)
  {
      $className = ltrim($className, '\\');
@@ -23,4 +24,4 @@
 
      require $fileName;
  }
-
+*/
