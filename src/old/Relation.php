@@ -16,7 +16,7 @@ use Lazer\Classes\LazerException;
   * @license http://opensource.org/licenses/MIT The MIT License
   * @link https://github.com/Greg0/Lazer-Database GitHub Repository
   */
- abstract class Core_Relation {
+class Relation {
 
      /**
       * Tables names

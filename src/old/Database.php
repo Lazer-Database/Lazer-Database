@@ -20,7 +20,7 @@ use Lazer\Classes\Helpers;
  * @license http://opensource.org/licenses/MIT The MIT License
  * @link https://github.com/Greg0/Lazer-Database GitHub Repository
  */
-abstract class Core_Database implements \IteratorAggregate, \Countable {
+class Database implements \IteratorAggregate, \Countable {
 
     /**
      * Contain returned data from file as object or array of objects

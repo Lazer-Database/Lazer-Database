@@ -41,7 +41,7 @@ class File implements FileInterface {
     public final function getPath() {
         if(!defined('LAZER_DATA_PATH'))
         {
-            throw new LazerException('you must define constant LAZER_DATA_PATH');
+            throw new LazerException('you must define constant LAZER_DATA_PATH (see README.md)');
         }
         else if (!empty($this->type)) {
             return LAZER_DATA_PATH . $this->name . '.' . $this->type . '.json';
