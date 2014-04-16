@@ -1,8 +1,7 @@
 <?php
 
- namespace Lazer\Classes;
+namespace Lazer\Classes;
 
-defined('LAZER_SECURE') or die('Permission denied!');
-
- class Database extends Core_Database { }
-
+class Database extends Core_Database {
+    
+}
