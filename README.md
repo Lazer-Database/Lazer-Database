@@ -18,14 +18,13 @@ Structure of table files
 Basic Usage
 ------
 
-First of all you should open `Lazer/bootstrap.php` file and define constant `LAZER_DATA_PATH` containing absolute path to folder with JSON files:
+First of all you should define constant `LAZER_DATA_PATH` containing absolute path to folder with JSON files:
 ```php
 define('LAZER_DATA_PATH', realpath(dirname(__FILE__)).'/data/'); //Path to folder with tables
 ```
 
-Then include it in your file and set up namespace:
+Then set up namespace:
 ```php
-require_once 'Lazer/bootstrap.php';
 use Lazer\Classes\Database as Lazer; // example
 ```
 
