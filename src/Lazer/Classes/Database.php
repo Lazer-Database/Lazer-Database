@@ -2,6 +2,4 @@
 
 namespace Lazer\Classes;
 
-class Database extends Core_Database {
-    
-}
+class Database extends Core_Database {}

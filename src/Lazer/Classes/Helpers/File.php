@@ -41,12 +41,12 @@ class File implements FileInterface {
     public final function getPath() {
         if(!defined('LAZER_DATA_PATH'))
         {
-            throw new LazerException('you must define constant LAZER_DATA_PATH');
+            throw new LazerException('Please define constant LAZER_DATA_PATH (check README.md)');
         }
         else if (!empty($this->type)) {
             return LAZER_DATA_PATH . $this->name . '.' . $this->type . '.json';
         } else {
-            throw new LazerException('You must specify the type of file in class: ' . __CLASS__);
+            throw new LazerException('Please specify the type of file in class: ' . __CLASS__);
         }
     }
 
