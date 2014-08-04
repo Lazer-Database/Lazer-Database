@@ -161,6 +161,15 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
 
         throw new LazerException('There is no data');
     }
+    
+    /**
+     * Check if the given field exists
+     * @param string $name Field name
+     * @return boolean True if the field exists, false otherwise
+     */
+    public function __isset($name) {
+        return isset($this->set->{$name});
+    }
 
     /**
      * Execute pending functions
