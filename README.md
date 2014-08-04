@@ -80,6 +80,16 @@ More informations about field types and usage in PHPDoc
 ```php
 Lazer::remove('table_name');
 ```
+
+### Check if a database exists
+```php
+try{
+    \Lazer\Classes\Helpers\Validate::table('table_name')->exists();
+} catch(\Lazer\Classes\LazerException $e){
+    //Database doesn't exist
+}
+```
+
 ### Select
 
 #### Multiple select
