@@ -1,0 +1,74 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+    ],
+    "hash": "6eeea91df4e0b145d401869a1b44cf43",
+    "packages": [
+        {
+            "name": "mountain/enum",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-mountain/Enum.git",
+                "reference": "c34b233588466363ce77fd25fcb00a7a949977a4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-mountain/Enum/zipball/c34b233588466363ce77fd25fcb00a7a949977a4",
+                "reference": "c34b233588466363ce77fd25fcb00a7a949977a4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "mountain/testing": "dev-master"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Mountain\\Component\\Enum\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kevin Herrera",
+                    "email": "kevin@herrera.io",
+                    "homepage": "http://kevin.herrera.io/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A library for supporting enumerated types.",
+            "keywords": [
+                "enum"
+            ],
+            "time": "2014-03-25 17:51:31"
+        }
+    ],
+    "packages-dev": [
+
+    ],
+    "aliases": [
+
+    ],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "mountain/enum": 20
+    },
+    "platform": {
+        "php": ">=5.4"
+    },
+    "platform-dev": [
+
+    ]
+}

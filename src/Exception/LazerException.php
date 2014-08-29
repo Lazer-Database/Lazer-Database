@@ -1,6 +1,6 @@
 <?php
 
-namespace Lazer\Classes;
+namespace Lazer\Exception;
 
 /**
  * Exception extend
