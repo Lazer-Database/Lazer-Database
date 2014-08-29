@@ -1,4 +1,4 @@
-PSR-4 testing and rebuilding library
+Rebuilding library, may not work properly
 =============
 Lazer - database based on JSON files
 =============
