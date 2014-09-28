@@ -820,22 +820,26 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
      */
     public function find($id)
     {
-        $data = $this->getData();
         if ($id !== NULL)
         {
+            $data             = $this->getData();
             $this->currentId  = $id;
             $this->currentKey = $this->getRowKey($id);
             foreach ($data[$this->currentKey] as $field => $value)
             {
                 $this->set->{$field} = $value;
             }
-            return $this;
         }
         else
         {
-            $this->findAll();
-            return $this->data[0];
+            $this->limit(1)->findAll();
+            $data = $this->data;
+            foreach ($data[0] as $field => $value)
+            {
+                $this->set->{$field} = $value;
+            }
         }
+        return $this;
     }
 
     /**
