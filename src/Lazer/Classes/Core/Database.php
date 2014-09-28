@@ -818,7 +818,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
      * @param integer $id Row ID
      * @return \Lazer\Classes\Core_Database
      */
-    public function find($id)
+    public function find($id = NULL)
     {
         if ($id !== NULL)
         {
