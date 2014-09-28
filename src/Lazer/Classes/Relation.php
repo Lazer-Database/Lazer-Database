@@ -1,6 +1,7 @@
 <?php
 
- namespace Lazer\Classes;
+namespace Lazer\Classes;
 
- class Relation extends Core_Relation {}
- 
+class Relation extends Core_Relation {
+    
+}

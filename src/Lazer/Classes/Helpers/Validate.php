@@ -27,8 +27,9 @@ class Validate {
      * @param string $name
      * @return \jsondb\helpers\Validate
      */
-    public static function table($name) {
-        $validate = new Validate();
+    public static function table($name)
+    {
+        $validate       = new Validate();
         $validate->name = $name;
         return $validate;
     }
@@ -38,10 +39,12 @@ class Validate {
      * @param string $type
      * @return boolean
      */
-    public static function isNumeric($type) {
+    public static function isNumeric($type)
+    {
         $defined = array('integer', 'double');
 
-        if (in_array($type, $defined)) {
+        if (in_array($type, $defined))
+        {
             return TRUE;
         }
 
@@ -53,11 +56,13 @@ class Validate {
      * @param array $fields Indexed array
      * @return array Fields without ID
      */
-    public static function types(array $types) {
+    public static function types(array $types)
+    {
         $defined = array('boolean', 'integer', 'string', 'double');
-        $diff = array_diff($types, $defined);
+        $diff    = array_diff($types, $defined);
 
-        if (empty($diff)) {
+        if (empty($diff))
+        {
             return TRUE;
         }
         throw new LazerException('Wrong types: "' . implode(', ', $diff) . '". Available "boolean, integer, string, double"');
@@ -68,12 +73,17 @@ class Validate {
      * @param array $fields
      * @return array Fields without ID
      */
-    public static function filter(array $fields) {
-        if (array_values($fields) === $fields) {
-            if (($key = array_search('id', $fields)) !== false) {
+    public static function filter(array $fields)
+    {
+        if (array_values($fields) === $fields)
+        {
+            if (($key = array_search('id', $fields)) !== false)
+            {
                 unset($fields[$key]);
             }
-        } else {
+        }
+        else
+        {
             unset($fields['id']);
         }
         return $fields;
@@ -84,7 +94,8 @@ class Validate {
      * @param array $array
      * @return array
      */
-    public static function arrToLower(array $array) {
+    public static function arrToLower(array $array)
+    {
         $array = array_change_key_case($array);
         $array = array_map('strtolower', $array);
 
@@ -97,11 +108,13 @@ class Validate {
      * @return boolean
      * @throws LazerException If field(s) does not exist
      */
-    public function fields(array $fields) {
+    public function fields(array $fields)
+    {
         $fields = self::filter($fields);
-        $diff = array_diff($fields, Config::table($this->name)->fields());
+        $diff   = array_diff($fields, Config::table($this->name)->fields());
 
-        if (empty($diff)) {
+        if (empty($diff))
+        {
             return TRUE;
         }
         throw new LazerException('Field(s) "' . implode(', ', $diff) . '" does not exists in table "' . $this->name . '"');
@@ -113,8 +126,10 @@ class Validate {
      * @return boolean
      * @throws LazerException If field does not exist
      */
-    public function field($name) {
-        if (in_array($name, Config::table($this->name)->fields())) {
+    public function field($name)
+    {
+        if (in_array($name, Config::table($this->name)->fields()))
+        {
             return TRUE;
         }
         throw new LazerException('Field ' . $name . ' does not exists in table "' . $this->name . '"');
@@ -125,7 +140,8 @@ class Validate {
      * @return boolean
      * @throws LazerException
      */
-    public function exists() {
+    public function exists()
+    {
         if (!Data::table($this->name)->exists())
             throw new LazerException('Table "' . $this->name . '" does not exists');
 
@@ -142,9 +158,11 @@ class Validate {
      * @return boolean
      * @throws LazerException If type is wrong
      */
-    public function type($name, $value) {
+    public function type($name, $value)
+    {
         $schema = Config::table($this->name)->schema();
-        if (array_key_exists($name, $schema) && $schema[$name] == gettype($value)) {
+        if (array_key_exists($name, $schema) && $schema[$name] == gettype($value))
+        {
             return TRUE;
         }
 
@@ -157,9 +175,11 @@ class Validate {
      * @param string $foreign related table
      * @throws LazerException
      */
-    public static function relation($local, $foreign) {
+    public static function relation($local, $foreign)
+    {
         $relations = Config::table($local)->relations();
-        if (isset($relations->{$foreign})) {
+        if (isset($relations->{$foreign}))
+        {
             return TRUE;
         }
 
@@ -171,8 +191,10 @@ class Validate {
      * @param string $type 
      * @return type
      */
-    public static function relation_type($type) {
-        if (in_array($type, Relation::relations())) {
+    public static function relation_type($type)
+    {
+        if (in_array($type, Relation::relations()))
+        {
             return true;
         }
 

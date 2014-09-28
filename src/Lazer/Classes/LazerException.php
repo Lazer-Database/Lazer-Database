@@ -9,4 +9,6 @@ namespace Lazer\Classes;
  * @author Grzegorz Kuźnik
  * @copyright (c) 2013, Grzegorz Kuźnik
  */
-class LazerException extends \Exception {}
+class LazerException extends \Exception {
+    
+}

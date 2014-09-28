@@ -1,395 +1,396 @@
 <?php
 
- namespace Lazer\Classes;
+namespace Lazer\Classes;
 
 use Lazer\Classes\Helpers\Validate;
 use Lazer\Classes\Helpers\Config;
 use Lazer\Classes\Database;
 use Lazer\Classes\LazerException;
 
- /**
-  * Relation class of LAZER project.
-  * 
-  * @category Core
-  * @author Grzegorz Kuźnik
-  * @copyright (c) 2013, Grzegorz Kuźnik
-  * @license http://opensource.org/licenses/MIT The MIT License
-  * @link https://github.com/Greg0/Lazer-Database GitHub Repository
-  */
- abstract class Core_Relation {
+/**
+ * Relation class of LAZER project.
+ * 
+ * @category Core
+ * @author Grzegorz Kuźnik
+ * @copyright (c) 2013, Grzegorz Kuźnik
+ * @license http://opensource.org/licenses/MIT The MIT License
+ * @link https://github.com/Greg0/Lazer-Database GitHub Repository
+ */
+abstract class Core_Relation {
 
-     /**
-      * Tables names
-      * @var array tables
-      */
-     protected $tables = array(
-         'local' => null,
-         'foreign' => null
-     );
+    /**
+     * Tables names
+     * @var array tables
+     */
+    protected $tables = array(
+        'local'   => null,
+        'foreign' => null
+    );
 
-     /**
-      * Relation keys names
-      * @var array keys
-      */
-     protected $keys = array(
-         'local' => null,
-         'foreign' => null
-     );
+    /**
+     * Relation keys names
+     * @var array keys
+     */
+    protected $keys = array(
+        'local'   => null,
+        'foreign' => null
+    );
 
-     /**
-      * Current relation type
-      * @var string
-      */
-     protected $relationType;
+    /**
+     * Current relation type
+     * @var string
+     */
+    protected $relationType;
 
-     /**
-      * All relations types
-      * @var array
-      */
-     protected static $relations = array('belongsTo', 'hasMany', 'hasAndBelongsToMany');
+    /**
+     * All relations types
+     * @var array
+     */
+    protected static $relations = array('belongsTo', 'hasMany', 'hasAndBelongsToMany');
 
-     /**
-      * Factory method
-      * @param string $name Name of table
-      * @return \Lazer\Classes\Relation
-      */
-     public static function table($name)
-     {
-         Validate::table($name)->exists();
+    /**
+     * Factory method
+     * @param string $name Name of table
+     * @return \Lazer\Classes\Relation
+     */
+    public static function table($name)
+    {
+        Validate::table($name)->exists();
 
-         $self = new Relation;
-         $self->tables['local'] = $name;
+        $self                  = new Relation;
+        $self->tables['local'] = $name;
 
-         return $self;
-     }
+        return $self;
+    }
 
-     /**
-      * Getter of junction table name in many2many relation
-      * @return boolean|string Name of junction table or false
-      */
-     public function getJunction()
-     {
-         if ($this->relationType == 'hasAndBelongsToMany')
-         {
-             $tables = $this->tables;
-             sort($tables);
-             return implode('_', $tables);
-         }
-         return false;
-     }
+    /**
+     * Getter of junction table name in many2many relation
+     * @return boolean|string Name of junction table or false
+     */
+    public function getJunction()
+    {
+        if ($this->relationType == 'hasAndBelongsToMany')
+        {
+            $tables = $this->tables;
+            sort($tables);
+            return implode('_', $tables);
+        }
+        return false;
+    }
 
-     /**
-      * Set relation type to field
-      * @param string $relation Name of relation
-      */
-     protected function setRelationType($relation)
-     {
-         Validate::relation_type($relation);
-         $this->relationType = $relation;
-     }
+    /**
+     * Set relation type to field
+     * @param string $relation Name of relation
+     */
+    protected function setRelationType($relation)
+    {
+        Validate::relation_type($relation);
+        $this->relationType = $relation;
+    }
 
-     /**
-      * Set table name
-      * @param string $type local or foreign
-      * @param string $name table name
-      */
-     protected function setTable($type, $name)
-     {
-         Validate::table($name)->exists();
-         $this->tables[$type] = $name;
-     }
+    /**
+     * Set table name
+     * @param string $type local or foreign
+     * @param string $name table name
+     */
+    protected function setTable($type, $name)
+    {
+        Validate::table($name)->exists();
+        $this->tables[$type] = $name;
+    }
 
-     /**
-      * Set key name
-      * @param string $type local or foreign
-      * @param string $key key name
-      * @return \Lazer\Classes\Core_Relation
-      * @throws LazerException First you must define tables name
-      */
-     protected function setKey($type, $key)
-     {
-         if (!in_array(null, $this->tables))
-         {
-             Validate::table($this->tables[$type])->field($key);
+    /**
+     * Set key name
+     * @param string $type local or foreign
+     * @param string $key key name
+     * @return \Lazer\Classes\Core_Relation
+     * @throws LazerException First you must define tables name
+     */
+    protected function setKey($type, $key)
+    {
+        if (!in_array(null, $this->tables))
+        {
+            Validate::table($this->tables[$type])->field($key);
 
-             $this->keys[$type] = $key;
-             return $this;
-         }
+            $this->keys[$type] = $key;
+            return $this;
+        }
 
-         throw new LazerException('First you must define tables name');
-     }
+        throw new LazerException('First you must define tables name');
+    }
 
-     /**
-      * Set local key name
-      * @param string $key key name
-      * @return \Lazer\Classes\Core_Relation
-      * @throws LazerException First you must define tables name
-      */
-     public function localKey($key)
-     {
-         return $this->setKey('local', $key);
-     }
+    /**
+     * Set local key name
+     * @param string $key key name
+     * @return \Lazer\Classes\Core_Relation
+     * @throws LazerException First you must define tables name
+     */
+    public function localKey($key)
+    {
+        return $this->setKey('local', $key);
+    }
 
-     /**
-      * Set foreign key name
-      * @param string $key key name
-      * @return \Lazer\Classes\Core_Relation
-      * @throws LazerException First you must define tables name
-      */
-     public function foreignKey($key)
-     {
-         return $this->setKey('foreign', $key);
-     }
+    /**
+     * Set foreign key name
+     * @param string $key key name
+     * @return \Lazer\Classes\Core_Relation
+     * @throws LazerException First you must define tables name
+     */
+    public function foreignKey($key)
+    {
+        return $this->setKey('foreign', $key);
+    }
 
-     /**
-      * Set relation one2many to table 
-      * @param string $table Table name
-      * @return \Lazer\Classes\Core_Relation
-      */
-     public function belongsTo($table)
-     {
-         $this->setTable('foreign', $table);
-         $this->setRelationType(__FUNCTION__);
+    /**
+     * Set relation one2many to table 
+     * @param string $table Table name
+     * @return \Lazer\Classes\Core_Relation
+     */
+    public function belongsTo($table)
+    {
+        $this->setTable('foreign', $table);
+        $this->setRelationType(__FUNCTION__);
 
-         return $this;
-     }
+        return $this;
+    }
 
-     /**
-      * Set relation many2one to table 
-      * @param string $table Table name
-      * @return \Lazer\Classes\Core_Relation
-      */
-     public function hasMany($table)
-     {
-         $this->setTable('foreign', $table);
-         $this->setRelationType(__FUNCTION__);
+    /**
+     * Set relation many2one to table 
+     * @param string $table Table name
+     * @return \Lazer\Classes\Core_Relation
+     */
+    public function hasMany($table)
+    {
+        $this->setTable('foreign', $table);
+        $this->setRelationType(__FUNCTION__);
 
-         return $this;
-     }
+        return $this;
+    }
 
-     /**
-      * Set relation many2many to table 
-      * @param string $table Table name
-      * @return \Lazer\Classes\Core_Relation
-      */
-     public function hasAndBelongsToMany($table)
-     {
-         $this->setTable('foreign', $table);
-         $this->setRelationType(__FUNCTION__);
+    /**
+     * Set relation many2many to table 
+     * @param string $table Table name
+     * @return \Lazer\Classes\Core_Relation
+     */
+    public function hasAndBelongsToMany($table)
+    {
+        $this->setTable('foreign', $table);
+        $this->setRelationType(__FUNCTION__);
 
-         return $this;
-     }
+        return $this;
+    }
 
-     /**
-      * Use relation to table
-      * @param string $table Table name
-      * @return \Lazer\Classes\Core_Relation
-      */
-     public function with($table)
-     {
-         Validate::relation($this->tables['local'], $table);
-         $this->setTable('foreign', $table);
-         $this->setRelationType(Config::table($this->tables['local'])->relations($this->tables['foreign'])->type);
-         $this->setKey('local', Config::table($this->tables['local'])->relations($this->tables['foreign'])->keys->local);
-         $this->setKey('foreign', Config::table($this->tables['local'])->relations($this->tables['foreign'])->keys->foreign);
+    /**
+     * Use relation to table
+     * @param string $table Table name
+     * @return \Lazer\Classes\Core_Relation
+     */
+    public function with($table)
+    {
+        Validate::relation($this->tables['local'], $table);
+        $this->setTable('foreign', $table);
+        $this->setRelationType(Config::table($this->tables['local'])->relations($this->tables['foreign'])->type);
+        $this->setKey('local', Config::table($this->tables['local'])->relations($this->tables['foreign'])->keys->local);
+        $this->setKey('foreign', Config::table($this->tables['local'])->relations($this->tables['foreign'])->keys->foreign);
 
-         return $this;
-     }
+        return $this;
+    }
 
-     /**
-      * Set specified relation
-      * @throws LazerException Tables names or keys missing
-      */
-     public function setRelation()
-     {
-         if (!in_array(null, $this->tables) && !in_array(null, $this->keys))
-         {
-             $this->addRelation();
-             return true;
-         }
-         else
-         {
-             throw new LazerException('Tables names or keys missing');
-         }
-     }
+    /**
+     * Set specified relation
+     * @throws LazerException Tables names or keys missing
+     */
+    public function setRelation()
+    {
+        if (!in_array(null, $this->tables) && !in_array(null, $this->keys))
+        {
+            $this->addRelation();
+            return true;
+        }
+        else
+        {
+            throw new LazerException('Tables names or keys missing');
+        }
+    }
 
-     /**
-      * Get relation information
-      * @return array relation information
-      */
-     public function getRelation()
-     {
-         return array(
-             'tables' => $this->tables,
-             'keys' => $this->keys,
-             'type' => $this->relationType
-         );
-     }
+    /**
+     * Get relation information
+     * @return array relation information
+     */
+    public function getRelation()
+    {
+        return array(
+            'tables' => $this->tables,
+            'keys'   => $this->keys,
+            'type'   => $this->relationType
+        );
+    }
 
-     /**
-      * Remove relation
-      */
-     public function removeRelation()
-     {
-         if ($this->relationType == 'hasAndBelongsToMany')
-         {
-             $junction = $this->getJunction();
+    /**
+     * Remove relation
+     */
+    public function removeRelation()
+    {
+        if ($this->relationType == 'hasAndBelongsToMany')
+        {
+            $junction = $this->getJunction();
 
-             $this->deleteRelationData($junction, $this->tables['local']);
-             $this->deleteRelationData($junction, $this->tables['foreign']);
-         }
-         $this->deleteRelationData($this->tables['local'], $this->tables['foreign']);
-     }
+            $this->deleteRelationData($junction, $this->tables['local']);
+            $this->deleteRelationData($junction, $this->tables['foreign']);
+        }
+        $this->deleteRelationData($this->tables['local'], $this->tables['foreign']);
+    }
 
-     /**
-      * Add data to configs and create all necessary files
-      */
-     protected function addRelation()
-     {
-         if ($this->relationType == 'hasAndBelongsToMany')
-         {
-             $junction = $this->getJunction();
+    /**
+     * Add data to configs and create all necessary files
+     */
+    protected function addRelation()
+    {
+        if ($this->relationType == 'hasAndBelongsToMany')
+        {
+            $junction = $this->getJunction();
 
-             try {
-                 Validate::table($junction)->exists();
-             }
-             catch (LazerException $e) {
-                 Database::create($junction, array(
-                     $this->tables['local'].'_id' => 'integer',
-                     $this->tables['foreign'].'_id' => 'integer',
-                 ));
+            try
+            {
+                Validate::table($junction)->exists();
+            }
+            catch (LazerException $e)
+            {
+                Database::create($junction, array(
+                    $this->tables['local'] . '_id'   => 'integer',
+                    $this->tables['foreign'] . '_id' => 'integer',
+                ));
 
-                 $this->insertRelationData($junction, $this->tables['local'], 'hasMany', array(
-                     'local' => $this->tables['local'].'_id',
-                     'foreign' => $this->keys['local']
-                 ));
+                $this->insertRelationData($junction, $this->tables['local'], 'hasMany', array(
+                    'local'   => $this->tables['local'] . '_id',
+                    'foreign' => $this->keys['local']
+                ));
 
-                 $this->insertRelationData($junction, $this->tables['foreign'], 'hasMany', array(
-                     'local' => $this->tables['foreign'].'_id',
-                     'foreign' => $this->keys['foreign']
-                 ));
-             }
-         }
-         $this->insertRelationData($this->tables['local'], $this->tables['foreign'], $this->relationType, $this->keys);
-     }
+                $this->insertRelationData($junction, $this->tables['foreign'], 'hasMany', array(
+                    'local'   => $this->tables['foreign'] . '_id',
+                    'foreign' => $this->keys['foreign']
+                ));
+            }
+        }
+        $this->insertRelationData($this->tables['local'], $this->tables['foreign'], $this->relationType, $this->keys);
+    }
 
-     /**
-      * Inserts relation data to config file
-      * @param string $from Local table
-      * @param string $to Related table
-      * @param string $type Relation type
-      * @param array $keys Relationed keys
-      */
-     protected function insertRelationData($from, $to, $type, array $keys)
-     {
-         $config = Config::table($from);
-         $content = $config->get();
-         $content->relations->{$to} = array(
-             'type' => $type,
-             'keys' => $keys,
-         );
-         $config->put($content);
-     }
+    /**
+     * Inserts relation data to config file
+     * @param string $from Local table
+     * @param string $to Related table
+     * @param string $type Relation type
+     * @param array $keys Relationed keys
+     */
+    protected function insertRelationData($from, $to, $type, array $keys)
+    {
+        $config                    = Config::table($from);
+        $content                   = $config->get();
+        $content->relations->{$to} = array(
+            'type' => $type,
+            'keys' => $keys,
+        );
+        $config->put($content);
+    }
 
-     /**
-      * Inserts relation data to config file
-      * @param string $from Local table
-      * @param string $to Related table
-      * @param string $type Relation type
-      * @param array $keys Relationed keys
-      */
-     protected function deleteRelationData($from, $to)
-     {
-         $config = Config::table($from);
-         $content = $config->get();
-         unset($content->relations->{$to});
-         $config->put($content);
-     }
+    /**
+     * Inserts relation data to config file
+     * @param string $from Local table
+     * @param string $to Related table
+     * @param string $type Relation type
+     * @param array $keys Relationed keys
+     */
+    protected function deleteRelationData($from, $to)
+    {
+        $config  = Config::table($from);
+        $content = $config->get();
+        unset($content->relations->{$to});
+        $config->put($content);
+    }
 
-     /**
-      * Process query with joined data
-      * @param object $row One row of data
-      * @return Database
-      */
-     protected function join($row)
-     {
-         $keys['local'] = $this->keys['local'];
-         $keys['foreign'] = $this->keys['foreign'];
+    /**
+     * Process query with joined data
+     * @param object $row One row of data
+     * @return Database
+     */
+    protected function join($row)
+    {
+        $keys['local']   = $this->keys['local'];
+        $keys['foreign'] = $this->keys['foreign'];
 
-         if ($this->relationType == 'hasAndBelongsToMany')
-         {
-             $join = Database::table($this->getJunction())
-                     ->groupBy($this->tables['local'].'_id')
-                     ->where($this->tables['local'].'_id', '=', $row->{$keys['local']})
-                     ->findAll()
-                     ->asArray(null, $this->tables['foreign'].'_id');
-             
+        if ($this->relationType == 'hasAndBelongsToMany')
+        {
+            $join = Database::table($this->getJunction())
+                    ->groupBy($this->tables['local'] . '_id')
+                    ->where($this->tables['local'] . '_id', '=', $row->{$keys['local']})
+                    ->findAll()
+                    ->asArray(null, $this->tables['foreign'] . '_id');
 
-             if (empty($join))
-                 return array();
-             
-             return Database::table($this->tables['foreign'])
-                             ->where($keys['foreign'], 'IN', $join[$row->{$keys['local']}]);
-         }
 
-         return Database::table($this->tables['foreign'])
-                         ->where($keys['foreign'], '=', $row->{$keys['local']});
-     }
+            if (empty($join))
+                return array();
 
-     /**
-      * 
-      * @param array $array
-      * @param string $part
-      * @return array
-      */
-     public function build(array $array, $part)
-     {
-         $return = array();
-         foreach ($array as $key => $row)
-         {
-             if (is_object($row))
-             {
-                 if ($row instanceof \stdClass)
-                 {
-                     $part = ucfirst($part);
+            return Database::table($this->tables['foreign'])
+                            ->where($keys['foreign'], 'IN', $join[$row->{$keys['local']}]);
+        }
 
-                     if (!isset($row->{$part}))
-                     {
-                         $query = $this->join($row);
+        return Database::table($this->tables['foreign'])
+                        ->where($keys['foreign'], '=', $row->{$keys['local']});
+    }
 
-                         if ($this->relationType == 'belongsTo')
-                         {
-                             $query = $query->findAll();
-                             $query = reset($query)[0];
-                         }
+    /**
+     * 
+     * @param array $array
+     * @param string $part
+     * @return array
+     */
+    public function build(array $array, $part)
+    {
+        $return = array();
+        foreach ($array as $key => $row)
+        {
+            if (is_object($row))
+            {
+                if ($row instanceof \stdClass)
+                {
+                    $part = ucfirst($part);
 
-                         $row->{$part} = $query;
-                     }
+                    if (!isset($row->{$part}))
+                    {
+                        $query = $this->join($row);
 
-                     $array[$key] = $row->{$part};
-                     $return[] = $row->{$part};
-                 }
-                 else
-                 {
-                     $row->with($part);
-                 }
-             }
-             else
-             {
-                 $return = array_merge($return, $this->build($row, $part));
-             }
-         }
-         return $return;
-     }
+                        if ($this->relationType == 'belongsTo')
+                        {
+                            $query = $query->findAll();
+                            $query = reset($query)[0];
+                        }
 
-     /**
-      * Get relations types
-      * @return array
-      */
-     public static function relations()
-     {
-         return self::$relations;
-     }
+                        $row->{$part} = $query;
+                    }
 
- }
- 
+                    $array[$key] = $row->{$part};
+                    $return[]    = $row->{$part};
+                }
+                else
+                {
+                    $row->with($part);
+                }
+            }
+            else
+            {
+                $return = array_merge($return, $this->build($row, $part));
+            }
+        }
+        return $return;
+    }
+
+    /**
+     * Get relations types
+     * @return array
+     */
+    public static function relations()
+    {
+        return self::$relations;
+    }
+
+}
