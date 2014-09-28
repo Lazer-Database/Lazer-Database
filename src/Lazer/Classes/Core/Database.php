@@ -499,7 +499,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
             }
         } else {
             if (is_null($key) && is_null($value)) {
-                return $this->data;
+                return json_decode(json_encode($this->data), true);
             } else {
                 foreach ($this->data as $data) {
                     if (is_null($key)) {
