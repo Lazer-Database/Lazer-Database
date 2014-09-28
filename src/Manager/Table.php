@@ -36,7 +36,7 @@ class Table {
 
     public function setColumns(array $columns)
     {
-        $pendingColumns = array();
+        $pendingColumns       = array();
         $pendingColumns['id'] = new \Lazer\Column('id', \Lazer\DataType::INTEGER);
         foreach ($columns as $key => $value)
         {
@@ -59,19 +59,19 @@ class Table {
         {
             unset($tableColumns[$columnName]);
             $this->setColumns($tableColumns);
-            
-            $tableFile = $this->table->getTableFile();
+
+            $tableFile  = $this->table->getTableFile();
             $configFile = $this->table->getConfigFile();
 
             $tableFile->read(TRUE);
-            $records = $tableFile->getContent();
+            $records    = $tableFile->getContent();
             $newRecords = array();
             foreach ($records as $id => $row)
             {
                 unset($row[$columnName]);
                 $newRecords[$id] = $row;
             }
-            
+
             return $tableFile->putContent($newRecords) && $configFile->putContent(new \Lazer\Config($this->table));
         }
         throw new Exception\RuntimeException('Column ' . $columnName . ' does not exist');
@@ -80,24 +80,24 @@ class Table {
     public function addColumn(\Lazer\Column $column)
     {
         $tableColumns = $this->table->getColumns();
-        
+
         if (!isset($tableColumns[$column->getName()]))
         {
             $tableColumns[$column->getName()] = $column;
             $this->setColumns($tableColumns);
-            
-            $tableFile = $this->table->getTableFile();
+
+            $tableFile  = $this->table->getTableFile();
             $configFile = $this->table->getConfigFile();
 
             $tableFile->read(TRUE);
-            $records = $tableFile->getContent();
+            $records    = $tableFile->getContent();
             $newRecords = array();
             foreach ($records as $id => $row)
             {
                 $row[$column->getName()] = null;
-                $newRecords[$id] = $row;
+                $newRecords[$id]         = $row;
             }
-            
+
             return $tableFile->putContent($newRecords) && $configFile->putContent(new \Lazer\Config($this->table));
         }
         throw new Exception\RuntimeException('Column ' . $column->getName() . ' already exist');

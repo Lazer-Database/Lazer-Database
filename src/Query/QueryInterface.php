@@ -16,19 +16,9 @@ interface QueryInterface {
 
     public function __construct(\Lazer\Table $table);
 
-    public function limit($limit, $offset);
-
-    public function orderBy($column, $direction);
-    
-    public function groupBy($column);
-
-    public function where($column, $operator, $value);
-
-    public function orWhere($column, $operator, $value);
-    
-    public function join($tables);
-
     public function count();
+    
+    public function find($id);
     
     public function findAll();
 

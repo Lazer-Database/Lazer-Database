@@ -3,6 +3,7 @@
 namespace Lazer\File;
 
 use Lazer\Exception;
+
 /**
  * Description of JSON
  * 
@@ -11,15 +12,19 @@ use Lazer\Exception;
 class JSON implements FileInterface {
 
     private $name;
+
     private $dir;
+
     private $path;
+
     private $assoc = false;
+
     private $content;
 
     public function __construct($name, $dir)
     {
         $this->name = $name;
-        $this->dir = $dir;
+        $this->dir  = $dir;
         $this->path = $dir . $name . '.json';
     }
 
@@ -42,7 +47,7 @@ class JSON implements FileInterface {
     {
         if ($this->exists())
         {
-            $this->assoc = $assoc;
+            $this->assoc   = $assoc;
             $this->content = json_decode(file_get_contents($this->path), $this->assoc);
         }
         else
@@ -51,7 +56,7 @@ class JSON implements FileInterface {
         }
     }
 
-    public function create($initialContent = array(), $options=0)
+    public function create($initialContent = array(), $options = 0)
     {
         return $this->putContent($initialContent, $options);
     }
@@ -94,11 +99,10 @@ class JSON implements FileInterface {
 
     public function remove()
     {
-        if($this->exists())
+        if ($this->exists())
         {
             return unlink($this->path);
         }
-        
     }
 
 }
