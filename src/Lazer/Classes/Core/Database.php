@@ -838,6 +838,9 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
             {
                 $this->set->{$field} = $value;
             }
+            
+            $this->currentId  = $this->set->id;
+            $this->currentKey = $this->getRowKey($this->currentId);
         }
         return $this;
     }

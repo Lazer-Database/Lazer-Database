@@ -16,7 +16,7 @@ Easiest way to install `Lazer Database` is to use Composer. Of course you can us
 Add the following to your  `composer.json`  and run  `composer update` .
 
     "require": {
-        "greg0/lazer-database": "1.0.4"
+        "greg0/lazer-database": "1.0.5"
     }
 
 Structure of table files
@@ -109,6 +109,13 @@ echo $row->id;
 ```
 Type ID of row in `find()` method.
 
+You also can do something like that to get first matching record:
+```php
+$row = Lazer::table('table_name')->where('name', '=', 'John')->find();
+
+echo $row->id;
+```
+
 ### Insert
 ```php
 $row = Lazer::table('table_name');
@@ -133,6 +140,11 @@ $row->save();
 #### Single record deleting
 ```php
 Lazer::table('table_name')->find(1)->delete(); //Will remove row with ID 1
+
+// OR
+
+Lazer::table('table_name')->where('name', '=', 'John')->find()->delete(); //Will remove John from DB
+
 ```
 #### Multiple records deleting
 ```php
