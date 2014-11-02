@@ -50,7 +50,7 @@ Relation::table('users')->hasMany('news')->localKey('id')->foreignKey('author_id
 Relation::table('users')->hasMany('comments')->localKey('id')->foreignKey('author_id')->setRelation();
 
 /* relations for Comments table */
-Relation::table('comments')->belongsTo('news')->localKey('author_id')->foreignKey('id')->setRelation();
+Relation::table('comments')->belongsTo('news')->localKey('news_id')->foreignKey('id')->setRelation();
 Relation::table('comments')->belongsTo('users')->localKey('author_id')->foreignKey('id')->setRelation();
 
 /* relations for Tags table */
