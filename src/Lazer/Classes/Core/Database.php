@@ -834,13 +834,16 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
         {
             $this->limit(1)->findAll();
             $data = $this->data;
-            foreach ($data[0] as $field => $value)
+            if (count($data))
             {
-                $this->set->{$field} = $value;
+                foreach ($data[0] as $field => $value)
+                {
+                    $this->set->{$field} = $value;
+                }
+
+                $this->currentId  = $this->set->id;
+                $this->currentKey = $this->getRowKey($this->currentId);
             }
-            
-            $this->currentId  = $this->set->id;
-            $this->currentKey = $this->getRowKey($this->currentId);
         }
         return $this;
     }
