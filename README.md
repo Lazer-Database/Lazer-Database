@@ -16,7 +16,7 @@ Easiest way to install `Lazer Database` is to use Composer. Of course you can us
 Add the following to your  `composer.json`  and run  `composer update` .
 
     "require": {
-        "greg0/lazer-database": "1.0.5"
+        "greg0/lazer-database": "1.0.6"
     }
 
 Structure of table files
