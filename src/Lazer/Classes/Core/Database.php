@@ -568,7 +568,10 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
         {
             if (is_null($key) && is_null($value))
             {
-                return json_decode(json_encode($this->data), true);
+                foreach ($this->data as $data)
+                {
+                    $datas[] = get_object_vars($data);
+                }
             }
             else
             {
