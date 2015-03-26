@@ -58,6 +58,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
      */
     protected $pending = array(
         'where'   => array(),
+        'like'    => array(),
         'orderBy' => array(),
         'limit'   => array(),
         'with'    => array(),
@@ -622,6 +623,61 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
         $offset     = $this->pending['limit']['offset'];
         $num        = $this->pending['limit']['number'];
         $this->data = array_slice($this->data, $offset, $num);
+    }
+    
+    /**
+     * Like function, like SQL.
+     * 
+     * @param string $field Field name
+     * @param string $value The value of the key
+     * @return \Lazer\Classes\Core_Database
+     */
+    public function like($field, $value)
+    {
+        $this->pending['like'][] = array(
+            'field' => $field,
+            'value' => $value
+        );
+
+        return $this;
+    }
+    
+    /**
+     * Filter function for array_filter() in like()
+     */
+    protected function likePending()
+    {
+        $this->data = array_filter($this->data, function($row)
+        {
+            $clause = '';
+            $result = true;
+
+            foreach ($this->pending['like'] as $key => $condition)
+            {
+                extract($condition);
+                
+                if($value[0] == "%"){
+                    $value = substr($value, 1);
+                }
+                
+                if(substr($value, -1) == "%"){
+                    $value = substr($value, 0, -1);
+                }
+
+                $query = array('strpos("' . $row->{$field} .'", "' . $value . '")', '!==', 'FALSE');
+                
+                if(strlen($clause) > 0){
+                    $clause .= ' && ';
+                }
+                $clause .= implode(' ', $query) . ' ';
+                
+                //echo($clause);
+
+                eval('$result = ' . $clause . ';');
+            }
+
+            return $result;
+        });
     }
 
     /**

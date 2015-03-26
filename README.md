@@ -49,6 +49,7 @@ use Lazer\Classes\Database as Lazer; // example
 - `where()` - filter records. Alias: `and_where()`.
 - `orWhere()` - other type of filtering results. 
 - `with()` - join other tables by defined relations
+- `like()` - filter records using a like method
 
 ##### Ending methods
 
