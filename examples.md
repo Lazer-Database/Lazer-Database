@@ -37,12 +37,6 @@ Lazer::table('users')->where('id', 'IN', array(1, 3, 6, 7))->findAll();
 Lazer::table('users')->where('id', '>=', 2)->andWhere('id', '<=', 7)->findAll();
 Lazer::table('users')->where('id', '=', 1)->orWhere('id', '=', 3)->findAll();
 ```
-### Like
-
-##### Query:
-```php
-Lazer::table('users')->like('nickname', 'vid')->findAll();
-```
 ### Group By
 
 ##### Query:
