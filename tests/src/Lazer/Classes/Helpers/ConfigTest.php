@@ -27,24 +27,10 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers Lazer\Classes\Helpers\Config::getKey
      */
-    public function testGetKeyLastId()
+    public function testGetKey()
     {
         $this->assertInternalType('integer', $this->object->getKey('last_id'));
-    }
-
-    /**
-     * @covers Lazer\Classes\Helpers\Config::getKey
-     */
-    public function testGetKeyAsObject()
-    {
         $this->assertInternalType('object', $this->object->getKey('schema'));
-    }
-
-    /**
-     * @covers Lazer\Classes\Helpers\Config::getKey
-     */
-    public function testGetKeyAsArray()
-    {
         $this->assertInternalType('array', $this->object->getKey('schema', true));
     }
 
@@ -59,16 +45,12 @@ class ConfigTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers Lazer\Classes\Helpers\Config::relations
      */
-    public function testGetMultipleRelationsAsObject()
+    public function testGetMultipleRelations()
     {
+        /* as object */
         $this->assertInternalType('object', $this->object->relations(['comments', 'news']));
-    }
-
-    /**
-     * @covers Lazer\Classes\Helpers\Config::relations
-     */
-    public function testGetMultipleRelationsAsArray()
-    {
+        
+        /* as array */
         $this->assertInternalType('array', $this->object->relations(['comments', 'news'], true));
     }
 
