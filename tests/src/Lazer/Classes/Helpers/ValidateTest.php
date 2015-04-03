@@ -47,16 +47,9 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
     /**
      * @covers Lazer\Classes\Helpers\Validate::isNumeric
      */
-    public function testIsNumericInteger()
+    public function testIsNumeric()
     {
         $this->assertTrue($this->object->isNumeric('integer'));
-    }
-
-    /**
-     * @covers Lazer\Classes\Helpers\Validate::isNumeric
-     */
-    public function testIsNumericDouble()
-    {
         $this->assertTrue($this->object->isNumeric('double'));
     }
 
@@ -82,17 +75,10 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
      */
     public function testFilterIndexedArrayFromIdKey()
     {
-        $array = ['id', 'column1', 'column2'];
-        $this->assertArrayNotHasKey('id', $this->object->filter($array));
-    }
-
-    /**
-     * @covers Lazer\Classes\Helpers\Validate::filter
-     */
-    public function testFilterAssociativeArrayFromIdKey()
-    {
-        $array = ['id' => 1, 'column1' => 'value1', 'column2' => 'value2'];
-        $this->assertArrayNotHasKey('id', $this->object->filter($array));
+        $arrayOne = ['id', 'column1', 'column2'];
+        $this->assertArrayNotHasKey('id', $this->object->filter($arrayOne));
+        $arrayTwo = ['id' => 1, 'column1' => 'value1', 'column2' => 'value2'];
+        $this->assertArrayNotHasKey('id', $this->object->filter($arrayTwo));
     }
 
     /**
