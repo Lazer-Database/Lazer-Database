@@ -109,12 +109,36 @@ class FileTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @covers Lazer\Classes\Helpers\File::put
+     */
+    public function testCreateFile()
+    {
+        $object = $this->object->table('foo');
+        $object->setType('bar');
+        $this->assertFalse($this->root->hasChild('foo.bar.json'));
+        $this->assertInternalType('integer', $object->put('test'));
+        $this->assertTrue($this->root->hasChild('foo.bar.json'));
+    }
+
+    /**
      * @covers Lazer\Classes\Helpers\File::exists
      * @depends testGetPath
      */
     public function testExists($object)
     {
         $this->assertTrue($object->exists());
+    }
+
+    /**
+     * @covers Lazer\Classes\Helpers\File::remove
+     */
+    public function testRemove()
+    {
+        $object = $this->object->table('users');
+        $object->setType('data');
+        $this->assertTrue($this->root->hasChild('users.data.json'));
+        $this->assertTrue($object->remove());
+        $this->assertFalse($this->root->hasChild('users.data.json'));
     }
 
 }
