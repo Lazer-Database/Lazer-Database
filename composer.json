@@ -21,7 +21,7 @@
             "Lazer\\Classes\\": "src/"
         },
         "classmap": [
-            "tests"
+            "tests/"
         ]
     }
 }
