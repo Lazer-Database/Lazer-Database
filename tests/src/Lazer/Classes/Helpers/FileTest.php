@@ -141,4 +141,17 @@ class FileTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->root->hasChild('users.data.json'));
     }
 
+    /**
+     * @covers Lazer\Classes\Helpers\File::remove
+     * @expectedException Lazer\Classes\LazerException
+     * @expectedExceptionMessage Data: File does not exists
+     */
+    public function testRemoveFileNotExists()
+    {
+        $object = $this->object->table('ghost');
+        $object->setType('data');
+        $this->assertFalse($this->root->hasChild('ghost.data.json'));
+        $object->remove();
+    }
+
 }
