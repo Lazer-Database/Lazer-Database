@@ -53,16 +53,11 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
     protected $currentKey;
 
     /**
-     * All pending functions parameters in right order
+     * Pending functions with values
+     * @see \Lazer\Classes\Core_Database::setPending()
      * @var array
      */
-    protected $pending = array(
-        'where'   => array(),
-        'orderBy' => array(),
-        'limit'   => array(),
-        'with'    => array(),
-        'groupBy' => array(),
-    );
+    protected $pending;
 
     /**
      * Information about to reset keys in array or not to
@@ -84,8 +79,8 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
         $self->name = $name;
 
         $self->setFields();
-//         $self->_data = Helpers\Data::table($self->_name)->get();
-
+        $self->setPending();
+        
         return $self;
     }
 
@@ -149,6 +144,20 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
     }
 
     /**
+     * Set pending functions in right order with default values (Empty).
+     */
+    protected function setPending()
+    {
+        $this->pending = array(
+            'where'   => array(),
+            'orderBy' => array(),
+            'limit'   => array(),
+            'with'    => array(),
+            'groupBy' => array(),
+        );
+    }
+
+    /**
      * Validating fields and setting variables to current operations
      * @uses Lazer\Classes\Helpers\Validate::field() to check that field exist
      * @uses Lazer\Classes\Helpers\Validate::type() to check that field type is correct
@@ -199,6 +208,9 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
                 call_user_func(array($this, $func . 'Pending'));
             }
         }
+        
+        //clear pending values after executed query
+        $this->setPending();
     }
 
     /**
