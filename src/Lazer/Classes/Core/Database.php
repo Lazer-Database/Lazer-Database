@@ -811,7 +811,6 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
      */
     public function count()
     {
-        $this->pending();
         if (!empty($this->pending['groupBy']))
         {
             $count = array();
