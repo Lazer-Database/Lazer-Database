@@ -61,10 +61,10 @@ use Lazer\Classes\Database as Lazer; // example
 - `fields()` - returns array with fields name.
 - `schema()` - returns assoc array with fields name and fields type `field => type`.
 - `lastId()` - returns last ID from table.
-- `count()` - returns the number of rows.
 - `find()` - returns one row with specified ID.
 - `findAll()` - returns rows.
-- `asArray()` - returns data as indexed or assoc array: `['field_name' => 'field_name']`. Should be used after ending method `find_all()`.
+- `asArray()` - returns data as indexed or assoc array: `['field_name' => 'field_name']`. Should be used after ending method `find_all()` or `find()`.
+- `count()` - returns the number of rows. Should be used after ending method `find_all()` or `find()`.
 
 ### Create database
 ```php
