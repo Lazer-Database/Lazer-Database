@@ -1,1 +1,0 @@
-{"last_id":8,"schema":{"id":"integer","name":"string"},"relations":{"news":{"type":"hasAndBelongsToMany","keys":{"local":"id","foreign":"id"}}}}

@@ -1,1 +1,0 @@
-{"last_id":5,"schema":{"id":"integer","news_id":"integer","tags_id":"integer"},"relations":{"news":{"type":"hasMany","keys":{"local":"news_id","foreign":"id"}},"tags":{"type":"hasMany","keys":{"local":"tags_id","foreign":"id"}}}}
