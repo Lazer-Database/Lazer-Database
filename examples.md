@@ -47,7 +47,7 @@ Lazer::table('news')->groupBy('category_id')->findAll();
 
 ##### Query:
 ```php
-Lazer::table('users')->count(); /* Number of rows */
+Lazer::table('users')->count(); /* Returns integer 0 */
 
 Lazer::table('users')->findAll()->count(); /* Number of rows */
 

@@ -178,7 +178,7 @@ foreach($news as $post)
     echo '<h4>Author: '.$post->Users->name.'</h4>';   
     echo '<p>'.$post->content.'</p>';
     echo '<small>Tags: '.implode(', ', $post->Tags->findAll()->asArray(null, 'name')).'</small><br />';
-    echo '<small>Comments: '.$post->Comments->count().'</small>';
+    echo '<small>Comments: '.$post->Comments->findAll()->count().'</small>';
     echo '<ul>';
     foreach($post->Comments->findAll() as $comment)
     {
