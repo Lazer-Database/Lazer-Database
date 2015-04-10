@@ -7,7 +7,7 @@ namespace Lazer\Classes\Helpers;
  */
 class ValidateTest extends \PHPUnit_Framework_TestCase {
 
-    use \vfsStream\Config;
+    use \vfsHelper\Config;
 
     /**
      * @var Validate
@@ -51,6 +51,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
     {
         $this->assertTrue($this->object->isNumeric('integer'));
         $this->assertTrue($this->object->isNumeric('double'));
+        $this->assertFalse($this->object->isNumeric('boolean'));
     }
 
     /**
@@ -112,7 +113,7 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @covers Lazer\Classes\Helpers\Validate::fields
+     * @covers Lazer\Classes\Helpers\Validate::field
      * @depends testTable
      */
     public function testFieldExistsInTable($object)
@@ -122,9 +123,10 @@ class ValidateTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @covers Lazer\Classes\Helpers\Validate::fields
+     * @covers Lazer\Classes\Helpers\Validate::field
      * @depends testTable
      * @expectedException Lazer\Classes\LazerException
+     * @expectedExceptionMessage Field surname does not exists in table "users"
      */
     public function testFieldNotExistsInTable($object)
     {

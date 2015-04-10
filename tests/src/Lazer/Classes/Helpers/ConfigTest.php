@@ -7,7 +7,7 @@ namespace Lazer\Classes\Helpers;
  */
 class ConfigTest extends \PHPUnit_Framework_TestCase {
 
-    use \vfsStream\Config;
+    use \vfsHelper\Config;
 
     /**
      * @var Config

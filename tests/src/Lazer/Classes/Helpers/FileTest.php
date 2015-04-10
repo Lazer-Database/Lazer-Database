@@ -11,7 +11,7 @@ use PHPUnit_Framework_TestCase;
  */
 class FileTest extends PHPUnit_Framework_TestCase {
 
-    use \vfsStream\Config;
+    use \vfsHelper\Config;
 
     /**
      * @var File

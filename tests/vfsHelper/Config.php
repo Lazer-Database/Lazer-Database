@@ -1,6 +1,6 @@
 <?php
 
-namespace vfsStream;
+namespace vfsHelper;
 
 use org\bovigo\vfs\vfsStream;
 

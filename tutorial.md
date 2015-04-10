@@ -65,20 +65,20 @@ Put some data into tables
 ```php
 $user = Lazer::table('users');
 
-$user->name = 'John';
-$user->email = 'john@example.com';
+$user->name = 'Paul';
+$user->email = 'paul@example.com';
 $user->save();
 
 $user->name = 'Kriss';
 $user->email = 'kriss@example.com';
 $user->save();
 
-$user->name = 'Larry';
-$user->email = 'larry@example.com';
+$user->name = 'John';
+$user->email = 'john@example.com';
 $user->save();
 
-$user->name = 'Paul';
-$user->email = 'paul@example.com';
+$user->name = 'Larry';
+$user->email = 'larry@example.com';
 $user->save();
 ```
 
