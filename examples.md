@@ -25,7 +25,7 @@ Lazer::table('users')->limit(10, 5)->findAll(); /* Get five records from 10th */
 ```php
 Lazer::table('users')->orderBy('id')->findAll();
 Lazer::table('users')->orderBy('id', 'DESC')->findAll();
-Lazer::table('users')->orderBy('id')->orderBy('name')->findAll();
+Lazer::table('users')->orderBy('category')->orderBy('id')->findAll(); /* Order by multiple fields */
 ```
 ### Where
 
