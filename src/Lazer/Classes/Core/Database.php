@@ -547,7 +547,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
         }
 
         $datas = array();
-        if (!empty($this->pending['groupBy']))
+        if (!$this->resetKeys)
         {
             if (is_null($key) && is_null($value))
             {
@@ -811,7 +811,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
      */
     public function count()
     {
-        if (!empty($this->pending['groupBy']))
+        if (!$this->resetKeys)
         {
             $count = array();
             foreach ($this->data as $group => $data)
