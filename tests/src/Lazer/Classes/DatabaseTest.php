@@ -5,7 +5,7 @@ namespace Lazer\Classes;
 class DatabaseTest extends \PHPUnit_Framework_TestCase {
 
     use \vfsHelper\Config;
-    
+
     /**
      * @var Database
      */
@@ -30,8 +30,8 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($this->root->hasChild('newTable.config.json'));
         $this->object->create('newTable', array(
             'myInteger' => 'integer',
-            'myString' => 'string',
-            'myBool' => 'boolean'
+            'myString'  => 'string',
+            'myBool'    => 'boolean'
         ));
         $this->assertTrue($this->root->hasChild('newTable.data.json'));
         $this->assertTrue($this->root->hasChild('newTable.config.json'));
@@ -46,11 +46,11 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     {
         $this->object->create('users', array(
             'myInteger' => 'integer',
-            'myString' => 'string',
-            'myBool' => 'boolean'
+            'myString'  => 'string',
+            'myBool'    => 'boolean'
         ));
     }
-    
+
     /**
      * @covers Lazer\Classes\Database::create
      */
@@ -62,7 +62,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($this->root->hasChild('users.data.json'));
         $this->assertFalse($this->root->hasChild('users.config.json'));
     }
-    
+
     /**
      * @covers Lazer\Classes\Database::create
      * @expectedException Lazer\Classes\LazerException
@@ -93,7 +93,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('users', $table->name());
         return $this->object->table('users');
     }
-    
+
     /**
      * @depends testTableExists
      */
@@ -103,7 +103,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('Lazer\Classes\Database', $results);
         $this->assertSame(4, count($results));
     }
-    
+
     /**
      * @depends testTableExists
      */
@@ -112,22 +112,22 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $results = $table->findAll()->asArray();
         $this->assertInternalType('array', $results);
         $this->assertArrayHasKey(0, $results);
-        
+
         $resultsKeyField = $table->findAll()->asArray('id');
         $this->assertInternalType('array', $resultsKeyField);
         $this->assertArrayHasKey(3, $resultsKeyField);
         $this->assertArrayNotHasKey(0, $resultsKeyField);
-        
+
         $resultsValueField = $table->findAll()->asArray(null, 'id');
         $this->assertInternalType('array', $resultsValueField);
         $this->assertArrayNotHasKey(4, $resultsValueField);
         $this->assertArrayHasKey(0, $resultsValueField);
-        
+
         $resultsKeyValue = $table->findAll()->asArray('id', 'name');
         $this->assertInternalType('array', $resultsValueField);
         $this->assertArraySubset([2 => 'Kriss'], $resultsKeyValue);
     }
-    
+
     /**
      * @depends testTableExists
      */
@@ -137,7 +137,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame(4, count($results));
         $this->assertSame(4, $results->count());
     }
-    
+
     /**
      * @covers Lazer\Classes\Database::limit
      * @depends testTableExists
@@ -148,13 +148,42 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('Lazer\Classes\Database', $results);
         $this->assertSame(1, count($results));
     }
-    
+
     /**
      * @covers Lazer\Classes\Database::orderBy
      */
     public function testOrderBy()
     {
-        $this->anything();
+        $table   = $this->object->table('order');
+        $query   = array();
+        $query[] = $table->orderBy('id')->findAll()->asArray();
+        $query[] = $table->orderBy('id', 'DESC')->findAll()->asArray();
+        $query[] = $table->orderBy('name')->findAll()->asArray();
+        $query[] = $table->orderBy('name', 'DESC')->findAll()->asArray();
+        $query[] = $table->orderBy('category')->orderBy('name')->findAll()->asArray();
+        $query[] = $table->orderBy('category')->orderBy('name', 'DESC')->findAll()->asArray();
+        $query[] = $table->orderBy('category')->orderBy('name')->orderBy('number')->findAll()->asArray();
+
+        $this->assertSame(1, reset($query[0])['id']);
+        $this->assertSame(9, end($query[0])['id']);
+
+        $this->assertSame(9, reset($query[1])['id']);
+        $this->assertSame(1, end($query[1])['id']);
+
+        $this->assertSame(6, reset($query[2])['id']);
+        $this->assertSame(4, end($query[2])['id']);
+
+        $this->assertSame(4, reset($query[3])['id']);
+        $this->assertSame(6, end($query[3])['id']);
+
+        $this->assertSame(1, reset($query[4])['id']);
+        $this->assertSame(7, end($query[4])['id']);
+
+        $this->assertSame(4, reset($query[5])['id']);
+        $this->assertSame(6, end($query[5])['id']);
+
+        $this->assertSame(9, reset($query[6])['id']);
+        $this->assertSame(7, end($query[6])['id']);
         
     }
 
