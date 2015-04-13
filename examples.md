@@ -57,8 +57,8 @@ count($users); /* Number of rows */
 You can use it with rest of methods
 ##### Query:
 ```php
-Lazer::table('news')->where('id', '=', 2)->count();
-Lazer::table('news')->groupBy('category_id')->count();
+Lazer::table('news')->where('id', '=', 2)->findAll()->count();
+Lazer::table('news')->groupBy('category_id')->findAll()->count();
 ```
 ### As Array
 
