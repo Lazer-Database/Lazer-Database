@@ -184,7 +184,64 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertSame(9, reset($query[6])['id']);
         $this->assertSame(7, end($query[6])['id']);
-        
+    }
+
+    /**
+     * @covers Lazer\Classes\Database::orderBy
+     */
+    public function testWhere()
+    {
+        $table   = $this->object->table('users');
+        $query   = array();
+        $query[] = $table->where('id', '=', 1)->findAll();
+        $query[] = $table->where('id', '!=', 4)->findAll();
+        $query[] = $table->where('name', '=', 'kriss')->findAll();
+        $query[] = $table->where('name', '!=', 'kriss')->findAll();
+        $query[] = $table->where('id', '>', 2)->findAll();
+        $query[] = $table->where('id', '<', 3)->findAll();
+        $query[] = $table->where('id', '>=', 2)->findAll();
+        $query[] = $table->where('id', '<=', 3)->findAll();
+
+        foreach($query[0] as $row)
+        {
+            $this->assertEquals(1, $row->id);
+        }
+
+        foreach($query[1] as $row)
+        {
+            $this->assertNotEquals(4, $row->id);
+        }
+
+        foreach($query[2] as $row)
+        {
+            $this->assertEquals('Kriss', $row->name);
+        }
+
+        foreach($query[3] as $row)
+        {
+            $this->assertNotEquals('Kriss', $row->name);
+        }
+
+        foreach($query[4] as $row)
+        {
+            $this->greaterThan(2, $row->id);
+        }
+
+        foreach($query[5] as $row)
+        {
+            $this->lessThan(3, $row->id);
+        }
+
+        foreach($query[6] as $row)
+        {
+            $this->greaterThanOrEqual(2, $row->id);
+        }
+
+        foreach($query[7] as $row)
+        {
+            $this->lessThanOrEqual(3, $row->id);
+        }
+
     }
 
 }
