@@ -859,7 +859,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
                 $this->currentKey = $this->getRowKey($this->currentId);
             }
         }
-        return $this;
+        return clone $this;
     }
 
     /**
@@ -870,7 +870,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
         $this->pending();
         $this->data = $this->resetKeys ? array_values($this->data) : $this->data;
 
-        return $this;
+        return clone $this;
     }
 
     /**
@@ -927,6 +927,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
             }
         }
         echo '<pre>' . print_r($print, true) . '</pre>';
+        $this->setPending();
     }
 
 }
