@@ -80,7 +80,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
 
         $self->setFields();
         $self->setPending();
-        
+
         return $self;
     }
 
@@ -208,7 +208,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
                 call_user_func(array($this, $func . 'Pending'));
             }
         }
-        
+
         //clear pending values after executed query
         $this->setPending();
     }
@@ -789,16 +789,11 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
         {
             unset($data[$this->currentKey]);
         }
-        elseif (isset($this->pending['where']) && !empty($this->pending['where']))
-        {
-            $this->data = $data;
-            $old        = $this->data;
-            call_user_func(array($this, '_where'));
-            $data       = array_diff_key($old, $this->data);
-        }
         else
         {
-            $data = array();
+            $this->pending();
+            $old  = $data;
+            $data = array_diff_key($old, $this->data);
         }
         $this->data = array_values($data);
 
