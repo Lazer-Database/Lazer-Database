@@ -497,14 +497,15 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
     protected function wherePending()
     {
         $operator = array(
-            '='   => '==',
-            '!='  => '!=',
-            '>'   => '>',
-            '<'   => '<',
-            '>='  => '>=',
-            '<='  => '<=',
-            'and' => '&&',
-            'or'  => '||'
+            '='     => '==',
+            '!='    => '!=',
+            '>'     => '>',
+            '<'     => '<',
+            '>='    => '>=',
+            '<='    => '<=',
+            'and'   => '&&',
+            'or'    => '||',
+            'like'  => 'like'
         );
 
         $this->data = array_filter($this->data, function($row) use ($operator)
@@ -515,12 +516,17 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
             foreach ($this->pending['where'] as $key => $condition)
             {
                 extract($condition);
+                
+                $type = (!$key) ?
+                    null :
+                    $operator[$type];
 
                 if (is_array($value) && $op == 'IN')
                 {
                     $value = (in_array($row->{$field}, $value)) ? 1 : 0;
                     $op    = '==';
                     $field = 1;
+                    $query = array($type, $field, $op, $value);
                 }
                 elseif (!is_array($value) && $op == 'LIKE')
                 {
@@ -531,19 +537,49 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
                 }
                 elseif (!is_array($value) && $op != 'IN')
                 {
-                    $value = is_string($value) ?
+                    $op    = $operator[$op];
+                    
+                    if($op == 'like'){
+                        //If the string contains no value
+                        if(count($value) == 0){
+                            continue;
+                        }
+                        
+                        $firstChar = $value[0];
+                        $lastChar = substr($value, -1);
+                        
+                        
+                        //Handle '%' before and after
+                        if($firstChar == "%" && $lastChar == "%"){
+                            $value = substr($value, 1);
+                            $value = substr($value, 0, -1);
+                            
+                            $query = array($type, 'stripos("' . $row->{$field} .'", "' . $value . '")', '!==', 'FALSE');
+                        } else if($firstChar == "%"){
+                            //Handle '%' before
+                            $value = substr($value, 1);
+                            
+                            $length = strlen($value);
+                            $query = array($type, 'substr(strtoupper("' . $row->{$field} .'"), -' . $length . ')', '===', 'strtoupper("' . $value . '")');
+                        } else if(substr($value, -1) == "%"){
+                            //Handle '%' after
+                            $value = substr($value, 0, -1);
+                            
+                            $length = strlen($value);
+                            $query = array($type, 'substr(strtoupper("' . $row->{$field} .'"), 0, ' . $length . ')', '===', 'strtoupper("' . $value. '")'); 
+                        } else {
+                            $query = array($type, 'substr("' . $row->{$field} .'", "' . $value . '")', '!==', 'FALSE');
+                        }
+                    }
+                    else {
+                        $value = is_string($value) ?
                             '\'' . $value . '\'' :
                             $value;
-
-                    $op    = $operator[$op];
-                    $field = '$row->' . $field;
+                        $field = '$row->' . $field;
+                        $query = array($type, $field, $op, $value);
+                    }
                 }
-
-                $type = (!$key) ?
-                        null :
-                        $operator[$type];
-
-                $query = array($type, $field, $op, $value);
+                
                 $clause .= implode(' ', $query) . ' ';
 
                 eval('$result = ' . $clause . ';');
