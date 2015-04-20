@@ -126,7 +126,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
      */
     protected function clearKeyInfo()
     {
-        $this->currentId = $this->currentKey = NULL;
+        $this->currentId  = $this->currentKey = NULL;
     }
 
     /**
@@ -519,6 +519,13 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
                 if (is_array($value) && $op == 'IN')
                 {
                     $value = (in_array($row->{$field}, $value)) ? 1 : 0;
+                    $op    = '==';
+                    $field = 1;
+                }
+                elseif (!is_array($value) && $op == 'LIKE')
+                {
+                    $regex = "/^" . str_replace('%', '(.*?)', preg_quote($value)) . "$/s";
+                    $value = preg_match($regex, $row->{$field});
                     $op    = '==';
                     $field = 1;
                 }
