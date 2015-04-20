@@ -107,6 +107,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @covers Lazer\Classes\Database::find
+     * @covers Lazer\Classes\Database::getRowKey
      * @depends testTableExists
      */
     public function testFind($table)
@@ -237,7 +238,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $query[] = $table->where('id', '>=', 2)->findAll();
         $query[] = $table->where('id', '<=', 3)->findAll();
         $query[] = $table->where('id', '<=', 3)->andWhere('id', '>', 1)->findAll();
-        $query[] = $table->where('id', 'IN', [1,2])->findAll();
+        $query[] = $table->where('id', 'IN', [1, 2])->findAll();
         $query[] = $table->where('name', '=', 'Larry')->orWhere('name', '=', 'Kriss')->findAll();
 
         foreach ($query[0] as $row)
@@ -282,17 +283,17 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
 
         foreach ($query[8] as $row)
         {
-            $this->assertContains($row->id, [2,3]);
+            $this->assertContains($row->id, [2, 3]);
         }
 
         foreach ($query[9] as $row)
         {
-            $this->assertContains($row->id, [1,2]);
+            $this->assertContains($row->id, [1, 2]);
         }
 
         foreach ($query[10] as $row)
         {
-            $this->assertContains($row->name, ['Larry','Kriss']);
+            $this->assertContains($row->name, ['Larry', 'Kriss']);
         }
     }
 
@@ -393,14 +394,14 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $table = $this->object->table('order');
         $table->find(1)->delete();
         $this->assertSame(0, $table->where('id', '=', 1)->findAll()->count());
-        
+
         $table->where('category', '=', 'b')->delete();
         $this->assertSame(0, $table->where('category', '=', 'b')->findAll()->count());
-        
+
         $table->delete();
         $this->assertSame(0, $table->findAll()->count());
     }
-    
+
     /**
      * @covers Lazer\Classes\Database::__get
      * @expectedException Lazer\Classes\LazerException
@@ -408,16 +409,16 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
      */
     public function testGet()
     {
-        $table        = $this->object->table('users');
+        $table = $this->object->table('users');
         $table->someField;
     }
-    
+
     /**
      * @covers Lazer\Classes\Database::__isset
      */
     public function testIsset()
     {
-        $table        = $this->object->table('users')->find(1);
+        $table = $this->object->table('users')->find(1);
         $this->assertTrue(isset($table->name));
         $this->assertFalse(isset($table->someField));
     }
