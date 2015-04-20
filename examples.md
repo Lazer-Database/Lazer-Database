@@ -36,6 +36,9 @@ Lazer::table('users')->where('id', '>', 4)->findAll();
 Lazer::table('users')->where('id', 'IN', array(1, 3, 6, 7))->findAll();
 Lazer::table('users')->where('id', '>=', 2)->andWhere('id', '<=', 7)->findAll();
 Lazer::table('users')->where('id', '=', 1)->orWhere('id', '=', 3)->findAll();
+Lazer::table('users')->where('name', 'LIKE', 'Lar%')->findAll();
+Lazer::table('users')->where('name', 'LIKE', '%ry')->findAll();
+Lazer::table('users')->where('name', 'LIKE', '%a%')->findAll();
 ```
 ### Group By
 
