@@ -122,6 +122,14 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
     }
 
     /**
+     * Set NULL for currentId and currentKey 
+     */
+    protected function clearKeyInfo()
+    {
+        $this->currentId = $this->currentKey = NULL;
+    }
+
+    /**
      * Setting fields with default values
      * @uses Lazer\Classes\Helpers\Validate::isNumeric() to check if type of field is numeric
      */
@@ -155,6 +163,15 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
             'with'    => array(),
             'groupBy' => array(),
         );
+    }
+
+    /**
+     * Clear info about previous queries
+     */
+    protected function clearQuery()
+    {
+        $this->setPending();
+        $this->clearKeyInfo();
     }
 
     /**
@@ -210,7 +227,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
         }
 
         //clear pending values after executed query
-        $this->setPending();
+        $this->clearQuery();
     }
 
     /**
@@ -922,7 +939,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
             }
         }
         echo '<pre>' . print_r($print, true) . '</pre>';
-        $this->setPending();
+        $this->clearQuery();
     }
 
 }
