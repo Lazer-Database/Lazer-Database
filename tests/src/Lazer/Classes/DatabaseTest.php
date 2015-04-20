@@ -52,7 +52,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @covers Lazer\Classes\Database::create
+     * @covers Lazer\Classes\Database::remove
      */
     public function testRemoveExistingTable()
     {
@@ -64,7 +64,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @covers Lazer\Classes\Database::create
+     * @covers Lazer\Classes\Database::remove
      * @expectedException Lazer\Classes\LazerException
      * @expectedExceptionMessageRegExp #.* File does not exists#
      */
@@ -95,6 +95,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @covers Lazer\Classes\Database::findAll
      * @depends testTableExists
      */
     public function testFindAll($table)
@@ -105,6 +106,25 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @covers Lazer\Classes\Database::find
+     * @depends testTableExists
+     */
+    public function testFind($table)
+    {
+        $result = array();
+        
+        $result[] = $table->find();
+        $this->assertInstanceOf('Lazer\Classes\Database', $result[0]);
+        $this->assertSame(1, count($result[0]));
+        
+        $result[] = $table->find(2);
+        $this->assertInstanceOf('Lazer\Classes\Database', $result[1]);
+        $this->assertSame(1, count($result[1]));
+        $this->assertSame(2, $result[1]->id);
+    }
+
+    /**
+     * Lazer\Classes\Database::asArray
      * @depends testTableExists
      */
     public function testAsArray($table)
@@ -126,9 +146,15 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $resultsKeyValue = $table->findAll()->asArray('id', 'name');
         $this->assertInternalType('array', $resultsValueField);
         $this->assertArraySubset([2 => 'Kriss'], $resultsKeyValue);
+
+        $resultsGroupBy = $this->object->table('order')->groupBy('category')->findAll()->asArray();
+        $this->assertInternalType('array', $resultsGroupBy);
+        $this->assertArrayHasKey('a', $resultsGroupBy);
+        $this->assertArrayHasKey('b', $resultsGroupBy);
     }
 
     /**
+     * Lazer\Classes\Database::count
      * @depends testTableExists
      */
     public function testIsCountable($table)
@@ -136,10 +162,15 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $results = $table->findAll();
         $this->assertSame(4, count($results));
         $this->assertSame(4, $results->count());
+        
+        $table1   = $this->object->table('order');
+        $query = $table1->groupBy('category')->findAll()->count();
+        $this->assertInternalType('array', $query);
     }
 
     /**
      * @covers Lazer\Classes\Database::limit
+     * @covers Lazer\Classes\Database::limitPending
      * @depends testTableExists
      */
     public function testLimit($table)
@@ -151,6 +182,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @covers Lazer\Classes\Database::orderBy
+     * @covers Lazer\Classes\Database::orderByPending
      */
     public function testOrderBy()
     {
@@ -188,6 +220,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
 
     /**
      * @covers Lazer\Classes\Database::where
+     * @covers Lazer\Classes\Database::wherePending
      */
     public function testWhere()
     {
@@ -243,6 +276,55 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
             $this->lessThanOrEqual(3, $row->id);
         }
 
+    }
+    
+    /**
+     * @covers Lazer\Classes\Database::groupBy
+     * @covers Lazer\Classes\Database::groupByPending
+     */
+    public function testGroupBy()
+    {
+        $table   = $this->object->table('order');
+        $query   = array();
+        $query[] = $table->groupBy('category')->findAll();
+        
+        foreach($query[0] as $category => $group)
+        {
+            $this->assertInternalType('string', $category);
+            $this->assertInternalType('array', $group);
+            foreach($group as $row)
+            {
+                $this->assertInstanceOf('StdClass', $row);
+            }
+        }
+    }
+    
+    /**
+     * @covers Lazer\Classes\Database::addFields
+     */
+    public function testAddFields()
+    {
+        $table   = $this->object->table('users');
+        $fieldsBefore = $table->fields();
+        $table->addFields(array('new' => 'string', 'fields' => 'integer'));
+        $fieldsAfter = $table->fields();
+        
+        $this->assertArraySubset(['id', 'name', 'email'], $fieldsBefore, true);
+        $this->assertArraySubset(['id', 'name', 'email', 'new', 'fields'], $fieldsAfter, true);
+    }
+    
+    /**
+     * @covers Lazer\Classes\Database::deleteFields
+     */
+    public function testDeleteFields()
+    {
+        $table   = $this->object->table('users');
+        $fieldsBefore = $table->fields();
+        $table->deleteFields(array('name'));
+        $fieldsAfter = $table->fields();
+        
+        $this->assertArraySubset(['id', 'name', 'email'], $fieldsBefore, true);
+        $this->assertNotContains('name', $fieldsAfter);
     }
 
 }
