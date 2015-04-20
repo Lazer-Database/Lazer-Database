@@ -240,6 +240,9 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $query[] = $table->where('id', '<=', 3)->andWhere('id', '>', 1)->findAll();
         $query[] = $table->where('id', 'IN', [1, 2])->findAll();
         $query[] = $table->where('name', '=', 'Larry')->orWhere('name', '=', 'Kriss')->findAll();
+        $query[] = $table->where('name', 'LIKE', 'La%')->findAll();
+        $query[] = $table->where('name', 'LIKE', '%ss')->findAll();
+        $query[] = $table->where('name', 'LIKE', '%a%')->findAll();
 
         foreach ($query[0] as $row)
         {
@@ -294,6 +297,21 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         foreach ($query[10] as $row)
         {
             $this->assertContains($row->name, ['Larry', 'Kriss']);
+        }
+
+        foreach ($query[11] as $row)
+        {
+            $this->assertSame('Larry', $row->name);
+        }
+
+        foreach ($query[12] as $row)
+        {
+            $this->assertSame('Kriss', $row->name);
+        }
+
+        foreach ($query[13] as $row)
+        {
+            $this->assertContains($row->name, ['Larry', 'Paul']);
         }
     }
 
