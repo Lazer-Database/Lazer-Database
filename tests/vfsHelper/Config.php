@@ -11,6 +11,6 @@ trait Config {
     protected function setUpFilesystem()
     {
         $this->root = vfsStream::setup('data');
-        vfsStream::copyFromFileSystem('db');
+        vfsStream::copyFromFileSystem(ROOT . 'tests/db');
     }
 }
