@@ -8,7 +8,6 @@ First of all we must create our tables: `users`, `news`, `comments`, `tags`:
 
 #### Code:
 ```php
-require_once 'Lazer/bootstrap.php'; /* I will skip this line in rest of code samples */
 use Lazer\Classes\Database as Lazer; /* I will skip this line in rest of code samples */
 
 Lazer::create('users', array(
