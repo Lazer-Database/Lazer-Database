@@ -183,6 +183,7 @@ use Lazer\Classes\Relation; // example
 - `setRelation()` - creating specified relation
 - `removeRelation()` - creating specified relation
 - `getRelation()` - return informations about relation
+- `getJunction()` - return name of junction table in `hasAndBelongsToMany` relation
 
 #### Create relation
 ```php
