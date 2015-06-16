@@ -9,9 +9,9 @@ use Lazer\Classes\Helpers;
 
 /**
  * Core class of Lazer.
- * 
+ *
  * There are classes to use JSON files like file database.
- * 
+ *
  * Using style was inspired by ORM classes.
  *
  * @category Core
@@ -122,7 +122,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
     }
 
     /**
-     * Set NULL for currentId and currentKey 
+     * Set NULL for currentId and currentKey
      */
     protected function clearKeyInfo()
     {
@@ -232,24 +232,24 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
 
     /**
      * Creating new table
-     * 
+     *
      * For example few fields:
-     * 
+     *
      * Database::create('news', array(
      *  'title' => 'string',
      *  'content' => 'string',
      *  'rating' => 'double',
      *  'author' => 'integer'
      * ));
-     * 
+     *
      * Types of field:
      * - boolean
      * - integer
      * - string
      * - double (also for float type)
-     * 
+     *
      * ID field isn't required (it will be created automatically) but you can specify it at first place.
-     * 
+     *
      * @uses Lazer\Classes\Helpers\Data::arrToLower() to lower case keys and values of array
      * @uses Lazer\Classes\Helpers\Data::exists() to check if data file exists
      * @uses Lazer\Classes\Helpers\Config::exists() to check if config file exists
@@ -433,12 +433,12 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
 
     /**
      * Where function, like SQL
-     * 
+     *
      * Operators:
      * - Standard operators (=, !=, >, <, >=, <=)
      * - IN (only for array value)
      * - NOT IN (only for array value)
-     * 
+     *
      * @param string $field Field name
      * @param string $op Operator
      * @param mixed $value Field value
@@ -522,9 +522,9 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
                     $op    = '==';
                     $field = 1;
                 }
-                elseif (!is_array($value) && $op == 'LIKE')
+                elseif (!is_array($value) && in_array($op, array('LIKE', 'like')))
                 {
-                    $regex = "/^" . str_replace('%', '(.*?)', preg_quote($value)) . "$/s";
+                    $regex = "/^" . str_replace('%', '(.*?)', preg_quote($value)) . "$/si";
                     $value = preg_match($regex, $row->{$field});
                     $op    = '==';
                     $field = 1;
@@ -532,16 +532,18 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
                 elseif (!is_array($value) && $op != 'IN')
                 {
                     $value = is_string($value) ?
-                            '\'' . $value . '\'' :
-                            $value;
+                        '\'' . mb_strtolower($value) . '\'' :
+                        $value;
 
                     $op    = $operator[$op];
-                    $field = '$row->' . $field;
+                    $field = is_string($row->{$field}) ?
+                        'mb_strtolower($row->' . $field .')' :
+                        '$row->' . $field;
                 }
 
                 $type = (!$key) ?
-                        null :
-                        $operator[$type];
+                    null :
+                    $operator[$type];
 
                 $query = array($type, $field, $op, $value);
                 $clause .= implode(' ', $query) . ' ';
@@ -634,7 +636,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
 
     /**
      * Limit returned data
-     * 
+     *
      * Should be used at the end of chain, before end method
      * @param integer $number Limit number
      * @param integer $offset Offset number
@@ -826,7 +828,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
 
     /**
      * Return count in integer or array of integers (if grouped)
-     * @return mixed 
+     * @return mixed
      */
     public function count()
     {
