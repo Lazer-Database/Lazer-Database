@@ -23,4 +23,10 @@ class RelationTest extends \PHPUnit_Framework_TestCase {
     }
 
 
+    public function testDummy()
+    {
+       $this->markTestSkipped('TODO tests for relation');
+    }
+
+
 }
