@@ -13,6 +13,17 @@ namespace Lazer\Classes\Helpers;
  */
 class Config extends File {
 
+    /**
+     * Get key from returned config
+     * @param string $field key
+     * @param bool $assoc
+     * @return mixed
+     */
+    public function getKey($field, $assoc = false)
+    {
+        return $assoc ? $this->get($assoc)[$field] : $this->get($assoc)->{$field};
+    }
+
     public static function table($name)
     {
         $file       = new Config;
@@ -20,17 +31,6 @@ class Config extends File {
         $file->setType('config');
 
         return $file;
-    }
-
-    /**
-     * Get key from returned config
-     * @param type $field key
-     * @param type $assoc
-     * @return mixed
-     */
-    public function getKey($field, $assoc = false)
-    {
-        return $assoc ? $this->get($assoc)[$field] : $this->get($assoc)->{$field};
     }
 
     /**
@@ -81,7 +81,6 @@ class Config extends File {
 
     /**
      * Returning last ID from table
-     * @param string $name
      * @return integer
      */
     public function lastId()

@@ -3,9 +3,11 @@
 namespace Lazer\Classes;
 
 
+use vfsHelper\Config as testConfig;
+
 class RelationTest extends \PHPUnit_Framework_TestCase {
 
-    use \vfsHelper\Config;
+    use testConfig;
 
     /**
      * @var Database

@@ -2,9 +2,11 @@
 
 namespace Lazer\Classes;
 
+use vfsHelper\Config as testConfig;
+
 class DatabaseTest extends \PHPUnit_Framework_TestCase {
 
-    use \vfsHelper\Config;
+    use testConfig;
 
     /**
      * @var Database
@@ -266,22 +268,22 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
 
         foreach ($query[4] as $row)
         {
-            $this->greaterThan(2, $row->id);
+            $this->assertGreaterThan(2, $row->id);
         }
 
         foreach ($query[5] as $row)
         {
-            $this->lessThan(3, $row->id);
+            $this->assertLessThan(3, $row->id);
         }
 
         foreach ($query[6] as $row)
         {
-            $this->greaterThanOrEqual(2, $row->id);
+            $this->assertGreaterThanOrEqual(2, $row->id);
         }
 
         foreach ($query[7] as $row)
         {
-            $this->lessThanOrEqual(3, $row->id);
+            $this->assertLessThanOrEqual(3, $row->id);
         }
 
         foreach ($query[8] as $row)

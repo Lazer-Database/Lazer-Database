@@ -193,6 +193,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
      * Returning variable from Object
      * @param string $name Field name
      * @return mixed Field value
+     * @throws LazerException
      */
     public function __get($name)
     {
@@ -300,6 +301,8 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
         {
             return TRUE;
         }
+
+        return FALSE;
     }
 
     /**
@@ -491,7 +494,6 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
 
     /**
      * Filter function for array_filter() in where()
-     * @param object $row
      * @return boolean
      */
     protected function wherePending()
@@ -761,6 +763,7 @@ abstract class Core_Database implements \IteratorAggregate, \Countable {
 
     /**
      * Returning assoc array with relationed tables
+     * @param string|null $tableName
      * @return array Fields type
      */
     public function relations($tableName = null)

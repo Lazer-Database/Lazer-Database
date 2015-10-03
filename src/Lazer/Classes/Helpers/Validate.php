@@ -25,7 +25,7 @@ class Validate {
     /**
      * Table name
      * @param string $name
-     * @return \jsondb\helpers\Validate
+     * @return Validate
      */
     public static function table($name)
     {
@@ -53,8 +53,9 @@ class Validate {
 
     /**
      * Checking that types from array matching with [boolean, integer, string, double]
-     * @param array $fields Indexed array
-     * @return array Fields without ID
+     * @param array $types Indexed array
+     * @return bool
+     * @throws LazerException
      */
     public static function types(array $types)
     {
@@ -173,6 +174,7 @@ class Validate {
      * Checking that relation between tables exists
      * @param string $local local table
      * @param string $foreign related table
+     * @return bool relation exists
      * @throws LazerException
      */
     public static function relation($local, $foreign)
@@ -189,9 +191,10 @@ class Validate {
     /**
      * Checking that relation type is correct
      * @param string $type 
-     * @return type
+     * @return bool relation type
+     * @throws LazerException Wrong relation type
      */
-    public static function relation_type($type)
+    public static function relationType($type)
     {
         if (in_array($type, Relation::relations()))
         {

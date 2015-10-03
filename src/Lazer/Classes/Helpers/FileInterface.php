@@ -2,12 +2,14 @@
 
 namespace Lazer\Classes\Helpers;
 
+use Lazer\Classes\LazerException;
+
 interface FileInterface {
 
     /**
      * Setting name of table
      * @param string $name
-     * @return \jsondb\classes\helpers\File
+     * @return File
      */
     public static function table($name);
 
@@ -33,7 +35,7 @@ interface FileInterface {
 
     /**
      * Saving encoded JSON to file
-     * @param object $data
+     * @param object|array $data
      * @return boolean
      */
     public function put($data);

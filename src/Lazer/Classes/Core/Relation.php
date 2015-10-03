@@ -84,7 +84,7 @@ abstract class Core_Relation {
      */
     protected function setRelationType($relation)
     {
-        Validate::relation_type($relation);
+        Validate::relationType($relation);
         $this->relationType = $relation;
     }
 
@@ -297,8 +297,6 @@ abstract class Core_Relation {
      * Inserts relation data to config file
      * @param string $from Local table
      * @param string $to Related table
-     * @param string $type Relation type
-     * @param array $keys Relationed keys
      */
     protected function deleteRelationData($from, $to)
     {
