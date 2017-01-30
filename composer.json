@@ -11,7 +11,9 @@
         }
     ],
     "require": {
-        "php": ">=5.4",
+        "php": ">=5.4"
+    },
+    "require-dev": {
         "phpunit/phpunit": "4.5.1",
         "phpunit/phpunit-skeleton-generator": "2.0.1",
         "mikey179/vfsStream": "v1.5.0"
