@@ -9,7 +9,7 @@ Requirements
 - PHP 5.4+
 - Composer
 
-Instalation
+Installation
 -------
 Easiest way to install `Lazer Database` is to use Composer. Of course you can use your own autoloader but you must configure it properly by yourself. You can find my Package on [Packagist.org](https://packagist.org/packages/greg0/lazer-database).
 
