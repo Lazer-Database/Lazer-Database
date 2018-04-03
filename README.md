@@ -1,3 +1,8 @@
+# [UNMAINTAINED] This project is not maintained any more
+
+It is working as it is. Maybe project will be revived in future. 
+There is many great databases as SQLite or MongoDB, simple in use and with small requirements.
+
 Lazer - database based on JSON files
 =============
 
