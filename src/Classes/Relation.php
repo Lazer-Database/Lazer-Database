@@ -49,13 +49,13 @@ class Relation {
     /**
      * Factory method
      * @param string $name Name of table
-     * @return \Lazer\Classes\Relation
+     * @return self
      */
     public static function table($name)
     {
         Validate::table($name)->exists();
 
-        $self                  = new Relation;
+        $self                  = new self();
         $self->tables['local'] = $name;
 
         return $self;
@@ -101,7 +101,7 @@ class Relation {
      * Set key name
      * @param string $type local or foreign
      * @param string $key key name
-     * @return \Lazer\Classes\Core_Relation
+     * @return self
      * @throws LazerException First you must define tables name
      */
     protected function setKey($type, $key)
@@ -120,7 +120,7 @@ class Relation {
     /**
      * Set local key name
      * @param string $key key name
-     * @return \Lazer\Classes\Core_Relation
+     * @return self
      * @throws LazerException First you must define tables name
      */
     public function localKey($key)
@@ -131,7 +131,7 @@ class Relation {
     /**
      * Set foreign key name
      * @param string $key key name
-     * @return \Lazer\Classes\Core_Relation
+     * @return self
      * @throws LazerException First you must define tables name
      */
     public function foreignKey($key)
@@ -142,7 +142,7 @@ class Relation {
     /**
      * Set relation one2many to table
      * @param string $table Table name
-     * @return \Lazer\Classes\Core_Relation
+     * @return self
      */
     public function belongsTo($table)
     {
@@ -155,7 +155,7 @@ class Relation {
     /**
      * Set relation many2one to table
      * @param string $table Table name
-     * @return \Lazer\Classes\Core_Relation
+     * @return self
      */
     public function hasMany($table)
     {
@@ -168,7 +168,7 @@ class Relation {
     /**
      * Set relation many2many to table
      * @param string $table Table name
-     * @return \Lazer\Classes\Core_Relation
+     * @return self
      */
     public function hasAndBelongsToMany($table)
     {
@@ -181,7 +181,7 @@ class Relation {
     /**
      * Use relation to table
      * @param string $table Table name
-     * @return \Lazer\Classes\Core_Relation
+     * @return self
      */
     public function with($table)
     {
