@@ -1,13 +1,15 @@
 <?php
 
-namespace Lazer\Classes;
+namespace Lazer\Test\Classes;
 
 
-use vfsHelper\Config as testConfig;
+use Lazer\Classes\Database;
+use Lazer\Classes\Relation;
+use Lazer\Test\VfsHelper\Config as TestHelper;
 
 class RelationTest extends \PHPUnit_Framework_TestCase {
 
-    use testConfig;
+    use TestHelper;
 
     /**
      * @var Database

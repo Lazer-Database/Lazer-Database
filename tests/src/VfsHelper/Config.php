@@ -1,6 +1,6 @@
 <?php
 
-namespace vfsHelper;
+namespace Lazer\Test\VfsHelper;
 
 use org\bovigo\vfs\vfsStream;
 
