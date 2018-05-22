@@ -1,23 +1,29 @@
 Lazer - database based on JSON files
-=============
+====================================
 
 PHP Library to use JSON files like a database.   
 Functionality inspired by ORM's
 
 Requirements
--------
-- PHP 5.4+
+------------
+- PHP 5.6+
 - Composer
 
 Installation
--------
+------------
 Easiest way to install `Lazer Database` is to use Composer. Of course you can use your own autoloader but you must configure it properly by yourself. You can find my Package on [Packagist.org](https://packagist.org/packages/greg0/lazer-database).
 
-Add the following to your  `composer.json`  and run  `composer update` .
+To add library to your dependencies, execute:
+```
+composer require greg0/lazer-database
+```
 
-    "require": {
-        "greg0/lazer-database": "1.1"
-    }
+Tests
+-----
+Easiest way to run unit tests is to use composer script 
+```
+composer run-script test
+```
 
 Structure of table files
 -------
@@ -27,11 +33,11 @@ Structure of table files
 
     
 Basic Usage
-------
+-----------
 
 First of all you should define constant `LAZER_DATA_PATH` containing absolute path to folder with JSON files:
 ```php
-define('LAZER_DATA_PATH', realpath(dirname(__FILE__)).'/data/'); //Path to folder with tables
+define('LAZER_DATA_PATH', realpath(__DIR__).'/data/'); //Path to folder with tables
 ```
 
 Then set up namespace:
@@ -132,7 +138,6 @@ It's very smilar to `Inserting`.
 $row = Lazer::table('table_name')->find(1); //Edit row with ID 1
 
 $row->nickname = 'edited_user';
-
 $row->save();
 ```
 ### Remove
@@ -205,11 +210,10 @@ Lazer::table('table1')->relations('table2'); // relation with specified table
 ```
 
 Description
-------
+-----------
 For some examples please check `examples.md` and `tutorial.md` file.
 More informations you can find in PHPDoc, I think it's documented very well.
 
-Homepage: <http://greg0.ovh.org>   
 E-mail: <gerg0sz92@gmail.com>
 
 If you like and using/want to use my repo or you have any suggestions I will be greatful for sending me few words on e-mail.

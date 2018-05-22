@@ -2,7 +2,7 @@
     "name": "greg0/lazer-database",
     "description": "PHP library to use JSON files like flat-file database",
     "keywords": ["lazer", "simple", "json", "flat", "file", "database", "db"],
-    "homepage": "http://github.com/Greg0/Lazer-Database",
+    "homepage": "https://github.com/Greg0/Lazer-Database",
     "license": "MIT",
     "authors": [
         {
