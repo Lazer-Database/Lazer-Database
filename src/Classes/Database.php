@@ -182,7 +182,7 @@ class Database implements \IteratorAggregate, \Countable {
     {
         if (Helpers\Validate::table($this->name)->field($name) && Helpers\Validate::table($this->name)->type($name, $value))
         {
-            $this->set->{$name} = mb_convert_encoding($value, "UTF-8");
+            $this->set->{$name} = utf8_encode($value);
         }
     }
 
