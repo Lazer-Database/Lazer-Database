@@ -186,7 +186,7 @@ use Lazer\Classes\Relation; // example
 ##### Ending methods
 
 - `setRelation()` - creating specified relation
-- `removeRelation()` - creating specified relation
+- `removeRelation()` - remove relation
 - `getRelation()` - return informations about relation
 - `getJunction()` - return name of junction table in `hasAndBelongsToMany` relation
 
