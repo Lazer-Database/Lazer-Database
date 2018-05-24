@@ -24,6 +24,6 @@
         }
     },
     "scripts": {
-        "test": "./vendor/bin/phpunit --bootstrap ./tests/bootstrap.php tests/src/Classes/*"
+        "test": "./vendor/bin/phpunit"
     }
 }
