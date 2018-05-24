@@ -212,7 +212,8 @@ Lazer::table('table1')->relations('table2'); // relation with specified table
 
 Description
 -----------
-For some examples please check `examples.md` and `tutorial.md` file.
+For some examples please check 
+[Examples](docs/examples.md) and [Tutorial](docs/tutorial.md) file.
 More informations you can find in PHPDoc, I think it's documented very well.
 
 E-mail: <gerg0sz92@gmail.com>
