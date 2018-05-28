@@ -1,6 +1,8 @@
 Lazer - database based on JSON files
 ====================================
 [![Build Status](https://travis-ci.org/Greg0/Lazer-Database.svg?branch=master)](https://travis-ci.org/Greg0/Lazer-Database)
+[![Current Version](https://img.shields.io/packagist/v/greg0/lazer-database.svg)](https://packagist.org/packages/greg0/lazer-database#latest)
+![PHP Version](https://img.shields.io/packagist/php-v/greg0/lazer-database.svg)
 
 PHP Library to use JSON files like a database.   
 Functionality inspired by ORM's
