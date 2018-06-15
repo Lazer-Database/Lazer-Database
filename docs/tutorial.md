@@ -173,13 +173,15 @@ $news = Lazer::table('news')->with('users')->with('tags')->with('comments')->wit
 
 foreach($news as $post)
 {
+    $comments = $post->Comments; //->limit(1); // add limit
+    // $comments = $comments->where('author_id', '=', 4); // To get specific user's comments only
     echo '<h1>'.$post->topic.'</h1>';
     echo '<h4>Author: '.$post->Users->name.'</h4>';   
     echo '<p>'.$post->content.'</p>';
     echo '<small>Tags: '.implode(', ', $post->Tags->findAll()->asArray(null, 'name')).'</small><br />';
-    echo '<small>Comments: '.$post->Comments->findAll()->count().'</small>';
+    echo '<small>Comments: '.$comments->findAll()->count().'</small>';
     echo '<ul>';
-    foreach($post->Comments->findAll() as $comment)
+    foreach($comments  as $comment)
     {
         echo '<li>';
             echo '<h5><a href="mailto:'.$comment->Users->email.'">'.$comment->Users->name.'</a>: </h5>';
