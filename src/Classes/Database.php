@@ -172,6 +172,22 @@ class Database implements \IteratorAggregate, \Countable {
     }
 
     /**
+     * Validating array and setting variables to current operations
+     * @uses \Lazer\Classes\Helpers\Validate::field() to check that field exist
+     * @uses \Lazer\Classes\Helpers\Validate::type() to check that field type is correct
+     * @param array $name key value pair
+     */
+    public function set($data)
+    {
+        foreach ($data as $name => $value) {
+            if (Helpers\Validate::table($this->name)->field($name) && Helpers\Validate::table($this->name)->type($name,      $value))
+            {
+                $this->set->{$name} = utf8_encode($value);
+            }
+        }
+    }
+
+    /**
      * Validating fields and setting variables to current operations
      * @uses \Lazer\Classes\Helpers\Validate::field() to check that field exist
      * @uses \Lazer\Classes\Helpers\Validate::type() to check that field type is correct
