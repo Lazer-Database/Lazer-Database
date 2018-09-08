@@ -408,6 +408,50 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @covers \Lazer\Classes\Database::set
+     * @covers \Lazer\Classes\Database::save
+     * @covers \Lazer\Classes\Database::__get
+     */
+    public function testSetAndSave()
+    {
+        $table        = $this->object->table('users');
+        $table->set([
+            'name'  => 'Ananth',
+            'email' => 'ananth@example.com'
+        ]);
+        $table->save();
+
+        $id     = $table->lastId();
+        $result = $table->find($id);
+
+        $this->assertSame($id, $result->id);
+        $this->assertSame('Ananth', $result->name);
+        $this->assertSame('ananth@example.com', $result->email);
+    }
+
+    /**
+     * @covers \Lazer\Classes\Database::set
+     * @covers \Lazer\Classes\Database::save
+     * @covers \Lazer\Classes\Database::__get
+     */
+    public function testSetAndSaveInOtherCharEncoding()
+    {
+        $table        = $this->object->table('users');
+        $table->set([
+            'name'  => mb_convert_encoding('áéóú', 'ISO-8859-1'),
+            'email' => 'ananth@example.com'
+        ]);
+        $table->save();
+
+        $id     = $table->lastId();
+        $result = $table->find($id);
+
+        $this->assertSame($id, $result->id);
+        $this->assertSame('áéóú', $result->name);
+        $this->assertSame('ananth@example.com', $result->email);
+    }
+
+    /**
      * @covers \Lazer\Classes\Database::save
      */
     public function testUpdate()
