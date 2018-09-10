@@ -63,6 +63,7 @@ use Lazer\Classes\Database as Lazer; // example
 
 - `addFields()` - append new fields into existing table
 - `deleteFields()` - removing fields from existing table
+- `set()` - get key/value pair array argument to save.
 - `save()` - insert or Update data.
 - `delete()` - deleting data.
 - `relations()` - returns array with table relations
