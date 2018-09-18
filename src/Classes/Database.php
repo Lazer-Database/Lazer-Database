@@ -137,13 +137,13 @@ class Database implements \IteratorAggregate, \Countable {
 
         foreach ($schema as $field => $type)
         {
-            if (Helpers\Validate::isNumeric($type) AND $field != 'id')
+            if (Helpers\Validate::isNumeric($type) && $field != 'id')
             {
-                $this->set->{$field} = 0;
+                $this->setField($field, 0);
             }
             else
             {
-                $this->set->{$field} = null;
+                $this->setField($field, null);
             }
         }
     }
@@ -173,33 +173,77 @@ class Database implements \IteratorAggregate, \Countable {
 
     /**
      * Validating array and setting variables to current operations
-     * @uses \Lazer\Classes\Helpers\Validate::field() to check that field exist
-     * @uses \Lazer\Classes\Helpers\Validate::type() to check that field type is correct
-     * @param array $name key value pair
+     *
+     * @uses \Lazer\Classes\Database::setField() to set field value
+     * @param array $data key value pair
+     * @throws LazerException
      */
-    public function set($data)
+    public function set(array $data)
     {
         foreach ($data as $name => $value) {
-            if (Helpers\Validate::table($this->name)->field($name) && Helpers\Validate::table($this->name)->type($name,      $value))
-            {
-                $this->set->{$name} = utf8_encode($value);
-            }
+            $this->setField($name, $value);
         }
     }
 
     /**
-     * Validating fields and setting variables to current operations
-     * @uses \Lazer\Classes\Helpers\Validate::field() to check that field exist
-     * @uses \Lazer\Classes\Helpers\Validate::type() to check that field type is correct
-     * @param string $name Field name
-     * @param mixed $value Field value
+     * Validating array and setting variables to current operations
+     *
+     * @uses \Lazer\Classes\Database::setField() to set field value
+     * @param $name
+     * @param $value
+     * @throws LazerException
      */
     public function __set($name, $value)
     {
+        $this->setField($name, $value);
+    }
+
+
+    /**
+     * Validating fields and setting variables to current operations
+     *
+     * @uses \Lazer\Classes\Helpers\Validate::field() to check that field exist
+     * @uses \Lazer\Classes\Helpers\Validate::type() to check that field type is correct
+     * @param string $name  Field name
+     * @param mixed  $value Field value
+     * @return self
+     * @throws LazerException
+     */
+    public function setField($name, $value)
+    {
         if (Helpers\Validate::table($this->name)->field($name) && Helpers\Validate::table($this->name)->type($name, $value))
         {
-            $this->set->{$name} = utf8_encode($value);
+            $this->set->{$name} = is_string($value) && false === mb_check_encoding($value, 'UTF-8')
+                ? utf8_encode($value)
+                : $value;
         }
+
+        return $this;
+    }
+
+    /**
+     * Returning variable from Object
+     * @param string $name Field name
+     * @return mixed Field value
+     * @throws LazerException
+     */
+    public function getField($name)
+    {
+        if ($this->issetField($name)) {
+            return $this->set->{$name};
+        }
+
+        throw new LazerException('There is no data');
+    }
+
+    /**
+     * Check if the given field exists
+     * @param string $name Field name
+     * @return boolean True if the field exists, false otherwise
+     */
+    public function issetField($name)
+    {
+        return isset($this->set->{$name});
     }
 
     /**
@@ -210,10 +254,7 @@ class Database implements \IteratorAggregate, \Countable {
      */
     public function __get($name)
     {
-        if (isset($this->set->{$name}))
-            return $this->set->{$name};
-
-        throw new LazerException('There is no data');
+        return $this->getField($name);
     }
 
     /**
@@ -223,7 +264,7 @@ class Database implements \IteratorAggregate, \Countable {
      */
     public function __isset($name)
     {
-        return isset($this->set->{$name});
+        return $this->issetField($name);
     }
 
     /**
@@ -807,14 +848,14 @@ class Database implements \IteratorAggregate, \Countable {
             $config = $this->config();
             $config->last_id++;
 
-            $this->set->id = $config->last_id;
+            $this->setField('id', $config->last_id);
             array_push($data, $this->set);
 
             Helpers\Config::table($this->name)->put($config);
         }
         else
         {
-            $this->set->id           = $this->currentId;
+            $this->setField('id', $this->currentId);
             $data[$this->currentKey] = $this->set;
         }
 
@@ -881,7 +922,7 @@ class Database implements \IteratorAggregate, \Countable {
             $this->currentKey = $this->getRowKey($id);
             foreach ($data[$this->currentKey] as $field => $value)
             {
-                $this->set->{$field} = $value;
+                $this->setField($field, $value);
             }
         }
         else
@@ -892,10 +933,10 @@ class Database implements \IteratorAggregate, \Countable {
             {
                 foreach ($data[0] as $field => $value)
                 {
-                    $this->set->{$field} = $value;
+                    $this->setField($field, $value);
                 }
 
-                $this->currentId  = $this->set->id;
+                $this->currentId  = $this->getField('id');
                 $this->currentKey = $this->getRowKey($this->currentId);
             }
         }

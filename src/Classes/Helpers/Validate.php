@@ -162,7 +162,7 @@ class Validate {
     public function type($name, $value)
     {
         $schema = Config::table($this->name)->schema();
-        if (array_key_exists($name, $schema) && $schema[$name] == gettype($value))
+        if (array_key_exists($name, $schema) && (null === $value || $schema[$name] == gettype($value)))
         {
             return TRUE;
         }

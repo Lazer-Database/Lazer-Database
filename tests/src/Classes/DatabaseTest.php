@@ -452,6 +452,28 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @covers \Lazer\Classes\Database::set
+     * @covers \Lazer\Classes\Database::save
+     * @covers \Lazer\Classes\Database::__get
+     */
+    public function testSetAndSaveRightEncoding()
+    {
+        $table        = $this->object->table('users');
+        $table->set([
+            'name'  => 'áéóú',
+            'email' => 'ananth@example.com'
+        ]);
+        $table->save();
+
+        $id     = $table->lastId();
+        $result = $table->find($id);
+
+        $this->assertSame($id, $result->id);
+        $this->assertSame('áéóú', $result->name);
+        $this->assertSame('ananth@example.com', $result->email);
+    }
+
+    /**
      * @covers \Lazer\Classes\Database::save
      */
     public function testUpdate()
@@ -488,24 +510,55 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @covers \Lazer\Classes\Database::getField
+     * @covers \Lazer\Classes\Database::setField
+     */
+    public function testSetAndGet()
+    {
+        $table = $this->object->table('users');
+        $table->setField('name', 'Johń');
+        $this->assertEquals('Johń', $table->getField('name'));
+    }
+
+    /**
      * @covers \Lazer\Classes\Database::__get
+     * @expectedException \Lazer\Classes\LazerException
+     * @expectedExceptionMessage There is no data
+     */
+    public function testMagicGet()
+    {
+        $table = $this->object->table('users');
+        $table->someField;
+    }
+    /**
+     * @covers \Lazer\Classes\Database::getField
      * @expectedException \Lazer\Classes\LazerException
      * @expectedExceptionMessage There is no data
      */
     public function testGet()
     {
         $table = $this->object->table('users');
-        $table->someField;
+        $table->getField('someField');
     }
 
     /**
      * @covers \Lazer\Classes\Database::__isset
      */
-    public function testIsset()
+    public function testMagicIsset()
     {
         $table = $this->object->table('users')->find(1);
         $this->assertTrue(isset($table->name));
         $this->assertFalse(isset($table->someField));
+    }
+
+    /**
+     * @covers \Lazer\Classes\Database::issetField
+     */
+    public function testIsset()
+    {
+        $table = $this->object->table('users')->find(1);
+        $this->assertTrue($table->issetField('name'));
+        $this->assertFalse($table->issetField('someField'));
     }
 
 }

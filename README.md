@@ -52,6 +52,7 @@ use Lazer\Classes\Database as Lazer; // example
 
 ##### Chain methods
 
+- `setField()` - set value of field (alternative to magic `__set()`)
 - `limit()` - returns results between a certain number range. Should be used right before ending method `find_all()`.
 - `orderBy()` - sort rows by key in order, can order by more than one field (just chain it). 
 - `groupBy()` - group rows by field.
@@ -61,6 +62,8 @@ use Lazer\Classes\Database as Lazer; // example
 
 ##### Ending methods
 
+- `getField` - get value of field (alternative to magic `__get()`)
+- `issetField` - check if field is isset (alternative to magic `__isset()`)
 - `addFields()` - append new fields into existing table
 - `deleteFields()` - removing fields from existing table
 - `set()` - get key/value pair array argument to save.
@@ -115,7 +118,7 @@ foreach($table as $row)
 ```php
 $row = Lazer::table('table_name')->find(1);
 
-echo $row->id;
+echo $row->id; // or $row->getField('id')
 ```
 Type ID of row in `find()` method.
 
@@ -130,7 +133,7 @@ echo $row->id;
 ```php
 $row = Lazer::table('table_name');
 
-$row->nickname = 'new_user';
+$row->nickname = 'new_user'; // or $row->setField('nickname', 'new_user')
 $row->save();
 ```
 Do not set the ID.
@@ -141,9 +144,22 @@ It's very smilar to `Inserting`.
 ```php
 $row = Lazer::table('table_name')->find(1); //Edit row with ID 1
 
-$row->nickname = 'edited_user';
+$row->nickname = 'edited_user'; // or $row->setField('nickname', 'edited_user')
 $row->save();
 ```
+
+You can also set many field by simple key-value array
+```php
+$row = Lazer::table('table_name')->find(1); //Edit row with ID 1
+
+$row->set(array(
+    'nickname' => 'user',
+    'email' => 'user@example.com'
+));
+$row->save();
+```
+
+
 ### Remove
 
 #### Single record deleting
