@@ -58,7 +58,17 @@ class File implements FileInterface {
 
     public final function get($assoc = false)
     {
-        return json_decode(file_get_contents($this->getPath()), $assoc);
+        $datas = json_decode(file_get_contents($this->getPath()), $assoc);
+        foreach ($datas as $rowKey => $data){
+            if(is_object($data)){
+                foreach($data as $rowKey2 => $data2){
+                    if($rowKey2!="id"&&!is_object($datas2)){
+                        $data->{$rowKey2} = utf8_decode($data2);
+                    }
+                }
+            }
+        }
+        return $datas;
     }
 
     public final function put($data)
