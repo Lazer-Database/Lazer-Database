@@ -1,4 +1,4 @@
-Lazer - database based on JSON files
+Lazer - php flat file database based on JSON files
 ====================================
 [![Build Status](https://travis-ci.org/Greg0/Lazer-Database.svg?branch=master)](https://travis-ci.org/Greg0/Lazer-Database)
 [![Current Version](https://img.shields.io/packagist/v/greg0/lazer-database.svg)](https://packagist.org/packages/greg0/lazer-database#latest)
