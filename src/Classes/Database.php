@@ -232,9 +232,7 @@ class Database implements \IteratorAggregate, \Countable {
         if ($this->issetField($name)) {
             return $this->set->{$name};
         }
-        if (isset($this->schema()[$name]) && empty($this->issetField($name))) {
-            return $this->set->{$name};
-        }
+
         throw new LazerException('There is no data');
     }
 
@@ -245,7 +243,7 @@ class Database implements \IteratorAggregate, \Countable {
      */
     public function issetField($name)
     {
-        return isset($this->set->{$name});
+        return property_exists($this->set, $name);
     }
 
     /**
