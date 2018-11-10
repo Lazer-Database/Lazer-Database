@@ -243,7 +243,7 @@ class Database implements \IteratorAggregate, \Countable {
      */
     public function issetField($name)
     {
-        return isset($this->set->{$name});
+        return property_exists($this->set, $name);
     }
 
     /**

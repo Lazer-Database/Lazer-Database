@@ -456,6 +456,28 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
      * @covers \Lazer\Classes\Database::save
      * @covers \Lazer\Classes\Database::__get
      */
+    public function testSetAndSaveNullFieldData()
+    {
+        $table        = $this->object->table('users');
+        $table->set([
+            'name'  => mb_convert_encoding('áéóú', 'ISO-8859-1'),
+            'email' => null
+        ]);
+        $table->save();
+
+        $id     = $table->lastId();
+        $result = $table->find($id);
+
+        $this->assertSame($id, $result->id);
+        $this->assertSame('áéóú', $result->name);
+        $this->assertSame(null, $result->email);
+    }
+
+    /**
+     * @covers \Lazer\Classes\Database::set
+     * @covers \Lazer\Classes\Database::save
+     * @covers \Lazer\Classes\Database::__get
+     */
     public function testSetAndSaveRightEncoding()
     {
         $table        = $this->object->table('users');
