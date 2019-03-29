@@ -34,7 +34,8 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $this->object->create('newTable', array(
             'myInteger' => 'integer',
             'myString'  => 'string',
-            'myBool'    => 'boolean'
+            'myBool'    => 'boolean',
+            'myDouble'    => 'double'
         ));
         $this->assertTrue($this->root->hasChild('newTable.data.json'));
         $this->assertTrue($this->root->hasChild('newTable.config.json'));
@@ -147,7 +148,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey(4, $resultsValueField);
         $this->assertArrayHasKey(0, $resultsValueField);
 
-        $resultsKeyValue = $table->findAll()->asArray('id', 'name');
+        $resultsKeyValue = $table->findAll()->asArray('id', 'name', 'price');
         $this->assertInternalType('array', $resultsValueField);
         $this->assertArraySubset([2 => 'Kriss'], $resultsKeyValue);
 
@@ -196,6 +197,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $query[] = $table->orderBy('id', 'DESC')->findAll()->asArray();
         $query[] = $table->orderBy('name')->findAll()->asArray();
         $query[] = $table->orderBy('name', 'DESC')->findAll()->asArray();
+        $query[] = $table->orderBy('price', 'DESC')->findAll()->asArray();
         $query[] = $table->orderBy('category')->orderBy('name')->findAll()->asArray();
         $query[] = $table->orderBy('category')->orderBy('name', 'DESC')->findAll()->asArray();
         $query[] = $table->orderBy('category')->orderBy('name')->orderBy('number')->findAll()->asArray();
@@ -215,11 +217,11 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
 //        $this->assertSame(1, reset($query[4])['id']);
 //        $this->assertSame(7, end($query[4])['id']);
 
-        $this->assertSame(4, reset($query[5])['id']);
-        $this->assertSame(6, end($query[5])['id']);
+        $this->assertSame(9, reset($query[5])['id']);
+        $this->assertSame(7, end($query[5])['id']);
 
-        $this->assertSame(9, reset($query[6])['id']);
-        $this->assertSame(7, end($query[6])['id']);
+        $this->assertSame(4, reset($query[6])['id']);
+        $this->assertSame(6, end($query[6])['id']);
     }
 
     /**
@@ -350,7 +352,21 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $fieldsAfter  = $table->fields();
 
         $this->assertArraySubset(['id', 'name', 'email'], $fieldsBefore, true);
-        $this->assertArraySubset(['id', 'name', 'email', 'new', 'fields'], $fieldsAfter, true);
+        $this->assertArraySubset(['id', 'name', 'email', 'new', 'fields'], $fieldsAfter, true);        
+    }
+
+    /**
+     * @covers \Lazer\Classes\Database::addFields
+     */
+    public function testAddDoubleFieldToOrder()
+    {
+        $table        = $this->object->table('order');
+        $fieldsBefore = $table->fields();
+        $table->addFields(array('cost' => 'double'));
+        $fieldsAfter  = $table->fields();
+
+        $this->assertArraySubset(['id', 'price', 'name', 'number', 'category'], $fieldsBefore, true);
+        $this->assertArraySubset(['id', 'price', 'name', 'number', 'category', 'cost'], $fieldsAfter, true);
     }
 
     /**
