@@ -53,7 +53,7 @@ use Lazer\Classes\Database as Lazer; // example
 ##### Chain methods
 
 - `setField()` - set value of field (alternative to magic `__set()`)
-- `limit()` - returns results between a certain number range. Should be used right before ending method `find_all()`.
+- `limit()` - returns results between a certain number range. Should be used right before ending method `findAll()`.
 - `orderBy()` - sort rows by key in order, can order by more than one field (just chain it). 
 - `groupBy()` - group rows by field.
 - `where()` - filter records. Alias: `and_where()`.
@@ -76,8 +76,8 @@ use Lazer\Classes\Database as Lazer; // example
 - `lastId()` - returns last ID from table.
 - `find()` - returns one row with specified ID.
 - `findAll()` - returns rows.
-- `asArray()` - returns data as indexed or assoc array: `['field_name' => 'field_name']`. Should be used after ending method `find_all()` or `find()`.
-- `count()` - returns the number of rows. Should be used after ending method `find_all()` or `find()`.
+- `asArray()` - returns data as indexed or assoc array: `['field_name' => 'field_name']`. Should be used after ending method `findAll()` or `find()`.
+- `count()` - returns the number of rows. Should be used after ending method `findAll()` or `find()`.
 
 ### Create database
 ```php
