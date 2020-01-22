@@ -861,6 +861,9 @@ class Database implements \IteratorAggregate, \Countable {
 
         Helpers\Data::table($this->name)->put($data);
 
+        // after save, clear all $set data
+        $this->set = new \stdClass();
+
 //         $this->setFields();
     }
 
