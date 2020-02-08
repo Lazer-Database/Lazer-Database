@@ -512,6 +512,26 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @covers \Lazer\Classes\Database::insert
+     */
+    public function testInsert()
+    {
+        $table        = $this->object->table('users');
+        $table->name  = 'Greg';
+        $table->email = 'greg@example.com';
+        $table->insert();
+
+        $id         = $table->lastId();
+        $user       = $table->find($id);
+        $user->name = 'Gregory';
+        $user->insert();
+
+        $result = $table->find($table->lastId());
+        $this->assertSame('Gregory', $result->name);
+        $this->assertSame('greg@example.com', $result->email);
+    }
+
+    /**
      * @covers \Lazer\Classes\Database::save
      */
     public function testUpdate()

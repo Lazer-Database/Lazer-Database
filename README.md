@@ -67,7 +67,8 @@ use Lazer\Classes\Database as Lazer; // example
 - `addFields()` - append new fields into existing table
 - `deleteFields()` - removing fields from existing table
 - `set()` - get key/value pair array argument to save.
-- `save()` - insert or Update data.
+- `save()` - insert or Update data (automatically detect if it needs an insert or update).
+- `insert()` - force an insert.
 - `delete()` - deleting data.
 - `relations()` - returns array with table relations
 - `config()` - returns object with configuration.
@@ -87,7 +88,7 @@ Lazer::create('table_name', array(
     {field_name} => {field_type}
 ));
 ```
-More informations about field types and usage in PHPDoc
+More information about field types and usage in PHPDoc
 	
 ### Remove database
 ```php

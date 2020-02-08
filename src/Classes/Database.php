@@ -838,12 +838,24 @@ class Database implements \IteratorAggregate, \Countable {
     }
 
     /**
-     * Saving inserted or updated data
+     * Insert a row
+     *
+     * @throws LazerException
      */
-    public function save()
+    public function insert()
+    {
+        $this->save(true);
+    }
+
+    /**
+     * Saving inserted or updated data
+     * @param bool $forceInsert
+     * @throws LazerException
+     */
+    public function save($forceInsert = false)
     {
         $data = $this->getData();
-        if (!$this->currentId)
+        if (!$this->currentId || $forceInsert)
         {
             $config = $this->config();
             $config->last_id++;
