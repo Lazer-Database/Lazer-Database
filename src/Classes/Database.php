@@ -243,7 +243,7 @@ class Database implements \IteratorAggregate, \Countable {
      */
     public function issetField($name)
     {
-        return isset($this->set->{$name});
+        return property_exists($this->set, $name);
     }
 
     /**
@@ -838,14 +838,26 @@ class Database implements \IteratorAggregate, \Countable {
     }
 
     /**
-     * Saving inserted or updated data
+     * Insert a row
+     *
+     * @throws LazerException
      */
-    public function save()
+    public function insert()
+    {
+        $this->save(true);
+    }
+
+    /**
+     * Saving inserted or updated data
+     * @param bool $forceInsert
+     * @throws LazerException
+     */
+    public function save($forceInsert = false)
     {
         $data = $this->getData();
         $itemId = null;
 
-        if (!$this->currentId)
+        if (!$this->currentId || $forceInsert)
         {
             $config = $this->config();
             $config->last_id++;
@@ -862,6 +874,9 @@ class Database implements \IteratorAggregate, \Countable {
         }
 
         Helpers\Data::table($this->name)->put($data);
+
+        // after save, clear all $set data
+        $this->set = new \stdClass();
         $this->setField('id', $itemId);
 //         $this->setFields();
     }

@@ -34,7 +34,8 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $this->object->create('newTable', array(
             'myInteger' => 'integer',
             'myString'  => 'string',
-            'myBool'    => 'boolean'
+            'myBool'    => 'boolean',
+            'myDouble'    => 'double'
         ));
         $this->assertTrue($this->root->hasChild('newTable.data.json'));
         $this->assertTrue($this->root->hasChild('newTable.config.json'));
@@ -147,7 +148,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $this->assertArrayNotHasKey(4, $resultsValueField);
         $this->assertArrayHasKey(0, $resultsValueField);
 
-        $resultsKeyValue = $table->findAll()->asArray('id', 'name');
+        $resultsKeyValue = $table->findAll()->asArray('id', 'name', 'price');
         $this->assertInternalType('array', $resultsValueField);
         $this->assertArraySubset([2 => 'Kriss'], $resultsKeyValue);
 
@@ -196,6 +197,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $query[] = $table->orderBy('id', 'DESC')->findAll()->asArray();
         $query[] = $table->orderBy('name')->findAll()->asArray();
         $query[] = $table->orderBy('name', 'DESC')->findAll()->asArray();
+        $query[] = $table->orderBy('price', 'DESC')->findAll()->asArray();
         $query[] = $table->orderBy('category')->orderBy('name')->findAll()->asArray();
         $query[] = $table->orderBy('category')->orderBy('name', 'DESC')->findAll()->asArray();
         $query[] = $table->orderBy('category')->orderBy('name')->orderBy('number')->findAll()->asArray();
@@ -215,11 +217,11 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
 //        $this->assertSame(1, reset($query[4])['id']);
 //        $this->assertSame(7, end($query[4])['id']);
 
-        $this->assertSame(4, reset($query[5])['id']);
-        $this->assertSame(6, end($query[5])['id']);
+        //$this->assertSame(1, reset($query[5])['id']);
+        $this->assertSame(7, end($query[5])['id']);
 
-        $this->assertSame(9, reset($query[6])['id']);
-        $this->assertSame(7, end($query[6])['id']);
+        $this->assertSame(4, reset($query[6])['id']);
+        $this->assertSame(6, end($query[6])['id']);
     }
 
     /**
@@ -350,7 +352,21 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $fieldsAfter  = $table->fields();
 
         $this->assertArraySubset(['id', 'name', 'email'], $fieldsBefore, true);
-        $this->assertArraySubset(['id', 'name', 'email', 'new', 'fields'], $fieldsAfter, true);
+        $this->assertArraySubset(['id', 'name', 'email', 'new', 'fields'], $fieldsAfter, true);        
+    }
+
+    /**
+     * @covers \Lazer\Classes\Database::addFields
+     */
+    public function testAddDoubleFieldToOrder()
+    {
+        $table        = $this->object->table('order');
+        $fieldsBefore = $table->fields();
+        $table->addFields(array('cost' => 'double'));
+        $fieldsAfter  = $table->fields();
+
+        $this->assertArraySubset(['id', 'price', 'name', 'number', 'category'], $fieldsBefore, true);
+        $this->assertArraySubset(['id', 'price', 'name', 'number', 'category', 'cost'], $fieldsAfter, true);
     }
 
     /**
@@ -456,6 +472,28 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
      * @covers \Lazer\Classes\Database::save
      * @covers \Lazer\Classes\Database::__get
      */
+    public function testSetAndSaveNullFieldData()
+    {
+        $table        = $this->object->table('users');
+        $table->set([
+            'name'  => mb_convert_encoding('áéóú', 'ISO-8859-1'),
+            'email' => null
+        ]);
+        $table->save();
+
+        $id     = $table->lastId();
+        $result = $table->find($id);
+
+        $this->assertSame($id, $result->id);
+        $this->assertSame('áéóú', $result->name);
+        $this->assertSame(null, $result->email);
+    }
+
+    /**
+     * @covers \Lazer\Classes\Database::set
+     * @covers \Lazer\Classes\Database::save
+     * @covers \Lazer\Classes\Database::__get
+     */
     public function testSetAndSaveRightEncoding()
     {
         $table        = $this->object->table('users');
@@ -471,6 +509,26 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame($id, $result->id);
         $this->assertSame('áéóú', $result->name);
         $this->assertSame('ananth@example.com', $result->email);
+    }
+
+    /**
+     * @covers \Lazer\Classes\Database::insert
+     */
+    public function testInsert()
+    {
+        $table        = $this->object->table('users');
+        $table->name  = 'Greg';
+        $table->email = 'greg@example.com';
+        $table->insert();
+
+        $id         = $table->lastId();
+        $user       = $table->find($id);
+        $user->name = 'Gregory';
+        $user->insert();
+
+        $result = $table->find($table->lastId());
+        $this->assertSame('Gregory', $result->name);
+        $this->assertSame('greg@example.com', $result->email);
     }
 
     /**

@@ -2,7 +2,8 @@ Lazer - php flat file database based on JSON files
 ====================================
 [![Build Status](https://travis-ci.org/Greg0/Lazer-Database.svg?branch=master)](https://travis-ci.org/Greg0/Lazer-Database)
 [![Current Version](https://img.shields.io/packagist/v/greg0/lazer-database.svg)](https://packagist.org/packages/greg0/lazer-database#latest)
-![PHP Version](https://img.shields.io/packagist/php-v/greg0/lazer-database.svg)
+[![PHP Version](https://img.shields.io/packagist/php-v/greg0/lazer-database/1.1.7?style=plastic)](https://travis-ci.org/Greg0/Lazer-Database)
+[![Downloads](https://poser.pugx.org/greg0/lazer-database/d/total.svg)](https://travis-ci.org/Greg0/Lazer-Database)
 
 PHP Library to use JSON files like a database.   
 Functionality inspired by ORM's
@@ -53,7 +54,7 @@ use Lazer\Classes\Database as Lazer; // example
 ##### Chain methods
 
 - `setField()` - set value of field (alternative to magic `__set()`)
-- `limit()` - returns results between a certain number range. Should be used right before ending method `find_all()`.
+- `limit()` - returns results between a certain number range. Should be used right before ending method `findAll()`.
 - `orderBy()` - sort rows by key in order, can order by more than one field (just chain it). 
 - `groupBy()` - group rows by field.
 - `where()` - filter records. Alias: `and_where()`.
@@ -67,7 +68,8 @@ use Lazer\Classes\Database as Lazer; // example
 - `addFields()` - append new fields into existing table
 - `deleteFields()` - removing fields from existing table
 - `set()` - get key/value pair array argument to save.
-- `save()` - insert or Update data.
+- `save()` - insert or Update data (automatically detect if it needs an insert or update).
+- `insert()` - force an insert.
 - `delete()` - deleting data.
 - `relations()` - returns array with table relations
 - `config()` - returns object with configuration.
@@ -76,8 +78,8 @@ use Lazer\Classes\Database as Lazer; // example
 - `lastId()` - returns last ID from table.
 - `find()` - returns one row with specified ID.
 - `findAll()` - returns rows.
-- `asArray()` - returns data as indexed or assoc array: `['field_name' => 'field_name']`. Should be used after ending method `find_all()` or `find()`.
-- `count()` - returns the number of rows. Should be used after ending method `find_all()` or `find()`.
+- `asArray()` - returns data as indexed or assoc array: `['field_name' => 'field_name']`. Should be used after ending method `findAll()` or `find()`.
+- `count()` - returns the number of rows. Should be used after ending method `findAll()` or `find()`.
 
 ### Create database
 ```php
@@ -87,7 +89,7 @@ Lazer::create('table_name', array(
     {field_name} => {field_type}
 ));
 ```
-More informations about field types and usage in PHPDoc
+More information about field types and usage in PHPDoc
 	
 ### Remove database
 ```php
