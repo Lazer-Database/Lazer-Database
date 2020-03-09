@@ -843,24 +843,26 @@ class Database implements \IteratorAggregate, \Countable {
     public function save()
     {
         $data = $this->getData();
+        $itemId = null;
+
         if (!$this->currentId)
         {
             $config = $this->config();
             $config->last_id++;
 
-            $this->setField('id', $config->last_id);
+            $itemId = $config->last_id;
             array_push($data, $this->set);
 
             Helpers\Config::table($this->name)->put($config);
         }
         else
         {
-            $this->setField('id', $this->currentId);
+            $itemId = $this->currentId;
             $data[$this->currentKey] = $this->set;
         }
 
         Helpers\Data::table($this->name)->put($data);
-
+        $this->setField('id', $itemId);
 //         $this->setFields();
     }
 
