@@ -862,6 +862,7 @@ class Database implements \IteratorAggregate, \Countable {
             $config = $this->config();
             $config->last_id++;
 
+            $this->setField('id', $config->last_id);
             $itemId = $config->last_id;
             array_push($data, $this->set);
 
@@ -869,6 +870,7 @@ class Database implements \IteratorAggregate, \Countable {
         }
         else
         {
+            $this->setField('id', $this->currentId);
             $itemId = $this->currentId;
             $data[$this->currentKey] = $this->set;
         }
@@ -878,7 +880,6 @@ class Database implements \IteratorAggregate, \Countable {
         // after save, clear all $set data
         $this->set = new \stdClass();
         $this->setField('id', $itemId);
-//         $this->setFields();
     }
 
     /**
