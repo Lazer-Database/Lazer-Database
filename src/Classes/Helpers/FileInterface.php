@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lazer\Classes\Helpers;
 
 use Lazer\Classes\LazerException;
@@ -11,45 +13,45 @@ interface FileInterface {
      * @param string $name
      * @return File
      */
-    public static function table($name);
+    public static function table(string $name): File;
 
     /**
      * Set the file type
      * @param string $type File type (data|config)
      */
-    public function setType($type);
+    public function setType(string $type);
 
     /**
      * Returning path to file
      * @return string Path to file
      * @throws LazerException You must specify the type of file
      */
-    public function getPath();
+    public function getPath(): string;
 
     /**
      * Return decoded JSON
-     * @param boolean $assoc Returns object if false; array if true
+     * @param bool $assoc Returns object if false; array if true
      * @return mixed (object|array)
      */
-    public function get($assoc = false);
+    public function get(bool $assoc = false);
 
     /**
      * Saving encoded JSON to file
      * @param object|array $data
-     * @return boolean
+     * @return int|bool
      */
     public function put($data);
 
     /**
      * Checking that file exists
-     * @return boolean
+     * @return bool
      */
-    public function exists();
+    public function exists(): bool;
 
     /**
      * Removing file
-     * @return boolean
+     * @return bool
      * @throws LazerException If file doesn't exists or there's problems with deleting files
      */
-    public function remove();
+    public function remove(): bool;
 }

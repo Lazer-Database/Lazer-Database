@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lazer\Classes;
 
-use Lazer\Classes\Helpers\Validate;
-use Lazer\Classes\Helpers\Config;
+use Lazer\Classes\Helpers\{Validate,
+    Config};
 
 /**
  * Relation class of LAZER project.
@@ -20,19 +22,19 @@ class Relation {
      * Tables names
      * @var array tables
      */
-    protected $tables = array(
+    protected $tables = [
         'local'   => null,
         'foreign' => null
-    );
+    ];
 
     /**
      * Relation keys names
      * @var array keys
      */
-    protected $keys = array(
+    protected $keys = [
         'local'   => null,
         'foreign' => null
-    );
+    ];
 
     /**
      * Current relation type
@@ -44,7 +46,7 @@ class Relation {
      * All relations types
      * @var array
      */
-    protected static $relations = array('belongsTo', 'hasMany', 'hasAndBelongsToMany');
+    protected static $relations = ['belongsTo', 'hasMany', 'hasAndBelongsToMany'];
 
     /**
      * Factory method
@@ -217,11 +219,11 @@ class Relation {
      */
     public function getRelation()
     {
-        return array(
+        return [
             'tables' => $this->tables,
             'keys'   => $this->keys,
             'type'   => $this->relationType
-        );
+        ];
     }
 
     /**
@@ -254,20 +256,20 @@ class Relation {
             }
             catch (LazerException $e)
             {
-                Database::create($junction, array(
+                Database::create($junction, [
                     $this->tables['local'] . '_id'   => 'integer',
                     $this->tables['foreign'] . '_id' => 'integer',
-                ));
+                ]);
 
-                $this->insertRelationData($junction, $this->tables['local'], 'hasMany', array(
+                $this->insertRelationData($junction, $this->tables['local'], 'hasMany', [
                     'local'   => $this->tables['local'] . '_id',
                     'foreign' => $this->keys['local']
-                ));
+                ]);
 
-                $this->insertRelationData($junction, $this->tables['foreign'], 'hasMany', array(
+                $this->insertRelationData($junction, $this->tables['foreign'], 'hasMany', [
                     'local'   => $this->tables['foreign'] . '_id',
                     'foreign' => $this->keys['foreign']
-                ));
+                ]);
             }
         }
         $this->insertRelationData($this->tables['local'], $this->tables['foreign'], $this->relationType, $this->keys);
@@ -284,10 +286,10 @@ class Relation {
     {
         $config                    = Config::table($from);
         $content                   = $config->get();
-        $content->relations->{$to} = array(
+        $content->relations->{$to} = [
             'type' => $type,
             'keys' => $keys,
-        );
+        ];
         $config->put($content);
     }
 
@@ -324,7 +326,7 @@ class Relation {
 
 
             if (empty($join))
-                return array();
+                return [];
 
             return Database::table($this->tables['foreign'])
                 ->where($keys['foreign'], 'IN', $join[$row->{$keys['local']}]);
@@ -342,7 +344,7 @@ class Relation {
      */
     public function build(array $array, $part)
     {
-        $return = array();
+        $return = [];
         foreach ($array as $key => $row)
         {
             if (is_object($row))

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lazer\Classes\Helpers;
 
 /**
@@ -13,7 +15,12 @@ namespace Lazer\Classes\Helpers;
  */
 class Data extends File {
 
-    public static function table($name)
+    /**
+     * Get file of the table
+     * @param string $name
+     * @return File
+     */
+    public static function table(string $name): File
     {
         $file       = new Data;
         $file->name = $name;
