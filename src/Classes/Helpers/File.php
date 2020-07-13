@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lazer\Classes\Helpers;
 
 use Lazer\Classes\LazerException;
@@ -12,6 +14,11 @@ use Lazer\Classes\LazerException;
  * @copyright (c) 2013, Grzegorz Kuźnik
  * @license http://opensource.org/licenses/MIT The MIT License
  * @link https://github.com/Greg0/Lazer-Database GitHub Repository
+ * 
+ * @method array fields
+ * @method array schema
+ * @method object relations
+ * @method int lastId
  */
 class File implements FileInterface {
 
@@ -27,7 +34,12 @@ class File implements FileInterface {
      */
     protected $type;
 
-    public static function table($name)
+    /**
+     * 
+     * @param string $name
+     * @return File
+     */
+    public static function table(string $name): File
     {
         $file       = new File;
         $file->name = $name;
@@ -35,12 +47,21 @@ class File implements FileInterface {
         return $file;
     }
 
-    public final function setType($type)
+    /**
+     * @param string $type
+     * @return void
+     */
+    public final function setType(string $type)
     {
         $this->type = $type;
     }
 
-    public final function getPath()
+    /**
+     * 
+     * @return string
+     * @throws LazerException
+     */
+    public final function getPath(): string
     {
         if (!defined('LAZER_DATA_PATH'))
         {
@@ -56,22 +77,41 @@ class File implements FileInterface {
         }
     }
 
-    public final function get($assoc = false)
+    /**
+     * @param bool $assoc
+     * @return array|object
+     * @throws LazerException
+     */
+    public final function get(bool $assoc = false)
     {
         return json_decode(file_get_contents($this->getPath()), $assoc);
     }
 
+    /**
+     * @param object|array $data
+     * @return int|bool
+     * @throws LazerException
+     */
     public final function put($data)
     {
         return file_put_contents($this->getPath(), json_encode($data));
     }
 
-    public final function exists()
+    /**
+     * @return bool
+     * @throws LazerException
+     */
+    public final function exists(): bool
     {
         return file_exists($this->getPath());
     }
 
-    public final function remove()
+    /**
+     * 
+     * @return bool
+     * @throws LazerException 
+     */
+    public final function remove(): bool
     {
         $type = ucfirst($this->type);
         if ($this->exists())

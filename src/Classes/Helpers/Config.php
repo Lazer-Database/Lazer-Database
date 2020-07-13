@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lazer\Classes\Helpers;
+
+use Lazer\Classes\LazerException;
 
 /**
  * Config managing class
@@ -15,16 +19,22 @@ class Config extends File {
 
     /**
      * Get key from returned config
-     * @param string $field key
-     * @param bool $assoc
-     * @return mixed
+     * @param string $field 
+     * @param bool $assoc 
+     * @return mixed 
+     * @throws LazerException 
      */
-    public function getKey($field, $assoc = false)
+    public function getKey(string $field, bool $assoc = false)
     {
         return $assoc ? $this->get($assoc)[$field] : $this->get($assoc)->{$field};
     }
 
-    public static function table($name)
+    /**
+     * Get file of the table
+     * @param string $name
+     * @return File
+     */
+    public static function table(string $name): File
     {
         $file       = new Config;
         $file->name = $name;
@@ -36,19 +46,21 @@ class Config extends File {
     /**
      * Return array with names of fields
      * @return array
+     * @throws LazerException
      */
-    public function fields()
+    public function fields(): array
     {
         return array_keys($this->getKey('schema', true));
     }
 
     /**
      * Return relations configure
-     * @param mixed $tableName null-all tables;array-few tables;string-one table relation informations
-     * @param boolean $assoc Object or associative array
-     * @return array|object
+     * @param string|array|null $tableName null-all tables;array-few tables;string-one table relation informations
+     * @param bool $assoc Object or associative array
+     * @return mixed
+     * @throws LazerException
      */
-    public function relations($tableName = null, $assoc = false)
+    public function relations($tableName = null, bool $assoc = false)
     {
         if (is_array($tableName))
         {
@@ -73,17 +85,19 @@ class Config extends File {
     /**
      * Returning assoc array with types of fields
      * @return array
+     * @throws LazerException
      */
-    public function schema()
+    public function schema(): array
     {
         return $this->getKey('schema', true);
     }
 
     /**
      * Returning last ID from table
-     * @return integer
+     * @return int
+     * @throws LazerException 
      */
-    public function lastId()
+    public function lastId(): int
     {
         return $this->getKey('last_id');
     }

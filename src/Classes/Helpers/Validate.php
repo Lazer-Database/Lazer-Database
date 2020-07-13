@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lazer\Classes\Helpers;
 
-use Lazer\Classes\LazerException;
-use Lazer\Classes\Relation;
+use Lazer\Classes\{LazerException,
+    Relation};
 
 /**
  * Validation for tables
@@ -27,7 +29,7 @@ class Validate {
      * @param string $name
      * @return Validate
      */
-    public static function table($name)
+    public static function table(string $name): Validate
     {
         $validate       = new Validate();
         $validate->name = $name;
@@ -37,11 +39,11 @@ class Validate {
     /**
      * Checking that field type is numeric
      * @param string $type
-     * @return boolean
+     * @return bool
      */
-    public static function isNumeric($type)
+    public static function isNumeric(string $type): bool
     {
-        $defined = array('integer', 'double');
+        $defined = ['integer', 'double'];
 
         if (in_array($type, $defined))
         {
@@ -52,14 +54,14 @@ class Validate {
     }
 
     /**
-     * Checking that types from array matching with [boolean, integer, string, double]
+     * Checking that types from array matching with [bool, integer, string, double]
      * @param array $types Indexed array
      * @return bool
      * @throws LazerException
      */
-    public static function types(array $types)
+    public static function types(array $types): bool
     {
-        $defined = array('boolean', 'integer', 'string', 'double');
+        $defined = ['boolean', 'integer', 'string', 'double'];
         $diff    = array_diff($types, $defined);
 
         if (empty($diff))
@@ -74,7 +76,7 @@ class Validate {
      * @param array $fields
      * @return array Fields without ID
      */
-    public static function filter(array $fields)
+    public static function filter(array $fields): array
     {
         if (array_values($fields) === $fields)
         {
@@ -95,7 +97,7 @@ class Validate {
      * @param array $array
      * @return array
      */
-    public static function arrToLower(array $array)
+    public static function arrToLower(array $array): array
     {
         $array = array_change_key_case($array);
         $array = array_map('strtolower', $array);
@@ -106,10 +108,10 @@ class Validate {
     /**
      * Checking that typed fields really exist in table
      * @param array $fields Indexed array
-     * @return boolean
+     * @return bool
      * @throws LazerException If field(s) does not exist
      */
-    public function fields(array $fields)
+    public function fields(array $fields): bool
     {
         $fields = self::filter($fields);
         $diff   = array_diff($fields, Config::table($this->name)->fields());
@@ -124,10 +126,10 @@ class Validate {
     /**
      * Checking that typed field really exist in table
      * @param string $name
-     * @return boolean
+     * @return bool
      * @throws LazerException If field does not exist
      */
-    public function field($name)
+    public function field(string $name): bool
     {
         if (in_array($name, Config::table($this->name)->fields()))
         {
@@ -138,10 +140,10 @@ class Validate {
 
     /**
      * Checking that Table and Config exists and throw exceptions if not
-     * @return boolean
+     * @return bool
      * @throws LazerException
      */
-    public function exists()
+    public function exists(): bool
     {
         if (!Data::table($this->name)->exists())
             throw new LazerException('Table "' . $this->name . '" does not exists');
@@ -156,10 +158,10 @@ class Validate {
      * Checking that typed field have correct type of value
      * @param string $name
      * @param mixed $value
-     * @return boolean
+     * @return bool
      * @throws LazerException If type is wrong
      */
-    public function type($name, $value)
+    public function type(string $name, $value): bool
     {
         $schema = Config::table($this->name)->schema();
         if (array_key_exists($name, $schema) && (null === $value || $schema[$name] == gettype($value)) || (self::isNumeric($schema[$name]) === self::isNumeric(gettype($value))))
@@ -177,7 +179,7 @@ class Validate {
      * @return bool relation exists
      * @throws LazerException
      */
-    public static function relation($local, $foreign)
+    public static function relation(string $local, string $foreign): bool
     {
         $relations = Config::table($local)->relations();
         if (isset($relations->{$foreign}))
@@ -194,7 +196,7 @@ class Validate {
      * @return bool relation type
      * @throws LazerException Wrong relation type
      */
-    public static function relationType($type)
+    public static function relationType(string $type): bool
     {
         if (in_array($type, Relation::relations()))
         {

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lazer\Test\Classes;
 
 use Lazer\Classes\Database;
 use Lazer\Test\VfsHelper\Config as TestHelper;
 
-class DatabaseTest extends \PHPUnit_Framework_TestCase {
+class DatabaseTest extends \PHPUnit\Framework\TestCase {
 
     use TestHelper;
 
@@ -31,12 +33,12 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     {
         $this->assertFalse($this->root->hasChild('newTable.data.json'));
         $this->assertFalse($this->root->hasChild('newTable.config.json'));
-        $this->object->create('newTable', array(
+        $this->object->create('newTable', [
             'myInteger' => 'integer',
             'myString'  => 'string',
             'myBool'    => 'boolean',
             'myDouble'    => 'double'
-        ));
+        ]);
         $this->assertTrue($this->root->hasChild('newTable.data.json'));
         $this->assertTrue($this->root->hasChild('newTable.config.json'));
     }
@@ -48,11 +50,11 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
      */
     public function testCreateExistingTable()
     {
-        $this->object->create('users', array(
+        $this->object->create('users', [
             'myInteger' => 'integer',
             'myString'  => 'string',
             'myBool'    => 'boolean'
-        ));
+        ]);
     }
 
     /**
@@ -116,7 +118,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
      */
     public function testFind($table)
     {
-        $result = array();
+        $result = [];
 
         $result[] = $table->find();
         $this->assertInstanceOf('Lazer\Classes\Database', $result[0]);
@@ -147,7 +149,6 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
         $this->assertInternalType('array', $resultsValueField);
         $this->assertArrayNotHasKey(4, $resultsValueField);
         $this->assertArrayHasKey(0, $resultsValueField);
-
         $resultsKeyValue = $table->findAll()->asArray('id', 'name', 'price');
         $this->assertInternalType('array', $resultsValueField);
         $this->assertArraySubset([2 => 'Kriss'], $resultsKeyValue);
@@ -192,7 +193,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     public function testOrderBy()
     {
         $table   = $this->object->table('order');
-        $query   = array();
+        $query   = [];
         $query[] = $table->orderBy('id')->findAll()->asArray();
         $query[] = $table->orderBy('id', 'DESC')->findAll()->asArray();
         $query[] = $table->orderBy('name')->findAll()->asArray();
@@ -233,7 +234,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     public function testWhere()
     {
         $table   = $this->object->table('users');
-        $query   = array();
+        $query   = [];
         $query[] = $table->where('id', '=', 1)->findAll();
         $query[] = $table->where('id', '!=', 4)->findAll();
         $query[] = $table->where('name', '=', 'Kriss')->findAll();
@@ -327,7 +328,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     public function testGroupBy()
     {
         $table   = $this->object->table('order');
-        $query   = array();
+        $query   = [];
         $query[] = $table->groupBy('category')->findAll();
 
         foreach ($query[0] as $category => $group)
@@ -348,7 +349,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     {
         $table        = $this->object->table('users');
         $fieldsBefore = $table->fields();
-        $table->addFields(array('new' => 'string', 'fields' => 'integer'));
+        $table->addFields(['new' => 'string', 'fields' => 'integer']);
         $fieldsAfter  = $table->fields();
 
         $this->assertArraySubset(['id', 'name', 'email'], $fieldsBefore, true);
@@ -362,7 +363,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     {
         $table        = $this->object->table('order');
         $fieldsBefore = $table->fields();
-        $table->addFields(array('cost' => 'double'));
+        $table->addFields(['cost' => 'double']);
         $fieldsAfter  = $table->fields();
 
         $this->assertArraySubset(['id', 'price', 'name', 'number', 'category'], $fieldsBefore, true);
@@ -376,7 +377,7 @@ class DatabaseTest extends \PHPUnit_Framework_TestCase {
     {
         $table        = $this->object->table('users');
         $fieldsBefore = $table->fields();
-        $table->deleteFields(array('name'));
+        $table->deleteFields(['name']);
         $fieldsAfter  = $table->fields();
 
         $this->assertArraySubset(['id', 'name', 'email'], $fieldsBefore, true);

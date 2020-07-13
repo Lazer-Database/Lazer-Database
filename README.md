@@ -10,7 +10,7 @@ Functionality inspired by ORM's
 
 Requirements
 ------------
-- PHP 5.6+
+- PHP 7.0+
 - Composer
 
 Installation
@@ -54,32 +54,32 @@ use Lazer\Classes\Database as Lazer; // example
 ##### Chain methods
 
 - `setField()` - set value of field (alternative to magic `__set()`)
-- `limit()` - returns results between a certain number range. Should be used right before ending method `findAll()`.
-- `orderBy()` - sort rows by key in order, can order by more than one field (just chain it). 
-- `groupBy()` - group rows by field.
-- `where()` - filter records. Alias: `and_where()`.
-- `orWhere()` - other type of filtering results. 
-- `with()` - join other tables by defined relations
+- `limit()`    - returns results between a certain number range. Should be used right before ending method `findAll()`.
+- `orderBy()`  - sort rows by key in order, can order by more than one field (just chain it). 
+- `groupBy()`  - group rows by field.
+- `where()`    - filter records. Alias: `and_where()`.
+- `orWhere()`  - other type of filtering results. 
+- `with()`     - join other tables by defined relations
 
 ##### Ending methods
 
-- `getField` - get value of field (alternative to magic `__get()`)
-- `issetField` - check if field is isset (alternative to magic `__isset()`)
-- `addFields()` - append new fields into existing table
-- `deleteFields()` - removing fields from existing table
-- `set()` - get key/value pair array argument to save.
-- `save()` - insert or Update data (automatically detect if it needs an insert or update).
-- `insert()` - force an insert.
-- `delete()` - deleting data.
-- `relations()` - returns array with table relations
-- `config()` - returns object with configuration.
-- `fields()` - returns array with fields name.
-- `schema()` - returns assoc array with fields name and fields type `field => type`.
-- `lastId()` - returns last ID from table.
-- `find()` - returns one row with specified ID.
-- `findAll()` - returns rows.
-- `asArray()` - returns data as indexed or assoc array: `['field_name' => 'field_name']`. Should be used after ending method `findAll()` or `find()`.
-- `count()` - returns the number of rows. Should be used after ending method `findAll()` or `find()`.
+- `getField`        - get value of field (alternative to magic `__get()`)
+- `issetField`      - check if field is isset (alternative to magic `__isset()`)
+- `addFields()`     - append new fields into existing table
+- `deleteFields()`  - removing fields from existing table
+- `set()`           - get key/value pair array argument to save.
+- `save()`          - insert or Update data (automatically detect if it needs an insert or update).
+- `insert()`        - force an insert.
+- `delete()`        - deleting data.
+- `relations()`     - returns array with table relations
+- `config()`        - returns object with configuration.
+- `fields()`        - returns array with fields name.
+- `schema()`        - returns assoc array with fields name and fields type `field => type`.
+- `lastId()`        - returns last ID from table.
+- `find()`          - returns one row with specified ID.
+- `findAll()`       - returns rows.
+- `asArray()`       - returns data as indexed or assoc array: `['field_name' => 'field_name']`. Should be used after ending method `findAll()` or `find()`.
+- `count()`         - returns the number of rows. Should be used after ending method `findAll()` or `find()`.
 
 ### Create database
 ```php

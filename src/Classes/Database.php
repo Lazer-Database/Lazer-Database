@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Lazer\Classes;
 
 use Lazer\Classes\Helpers;
@@ -68,7 +70,7 @@ class Database implements \IteratorAggregate, \Countable {
      * @return self
      * @throws LazerException If there's problems with load file
      */
-    public static function table($name)
+    public static function table(string $name): self
     {
         Helpers\Validate::table($name)->exists();
 
@@ -86,7 +88,7 @@ class Database implements \IteratorAggregate, \Countable {
      * @uses \Lazer\Classes\Helpers\Data::get() to get data from file
      * @return array
      */
-    protected function getData()
+    protected function getData(): array
     {
         return Helpers\Data::table($this->name)->get();
     }
@@ -101,11 +103,11 @@ class Database implements \IteratorAggregate, \Countable {
 
     /**
      * Returns array key of row with specified ID
-     * @param integer $id Row ID
-     * @return integer Row key
+     * @param int $id Row ID
+     * @return int Row key
      * @throws LazerException If there's no data with that ID
      */
-    protected function getRowKey($id)
+    protected function getRowKey(int $id): int
     {
         foreach ($this->getData() as $key => $data)
         {
@@ -153,13 +155,13 @@ class Database implements \IteratorAggregate, \Countable {
      */
     protected function setPending()
     {
-        $this->pending = array(
-            'where'   => array(),
-            'orderBy' => array(),
-            'limit'   => array(),
-            'with'    => array(),
-            'groupBy' => array(),
-        );
+        $this->pending = [
+            'where'   => [],
+            'orderBy' => [],
+            'limit'   => [],
+            'with'    => [],
+            'groupBy' => [],
+        ];
     }
 
     /**
@@ -209,7 +211,7 @@ class Database implements \IteratorAggregate, \Countable {
      * @return self
      * @throws LazerException
      */
-    public function setField($name, $value)
+    public function setField(string $name, $value): self
     {
         if (Helpers\Validate::table($this->name)->field($name) && Helpers\Validate::table($this->name)->type($name, $value))
         {
@@ -239,9 +241,9 @@ class Database implements \IteratorAggregate, \Countable {
     /**
      * Check if the given field exists
      * @param string $name Field name
-     * @return boolean True if the field exists, false otherwise
+     * @return bool True if the field exists, false otherwise
      */
-    public function issetField($name)
+    public function issetField($name): bool
     {
         return property_exists($this->set, $name);
     }
@@ -262,7 +264,7 @@ class Database implements \IteratorAggregate, \Countable {
      * @param string $name Field name
      * @return boolean True if the field exists, false otherwise
      */
-    public function __isset($name)
+    public function __isset($name): bool
     {
         return $this->issetField($name);
     }
@@ -277,7 +279,7 @@ class Database implements \IteratorAggregate, \Countable {
         {
             if (!empty($args))
             {
-                call_user_func(array($this, $func . 'Pending'));
+                call_user_func([$this, $func . 'Pending']);
             }
         }
 
@@ -290,12 +292,12 @@ class Database implements \IteratorAggregate, \Countable {
      *
      * For example few fields:
      *
-     * Database::create('news', array(
+     * Database::create('news', [
      *  'title' => 'string',
      *  'content' => 'string',
      *  'rating' => 'double',
      *  'author' => 'integer'
-     * ));
+     * ]);
      *
      * Types of field:
      * - boolean
@@ -315,7 +317,7 @@ class Database implements \IteratorAggregate, \Countable {
      * @param array $fields Field configuration
      * @throws LazerException If table exist
      */
-    public static function create($name, array $fields)
+    public static function create(string $name, array $fields)
     {
         $fields = Helpers\Validate::arrToLower($fields);
 
@@ -330,7 +332,7 @@ class Database implements \IteratorAggregate, \Countable {
 
         if (!array_key_exists('id', $fields))
         {
-            $fields = array('id' => 'integer') + $fields;
+            $fields = ['id' => 'integer'] + $fields;
         }
 
         $data            = new \stdClass();
@@ -338,7 +340,7 @@ class Database implements \IteratorAggregate, \Countable {
         $data->schema    = $fields;
         $data->relations = new \stdClass();
 
-        Helpers\Data::table($name)->put(array());
+        Helpers\Data::table($name)->put([]);
         Helpers\Config::table($name)->put($data);
     }
 
@@ -382,7 +384,7 @@ class Database implements \IteratorAggregate, \Countable {
     {
         $column = $this->pending['groupBy'];
 
-        $grouped = array();
+        $grouped = [];
         foreach ($this->data as $object)
         {
             $grouped[$object->{$column}][] = $object;
@@ -434,11 +436,11 @@ class Database implements \IteratorAggregate, \Countable {
     {
         if (Helpers\Validate::table($this->name)->field($key))
         {
-            $directions                        = array(
+            $directions                        = [
                 'ASC'  => SORT_ASC,
                 'DESC' => SORT_DESC
-            );
-            $this->pending[__FUNCTION__][$key] = isset($directions[$direction]) ? $directions[$direction] : 'ASC';
+            ];
+            $this->pending[__FUNCTION__][$key] = $directions[$direction] ?: 'ASC';
         }
 
         return $this;
@@ -452,7 +454,22 @@ class Database implements \IteratorAggregate, \Countable {
     protected function orderByPending()
     {
         $properties = $this->pending['orderBy'];
-        uasort($this->data, function($a, $b) use ($properties)
+        $collapse = function($node, $props)
+        {
+            if (is_array($props))
+            {
+                foreach ($props as $prop)
+                {
+                    $node = $node->$prop ?: null;
+                }
+                return $node;
+            }
+            else
+            {
+                return $node->$props ?: null;
+            }
+        };
+        uasort($this->data, function($a, $b) use ($properties, $collapse)
         {
             foreach ($properties as $column => $direction)
             {
@@ -461,23 +478,8 @@ class Database implements \IteratorAggregate, \Countable {
                     $column    = $direction;
                     $direction = SORT_ASC;
                 }
-                $collapse = function($node, $props)
-                {
-                    if (is_array($props))
-                    {
-                        foreach ($props as $prop)
-                        {
-                            $node = (!isset($node->$prop)) ? null : $node->$prop;
-                        }
-                        return $node;
-                    }
-                    else
-                    {
-                        return (!isset($node->$props)) ? null : $node->$props;
-                    }
-                };
-                $aProp = $collapse($a, $column);
-                $bProp = $collapse($b, $column);
+                $aProp = (string) $collapse($a, $column);
+                $bProp = (string) $collapse($b, $column);
 
                 if ($aProp != $bProp)
                 {
@@ -503,12 +505,12 @@ class Database implements \IteratorAggregate, \Countable {
      */
     public function where($field, $op, $value)
     {
-        $this->pending['where'][] = array(
+        $this->pending['where'][] = [
             'type'  => 'and',
             'field' => $field,
             'op'    => $op,
             'value' => $value,
-        );
+        ];
 
         return $this;
     }
@@ -536,12 +538,12 @@ class Database implements \IteratorAggregate, \Countable {
      */
     public function orWhere($field, $op, $value)
     {
-        $this->pending['where'][] = array(
+        $this->pending['where'][] = [
             'type'  => 'or',
             'field' => $field,
             'op'    => $op,
             'value' => $value,
-        );
+        ];
 
         return $this;
     }
@@ -552,7 +554,7 @@ class Database implements \IteratorAggregate, \Countable {
      */
     protected function wherePending()
     {
-        $operator = array(
+        $operator = [
             '='   => '==',
             '!='  => '!=',
             '>'   => '>',
@@ -561,7 +563,7 @@ class Database implements \IteratorAggregate, \Countable {
             '<='  => '<=',
             'and' => '&&',
             'or'  => '||'
-        );
+        ];
 
         $this->data = array_filter($this->data, function($row) use ($operator)
         {
@@ -581,7 +583,7 @@ class Database implements \IteratorAggregate, \Countable {
                     $op    = '==';
                     $field = 1;
                 }
-                elseif (!is_array($value) && in_array($op, array('LIKE', 'like')))
+                elseif (!is_array($value) && in_array($op, ['LIKE', 'like']))
                 {
                     $regex = "/^" . str_replace('%', '(.*?)', preg_quote($value)) . "$/si";
                     $value = preg_match($regex, $row->{$field});
@@ -604,7 +606,7 @@ class Database implements \IteratorAggregate, \Countable {
                     null :
                     $operator[$type];
 
-                $query = array($type, $field, $op, $value);
+                $query = [$type, $field, $op, $value];
                 $clause .= implode(' ', $query) . ' ';
 
                 eval('$result = ' . $clause . ';');
@@ -620,7 +622,7 @@ class Database implements \IteratorAggregate, \Countable {
      * @param string $value Field that will be the value
      * @return array
      */
-    public function asArray($key = null, $value = null)
+    public function asArray(string $key = null, string $value = null, string $v2 = null)
     {
         if (!is_null($key))
         {
@@ -631,7 +633,7 @@ class Database implements \IteratorAggregate, \Countable {
             Helpers\Validate::table($this->name)->field($value);
         }
 
-        $datas = array();
+        $datas = [];
         if (!$this->resetKeys)
         {
             if (is_null($key) && is_null($value))
@@ -642,7 +644,7 @@ class Database implements \IteratorAggregate, \Countable {
             {
                 foreach ($this->data as $rowKey => $data)
                 {
-                    $datas[$rowKey] = array();
+                    $datas[$rowKey] = [];
                     foreach ($data as $row)
                     {
                         if (is_null($key))
@@ -703,10 +705,10 @@ class Database implements \IteratorAggregate, \Countable {
      */
     public function limit($number, $offset = 0)
     {
-        $this->pending['limit'] = array(
+        $this->pending['limit'] = [
             'offset' => $offset,
             'number' => $number
-        );
+        ];
 
         return $this;
     }
@@ -813,7 +815,7 @@ class Database implements \IteratorAggregate, \Countable {
      * Returning assoc array with types of fields
      * @return array Fields type
      */
-    public function schema()
+    public function schema(): array
     {
         return Helpers\Config::table($this->name)->schema();
     }
@@ -823,16 +825,16 @@ class Database implements \IteratorAggregate, \Countable {
      * @param string|null $tableName
      * @return array Fields type
      */
-    public function relations($tableName = null)
+    public function relations(string $tableName = null)
     {
         return Helpers\Config::table($this->name)->relations($tableName, true);
     }
 
     /**
      * Returning last ID from table
-     * @return integer Last ID
+     * @return int Last ID
      */
-    public function lastId()
+    public function lastId(): int
     {
         return Helpers\Config::table($this->name)->lastId();
     }
@@ -901,7 +903,7 @@ class Database implements \IteratorAggregate, \Countable {
         }
         $this->data = array_values($data);
 
-        return Helpers\Data::table($this->name)->put($this->data) ? true : false;
+        return Helpers\Data::table($this->name)->put($this->data);
     }
 
     /**
@@ -912,7 +914,7 @@ class Database implements \IteratorAggregate, \Countable {
     {
         if (!$this->resetKeys)
         {
-            $count = array();
+            $count = [];
             foreach ($this->data as $group => $data)
             {
                 $count[$group] = count($data);
