@@ -109,12 +109,13 @@ class Database implements \IteratorAggregate, \Countable {
      */
     protected function getRowKey(int $id): int
     {
-        foreach ($this->getData() as $key => $data)
-        {
-            if ($data->id == $id)
-            {
-                return $key;
-                break;
+        $currentData = $this->getData();
+        if (is_array($currentData)) {
+            foreach ($currentData as $key => $data) {
+                if ($data->id == $id) {
+                    return $key;
+                    break;
+                }
             }
         }
         throw new LazerException('No data found with ID: ' . $id);
