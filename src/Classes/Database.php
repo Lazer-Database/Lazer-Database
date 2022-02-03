@@ -86,9 +86,9 @@ class Database implements \IteratorAggregate, \Countable {
     /**
      * Get rows from table
      * @uses \Lazer\Classes\Helpers\Data::get() to get data from file
-     * @return array
+     * @return array|null
      */
-    protected function getData(): array
+    protected function getData()
     {
         return Helpers\Data::table($this->name)->get();
     }
