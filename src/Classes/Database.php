@@ -86,11 +86,11 @@ class Database implements \IteratorAggregate, \Countable {
     /**
      * Get rows from table
      * @uses \Lazer\Classes\Helpers\Data::get() to get data from file
-     * @return array|null
+     * @return array
      */
-    protected function getData()
+    protected function getData(): array
     {
-        return Helpers\Data::table($this->name)->get();
+        return Helpers\Data::table($this->name)->get() ?? [];
     }
 
     /**
@@ -109,13 +109,12 @@ class Database implements \IteratorAggregate, \Countable {
      */
     protected function getRowKey(int $id): int
     {
-        $currentData = $this->getData();
-        if (is_array($currentData)) {
-            foreach ($currentData as $key => $data) {
-                if ($data->id == $id) {
-                    return $key;
-                    break;
-                }
+        foreach ($this->getData() as $key => $data)
+        {
+            if ($data->id == $id)
+            {
+                return $key;
+                break;
             }
         }
         throw new LazerException('No data found with ID: ' . $id);
