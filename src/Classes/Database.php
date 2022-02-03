@@ -90,7 +90,7 @@ class Database implements \IteratorAggregate, \Countable {
      */
     protected function getData(): array
     {
-        return Helpers\Data::table($this->name)->get() ?? [];
+        return Helpers\Data::table($this->name)->get(true) ?? [];
     }
 
     /**

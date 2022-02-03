@@ -26,7 +26,13 @@ class Config extends File {
      */
     public function getKey(string $field, bool $assoc = false)
     {
-        return $assoc ? $this->get($assoc)[$field] : $this->get($assoc)->{$field};
+        $value = $this->get($assoc);
+
+        if (null === $value) {
+            return null;
+        }
+
+        return $assoc ? $value[$field] : $value->{$field};
     }
 
     /**
@@ -50,7 +56,8 @@ class Config extends File {
      */
     public function fields(): array
     {
-        return array_keys($this->getKey('schema', true));
+        $keys = $this->getKey('schema', true);
+        return $keys ? array_keys($keys) : [];
     }
 
     /**
