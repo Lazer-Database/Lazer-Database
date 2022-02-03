@@ -89,7 +89,7 @@ class Config extends File {
      */
     public function schema(): array
     {
-        return $this->getKey('schema', true);
+        return $this->getKey('schema', true) ?? [];
     }
 
     /**
