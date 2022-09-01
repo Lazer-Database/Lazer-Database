@@ -585,7 +585,7 @@ class Database implements \IteratorAggregate, \Countable {
                 }
                 elseif (!is_array($value) && in_array($op, ['LIKE', 'like']))
                 {
-                    $regex = "/^" . str_replace('%', '(.*?)', preg_quote($value)) . "$/si";
+                    $regex = "/^" . str_replace('%', '(.*?)', preg_quote($value, '/')) . "$/si";
                     $value = preg_match($regex, $row->{$field});
                     $op    = '==';
                     $field = 1;
