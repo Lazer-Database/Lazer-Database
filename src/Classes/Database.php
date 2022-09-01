@@ -486,7 +486,7 @@ class Database implements \IteratorAggregate, \Countable {
                     return ($direction == SORT_ASC) ? strnatcasecmp($aProp, $bProp) : strnatcasecmp($bProp, $aProp);
                 }
             }
-            return FALSE;
+            return 0;
         });
     }
 
@@ -907,10 +907,25 @@ class Database implements \IteratorAggregate, \Countable {
     }
 
     /**
-     * Return count in integer or array of integers (if grouped)
-     * @return mixed
+     * Return count in integer
+     * @throws LazerException
      */
-    public function count()
+    public function count(): int
+    {
+        if (!$this->resetKeys)
+        {
+            throw new LazerException('Deprecated, use `Database::countByGroup` instead.');
+        }
+
+        return count($this->data);
+    }
+
+    /**
+     * Return array of integers
+     * @return int[]
+     * @throws LazerException
+     */
+    public function countByGroup(): array
     {
         if (!$this->resetKeys)
         {
@@ -919,13 +934,11 @@ class Database implements \IteratorAggregate, \Countable {
             {
                 $count[$group] = count($data);
             }
-        }
-        else
-        {
-            $count = count($this->data);
+
+            return $count;
         }
 
-        return $count;
+        throw new LazerException('Use `Database::count` instead.');
     }
 
     /**
@@ -978,7 +991,7 @@ class Database implements \IteratorAggregate, \Countable {
      * Iterator for Data
      * @return \ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->data);
     }
