@@ -164,7 +164,7 @@ class Validate {
     public function type(string $name, $value): bool
     {
         $schema = Config::table($this->name)->schema();
-        if (array_key_exists($name, $schema) && (null === $value || $schema[$name] == gettype($value)) || (self::isNumeric($schema[$name]) === self::isNumeric(gettype($value))))
+        if ((array_key_exists($name, $schema) && (null === $value || $schema[$name] == gettype($value))) || (self::isNumeric($schema[$name]) === self::isNumeric(gettype($value))))
         {
             return TRUE;
         }
