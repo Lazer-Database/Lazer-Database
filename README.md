@@ -5,7 +5,7 @@ Lazer - php flat file database based on JSON files
 [![PHP Version](https://img.shields.io/packagist/php-v/greg0/lazer-database/2.0.0?style=plastic)](https://travis-ci.org/Greg0/Lazer-Database)
 [![Downloads](https://poser.pugx.org/greg0/lazer-database/d/total.svg)](https://travis-ci.org/Greg0/Lazer-Database)
 
-PHP Library to use JSON files like a database.   
+PHP Library to use JSON files like a database.
 Functionality inspired by ORM's
 
 Requirements
@@ -28,6 +28,14 @@ Easiest way to run unit tests is to use composer script
 ```
 composer run-script test
 ```
+
+Upcoming
+---
+- PHP 8.0/8.1 support
+
+Prerelease
+---
+- Migration tool
 
 Structure of table files
 -------
