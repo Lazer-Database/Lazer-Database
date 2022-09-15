@@ -1,0 +1,24 @@
+name: Unit
+
+on:
+  - workflow_dispatch
+  - push
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: php-actions/composer@v6
+        with:
+          php_version: "7.4"
+
+      - name: Units PHP7
+        uses: php-actions/phpunit@v3
+        with:
+          version: "6"
+          configuration: phpunit.xml
+          args: --coverage-text
+          php_version: "7.4"

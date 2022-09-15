@@ -1,5 +1,6 @@
 Lazer - php flat file database based on JSON files
 ====================================
+[![Unit](https://github.com/Lazer-Database/Lazer-Database/actions/workflows/unit.yml/badge.svg)](https://github.com/Lazer-Database/Lazer-Database/actions/workflows/unit.yml)
 [![Current Version](https://img.shields.io/packagist/v/greg0/lazer-database.svg)](https://packagist.org/packages/greg0/lazer-database#latest)
 ![PHP Version](https://img.shields.io/packagist/php-v/greg0/lazer-database/2.0.0)
 ![Downloads](https://poser.pugx.org/greg0/lazer-database/d/total.svg)
