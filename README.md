@@ -25,7 +25,14 @@ Tests
 -----
 Easiest way to run unit tests is to use composer script 
 ```
-composer run-script test
+composer run test
+```
+
+You can also use docker 
+
+```shell
+docker build -t lazer-db .
+docker run -it --rm lazer-db
 ```
 
 Structure of table files
