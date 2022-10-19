@@ -4,12 +4,18 @@ declare(strict_types=1);
 
 namespace Lazer\Test\Classes;
 
+use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Lazer\Classes\Database;
+use Lazer\Classes\LazerException;
 use Lazer\Test\VfsHelper\Config as TestHelper;
+use PHPUnit\Framework\TestCase;
+use Yoast\PHPUnitPolyfills\Polyfills\ExpectExceptionMessageMatches;
 
-class DatabaseTest extends \PHPUnit\Framework\TestCase {
+class DatabaseTest extends TestCase {
 
     use TestHelper;
+    use ArraySubsetAsserts;
+    use ExpectExceptionMessageMatches;
 
     /**
      * @var Database
@@ -20,7 +26,7 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase {
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->setUpFilesystem();
         $this->object = new Database;
@@ -45,11 +51,11 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @covers \Lazer\Classes\Database::create
-     * @expectedException \Lazer\Classes\LazerException
-     * @expectedExceptionMessageRegExp #Table ".*" already exists#
      */
     public function testCreateExistingTable()
     {
+        $this->expectException(LazerException::class);
+        $this->expectExceptionMessageMatches('#Table ".*" already exists#');
         $this->object->create('users', [
             'myInteger' => 'integer',
             'myString'  => 'string',
@@ -71,21 +77,21 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @covers \Lazer\Classes\Database::remove
-     * @expectedException \Lazer\Classes\LazerException
-     * @expectedExceptionMessageRegExp #.* File does not exists#
      */
     public function testRemoveNotExistingTable()
     {
+        $this->expectException(LazerException::class);
+        $this->expectExceptionMessageMatches('#.* File does not exists#');
         $this->object->remove('someTable');
     }
 
     /**
      * @covers \Lazer\Classes\Database::table
-     * @expectedException \Lazer\Classes\LazerException
-     * @expectedExceptionMessageRegExp #Table "[a-zA-Z0-9_-]+" does not exists#
      */
     public function testTableNotExists()
     {
+        $this->expectException(LazerException::class);
+        $this->expectExceptionMessageMatches('#Table "[a-zA-Z0-9_-]+" does not exists#');
         $this->object->table('notExistingTable');
     }
 
@@ -131,36 +137,37 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase {
     }
 
     /**
-     * Lazer\Classes\Database::asArray
+     * @covers \Lazer\Classes\Database::asArray
      * @depends testTableExists
      */
     public function testAsArray($table)
     {
         $results = $table->findAll()->asArray();
-        $this->assertInternalType('array', $results);
+        $this->assertIsArray($results);
         $this->assertArrayHasKey(0, $results);
 
         $resultsKeyField = $table->findAll()->asArray('id');
-        $this->assertInternalType('array', $resultsKeyField);
+        $this->assertIsArray($resultsKeyField);
         $this->assertArrayHasKey(3, $resultsKeyField);
         $this->assertArrayNotHasKey(0, $resultsKeyField);
 
         $resultsValueField = $table->findAll()->asArray(null, 'id');
-        $this->assertInternalType('array', $resultsValueField);
+        $this->assertIsArray($resultsValueField);
         $this->assertArrayNotHasKey(4, $resultsValueField);
         $this->assertArrayHasKey(0, $resultsValueField);
         $resultsKeyValue = $table->findAll()->asArray('id', 'name', 'price');
-        $this->assertInternalType('array', $resultsValueField);
+        $this->assertIsArray($resultsValueField);
         $this->assertArraySubset([2 => 'Kriss'], $resultsKeyValue);
 
         $resultsGroupBy = $this->object->table('order')->groupBy('category')->findAll()->asArray();
-        $this->assertInternalType('array', $resultsGroupBy);
+        $this->assertIsArray($resultsGroupBy);
         $this->assertArrayHasKey('a', $resultsGroupBy);
         $this->assertArrayHasKey('b', $resultsGroupBy);
     }
 
     /**
-     * Lazer\Classes\Database::count
+     * @covers \Lazer\Classes\Database::count
+     * @covers \Lazer\Classes\Database::countByGroup
      * @depends testTableExists
      */
     public function testIsCountable($table)
@@ -169,9 +176,24 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase {
         $this->assertSame(4, count($results));
         $this->assertSame(4, $results->count());
 
+        $this->expectException(LazerException::class);
+        $table->findAll()->countByGroup();
+    }
+
+    /**
+     * @covers \Lazer\Classes\Database::count
+     * @covers \Lazer\Classes\Database::countByGroup
+     * @depends testTableExists
+     */
+    public function testIsCountabledForGroups()
+    {
         $table1 = $this->object->table('order');
-        $query  = $table1->groupBy('category')->findAll()->count();
-        $this->assertInternalType('array', $query);
+        $query  = $table1->groupBy('category')->findAll()->countByGroup();
+        $this->assertIsArray($query);
+
+        $this->expectException(LazerException::class);
+        $table1 = $this->object->table('order');
+        $table1->groupBy('category')->findAll()->count();
     }
 
     /**
@@ -333,8 +355,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase {
 
         foreach ($query[0] as $category => $group)
         {
-            $this->assertInternalType('string', $category);
-            $this->assertInternalType('array', $group);
+            $this->assertIsString($category);
+            $this->assertIsArray($group);
             foreach ($group as $row)
             {
                 $this->assertInstanceOf('StdClass', $row);
@@ -581,21 +603,21 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @covers \Lazer\Classes\Database::__get
-     * @expectedException \Lazer\Classes\LazerException
-     * @expectedExceptionMessage There is no data
      */
     public function testMagicGet()
     {
+        $this->expectException(LazerException::class);
+        $this->expectExceptionMessage('There is no data');
         $table = $this->object->table('users');
         $table->someField;
     }
     /**
      * @covers \Lazer\Classes\Database::getField
-     * @expectedException \Lazer\Classes\LazerException
-     * @expectedExceptionMessage There is no data
      */
     public function testGet()
     {
+        $this->expectException(LazerException::class);
+        $this->expectExceptionMessage('There is no data');
         $table = $this->object->table('users');
         $table->getField('someField');
     }

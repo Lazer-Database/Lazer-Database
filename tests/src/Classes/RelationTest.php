@@ -7,8 +7,9 @@ namespace Lazer\Test\Classes;
 use Lazer\Classes\Database;
 use Lazer\Classes\Relation;
 use Lazer\Test\VfsHelper\Config as TestHelper;
+use PHPUnit\Framework\TestCase;
 
-class RelationTest extends \PHPUnit\Framework\TestCase {
+class RelationTest extends TestCase {
 
     use TestHelper;
 
@@ -21,7 +22,7 @@ class RelationTest extends \PHPUnit\Framework\TestCase {
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->setUpFilesystem();
         $this->object = new Relation();
