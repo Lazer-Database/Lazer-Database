@@ -1,0 +1,50 @@
+name: Unit
+
+on:
+  - workflow_dispatch
+  - push
+  - pull_request
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    name: PHP ${{ matrix.php-version.php }}
+
+    strategy:
+      matrix:
+        php-version:
+          - php: '7.1'
+            composer: '1'
+            phpunit: '7'
+          - php: '7.2'
+            composer: '2'
+            phpunit: '8'
+          - php: '7.3'
+            composer: '2'
+            phpunit: '8'
+          - php: '7.4'
+            composer: '2'
+            phpunit: '8'
+          - php: '8.0'
+            composer: '2'
+            phpunit: '8'
+          - php: '8.1'
+            composer: '2'
+            phpunit: '8'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: php-actions/composer@v6
+        name: Composer v${{ matrix.php-version.composer }}
+        with:
+          version: ${{ matrix.php-version.composer }}
+          php_version: ${{ matrix.php-version.php }}
+
+      - uses: php-actions/phpunit@v3
+        name: PHPUnit ${{ matrix.php-version.phpunit }}, PHP ${{ matrix.php-version.php }}
+        with:
+          version: ${{ matrix.php-version.phpunit }}
+          configuration: phpunit.xml
+          args: --coverage-text
+          php_version: ${{ matrix.php-version.php }}

@@ -1,16 +1,16 @@
 Lazer - php flat file database based on JSON files
 ====================================
-[![Build Status](https://travis-ci.org/Lazer-Database/Lazer-Database.svg?branch=master)](https://travis-ci.org/Greg0/Lazer-Database)
+[![Unit](https://github.com/Lazer-Database/Lazer-Database/actions/workflows/unit.yml/badge.svg)](https://github.com/Lazer-Database/Lazer-Database/actions/workflows/unit.yml)
 [![Current Version](https://img.shields.io/packagist/v/greg0/lazer-database.svg)](https://packagist.org/packages/greg0/lazer-database#latest)
-[![PHP Version](https://img.shields.io/packagist/php-v/greg0/lazer-database/2.0.0?style=plastic)](https://travis-ci.org/Greg0/Lazer-Database)
-[![Downloads](https://poser.pugx.org/greg0/lazer-database/d/total.svg)](https://travis-ci.org/Greg0/Lazer-Database)
+![PHP Version](https://img.shields.io/packagist/php-v/greg0/lazer-database/2.0.1)
+![Downloads](https://poser.pugx.org/greg0/lazer-database/d/total.svg)
 
 PHP Library to use JSON files like a database.
 Functionality inspired by ORM's
 
 Requirements
 ------------
-- PHP 7.0+
+- PHP 7.1+ to 8.1
 - Composer
 
 Installation
@@ -24,15 +24,24 @@ composer require greg0/lazer-database
 
 Tests
 -----
-Easiest way to run unit tests is to use composer script 
+Easiest way to run unit tests is to use composer script
 ```
-composer run-script test
+composer run test
 ```
 
-Upcoming
----
-- PHP 8.0/8.1 support
+You can also use docker
 
+```shell
+docker build -t lazer-db .
+docker run -it --rm lazer-db
+```
+
+You can also use docker
+
+```shell
+docker build -t lazer-db .
+docker run -it --rm lazer-db
+```
 Prerelease
 ---
 - Migration tool
@@ -40,10 +49,10 @@ Prerelease
 Structure of table files
 -------
 
-`table_name.data.json` - table file with data   
-`table_name.config.json` - table file with configuration 
+`table_name.data.json` - table file with data
+`table_name.config.json` - table file with configuration
 
-    
+
 Basic Usage
 -----------
 
@@ -63,10 +72,10 @@ use Lazer\Classes\Database as Lazer; // example
 
 - `setField()` - set value of field (alternative to magic `__set()`)
 - `limit()`    - returns results between a certain number range. Should be used right before ending method `findAll()`.
-- `orderBy()`  - sort rows by key in order, can order by more than one field (just chain it). 
+- `orderBy()`  - sort rows by key in order, can order by more than one field (just chain it).
 - `groupBy()`  - group rows by field.
 - `where()`    - filter records. Alias: `and_where()`.
-- `orWhere()`  - other type of filtering results. 
+- `orWhere()`  - other type of filtering results.
 - `with()`     - join other tables by defined relations
 
 ##### Ending methods
@@ -98,7 +107,7 @@ Lazer::create('table_name', array(
 ));
 ```
 More information about field types and usage in PHPDoc
-	
+
 ### Remove database
 ```php
 Lazer::remove('table_name');
@@ -118,7 +127,7 @@ try{
 #### Multiple select
 ```php
 $table = Lazer::table('table_name')->findAll();
-    
+
 foreach($table as $row)
 {
     print_r($row);
@@ -150,7 +159,7 @@ Do not set the ID.
 
 ### Update
 
-It's very smilar to `Inserting`.
+It's very similar to `Inserting`.
 ```php
 $row = Lazer::table('table_name')->find(1); //Edit row with ID 1
 
@@ -241,7 +250,7 @@ Lazer::table('table1')->relations('table2'); // relation with specified table
 
 Description
 -----------
-For some examples please check 
+For some examples please check
 [Examples](docs/examples.md) and [Tutorial](docs/tutorial.md) file.
 More informations you can find in PHPDoc, I think it's documented very well.
 
