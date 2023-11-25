@@ -362,6 +362,11 @@ class Relation {
                             $query = $query->findAll();
                             $query = reset($query)[0];
                         }
+                        
+                        if ($this->relationType == 'hasMany')
+                        {
+                            $query = $query->findAll();
+                        }
 
                         $row->{$part} = $query;
                     }
