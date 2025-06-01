@@ -4,7 +4,7 @@ In this tutorial we will create simple news system.
 
 ### Create tables
 
-First of all we must create our tables: `users`, `news`, `comments`, `tags`: 
+First of all we must create our tables: `users`, `news`, `comments`, `tags`:
 
 #### Code:
 ```php
@@ -136,7 +136,7 @@ $commment->news_id = 2; /* "Breaking..." news */
 $commment->save();
 ```
 
-Now we will insert records into junction table (created automatically) between `News` and `Tags`: 
+Now we will insert records into junction table (created automatically) between `News` and `Tags`:
 
 #### Join tags to news:
 
@@ -176,7 +176,7 @@ foreach($news as $post)
     $comments = $post->Comments; //->limit(1); // add limit
     // $comments = $comments->where('author_id', '=', 4); // To get specific user's comments only
     echo '<h1>'.$post->topic.'</h1>';
-    echo '<h4>Author: '.$post->Users->name.'</h4>';   
+    echo '<h4>Author: '.$post->Users->name.'</h4>';
     echo '<p>'.$post->content.'</p>';
     echo '<small>Tags: '.implode(', ', $post->Tags->findAll()->asArray(null, 'name')).'</small><br />';
     echo '<small>Comments: '.$comments->findAll()->count().'</small>';
