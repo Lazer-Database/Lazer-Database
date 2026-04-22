@@ -13,9 +13,6 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - php: '7.1'
-            composer: '1'
-            phpunit: '7'
           - php: '7.2'
             composer: '2'
             phpunit: '8'
