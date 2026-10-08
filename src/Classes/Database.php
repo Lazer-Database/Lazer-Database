@@ -321,7 +321,7 @@ class Database implements \IteratorAggregate, \Countable {
     {
         $fields = Helpers\Validate::arrToLower($fields);
 
-        if (Helpers\Data::table($name)->exists() && Helpers\Config::table($name)->exists())
+        if (Helpers\Data::table($name)->exists() || Helpers\Config::table($name)->exists())
         {
             throw new LazerException('helper\Table "' . $name . '" already exists');
         }
