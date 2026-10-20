@@ -359,8 +359,7 @@ class Relation {
 
                         if ($this->relationType == 'belongsTo')
                         {
-                            $query = $query->findAll();
-                            $query = reset($query)[0];
+                            $query = $query->find();
                         }
                         
                         if ($this->relationType == 'hasMany')
