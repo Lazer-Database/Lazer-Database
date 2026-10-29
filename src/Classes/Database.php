@@ -59,6 +59,12 @@ class Database implements \IteratorAggregate, \Countable {
     protected $pending;
 
     /**
+     * Cached schema (field => type) of the table, loaded lazily from the config file
+     * @var array|null
+     */
+    protected $schema;
+
+    /**
      * Information about to reset keys in array or not to
      * @var integer
      */
@@ -213,14 +219,40 @@ class Database implements \IteratorAggregate, \Countable {
      */
     public function setField(string $name, $value): self
     {
-        if (Helpers\Validate::table($this->name)->field($name) && Helpers\Validate::table($this->name)->type($name, $value))
+        $this->assertField($name);
+
+        $type = $this->schema()[$name];
+
+        if (!(null === $value
+            || $type == gettype($value)
+            || Helpers\Validate::isNumeric($type) === Helpers\Validate::isNumeric(gettype($value))))
         {
-            $this->set->{$name} = is_string($value) && false === mb_check_encoding($value, 'UTF-8')
-                ? utf8_encode($value)
-                : $value;
+            throw new LazerException('Wrong data type');
         }
 
+        $this->set->{$name} = is_string($value) && false === mb_check_encoding($value, 'UTF-8')
+            ? mb_convert_encoding($value, 'UTF-8', 'ISO-8859-1')
+            : $value;
+
         return $this;
+    }
+
+    /**
+     * Ensure a field exists in the table schema
+     *
+     * @uses Database::schema() to read the (cached) schema
+     * @param string $name Field name
+     * @return bool
+     * @throws LazerException If the field does not exist
+     */
+    protected function assertField(string $name): bool
+    {
+        if (array_key_exists($name, $this->schema()))
+        {
+            return true;
+        }
+
+        throw new LazerException('Field ' . $name . ' does not exists in table "' . $this->name . '"');
     }
 
     /**
@@ -231,6 +263,10 @@ class Database implements \IteratorAggregate, \Countable {
      */
     public function getField($name)
     {
+        if (!isset($this->set) || !($this->set instanceof \stdClass)) {
+            throw new LazerException('There is no data');
+        }
+        
         if ($this->issetField($name)) {
             return $this->set->{$name};
         }
@@ -368,11 +404,10 @@ class Database implements \IteratorAggregate, \Countable {
      */
     public function groupBy($column)
     {
-        if (Helpers\Validate::table($this->name)->field($column))
-        {
-            $this->resetKeys             = 0;
-            $this->pending[__FUNCTION__] = $column;
-        }
+        $this->assertField($column);
+
+        $this->resetKeys             = 0;
+        $this->pending[__FUNCTION__] = $column;
 
         return $this;
     }
@@ -412,16 +447,14 @@ class Database implements \IteratorAggregate, \Countable {
         $joins = $this->pending['with'];
         foreach ($joins as $join)
         {
-            $local   = (count($join) > 1) ? array_slice($join, -2, 1)[0] : $this->name;
-            $foreign = end($join);
-
-            $relation = Relation::table($local)->with($foreign);
-
-            $data = $this->data;
+            $rows     = $this->data;
+            $previous = $this->name;
 
             foreach ($join as $part)
             {
-                $data = $relation->build($data, $part);
+                $relation = Relation::table($previous)->with($part);
+                $rows     = $relation->build($rows, $part);
+                $previous = $part;
             }
         }
     }
@@ -434,14 +467,13 @@ class Database implements \IteratorAggregate, \Countable {
      */
     public function orderBy($key, $direction = 'ASC')
     {
-        if (Helpers\Validate::table($this->name)->field($key))
-        {
-            $directions                        = [
-                'ASC'  => SORT_ASC,
-                'DESC' => SORT_DESC
-            ];
-            $this->pending[__FUNCTION__][$key] = $directions[$direction] ?: 'ASC';
-        }
+        $this->assertField($key);
+
+        $directions                        = [
+            'ASC'  => SORT_ASC,
+            'DESC' => SORT_DESC
+        ];
+        $this->pending[__FUNCTION__][$key] = $directions[strtoupper((string) $direction)] ?? SORT_ASC;
 
         return $this;
     }
@@ -554,21 +586,9 @@ class Database implements \IteratorAggregate, \Countable {
      */
     protected function wherePending()
     {
-        $operator = [
-            '='   => '==',
-            '!='  => '!=',
-            '>'   => '>',
-            '<'   => '<',
-            '>='  => '>=',
-            '<='  => '<=',
-            'and' => '&&',
-            'or'  => '||'
-        ];
-
-        $this->data = array_filter($this->data, function($row) use ($operator)
+        $this->data = array_filter($this->data, function($row)
         {
-            $clause = '';
-            $result = true;
+            $results = [];
 
             foreach ($this->pending['where'] as $key => $condition)
             {
@@ -577,42 +597,85 @@ class Database implements \IteratorAggregate, \Countable {
                 $op = $condition['op'];
                 $field = $condition['field'];
 
-                if (is_array($value) && $op == 'IN')
+                $rowValue = property_exists($row, $field) ? $row->{$field} : null;
+                $rowIsString = is_string($rowValue);
+                $valueIsString = is_string($value);
+
+                if (is_array($value) && strtoupper($op) === 'IN')
                 {
-                    $value = (in_array($row->{$field}, $value)) ? 1 : 0;
-                    $op    = '==';
-                    $field = 1;
+                    $result = in_array($rowValue, $value);
                 }
-                elseif (!is_array($value) && in_array($op, ['LIKE', 'like']))
+                elseif (is_array($value) && strtoupper($op) === 'NOT IN')
                 {
-                    $regex = "/^" . str_replace('%', '(.*?)', preg_quote($value, '/')) . "$/si";
-                    $value = preg_match($regex, $row->{$field});
-                    $op    = '==';
-                    $field = 1;
+                    $result = !in_array($rowValue, $value);
                 }
-                elseif (!is_array($value) && $op != 'IN')
+                elseif (!is_array($value) && strtoupper($op) === 'LIKE')
                 {
-                    $value = is_string($value) ?
-                        '\'' . mb_strtolower($value) . '\'' :
-                        $value;
+                    $pattern = str_replace('%', '.*', preg_quote($value, '/'));
+                    $pattern = "/^{$pattern}$/si";
+                    $result = preg_match($pattern, $rowValue ?? '') === 1;
+                }
+                elseif (!is_array($value))
+                {
+                    $compareValue = $valueIsString ? mb_strtolower($value) : $value;
+                    $compareRowValue = $rowIsString ? mb_strtolower($rowValue) : $rowValue;
 
-                    $op    = $operator[$op];
-                    $field = is_string($row->{$field}) ?
-                        'mb_strtolower($row->' . $field .')' :
-                        '$row->' . $field;
+                    switch ($op)
+                    {
+                        case '=':
+                        case '==':
+                            $result = $compareRowValue == $compareValue;
+                            break;
+                        case '!=':
+                        case '<>':
+                            $result = $compareRowValue != $compareValue;
+                            break;
+                        case '>':
+                            $result = $compareRowValue > $compareValue;
+                            break;
+                        case '<':
+                            $result = $compareRowValue < $compareValue;
+                            break;
+                        case '>=':
+                            $result = $compareRowValue >= $compareValue;
+                            break;
+                        case '<=':
+                            $result = $compareRowValue <= $compareValue;
+                            break;
+                        default:
+                            $result = $compareRowValue == $compareValue;
+                    }
+                }
+                else
+                {
+                    $result = false;
                 }
 
-                $type = (!$key) ?
-                    null :
-                    $operator[$type];
-
-                $query = [$type, $field, $op, $value];
-                $clause .= implode(' ', $query) . ' ';
-
-                eval('$result = ' . $clause . ';');
+                $results[] = $result;
             }
 
-            return $result;
+            $finalResult = true;
+            foreach ($results as $index => $result)
+            {
+                if ($index === 0)
+                {
+                    $finalResult = $result;
+                }
+                else
+                {
+                    $condition = $this->pending['where'][$index];
+                    if ($condition['type'] === 'or')
+                    {
+                        $finalResult = $finalResult || $result;
+                    }
+                    else
+                    {
+                        $finalResult = $finalResult && $result;
+                    }
+                }
+            }
+
+            return $finalResult;
         });
     }
 
@@ -622,15 +685,15 @@ class Database implements \IteratorAggregate, \Countable {
      * @param string $value Field that will be the value
      * @return array
      */
-    public function asArray(string $key = null, string $value = null, string $v2 = null)
+    public function asArray(?string $key = null, ?string $value = null, ?string $v2 = null)
     {
         if (!is_null($key))
         {
-            Helpers\Validate::table($this->name)->field($key);
+            $this->assertField($key);
         }
         if (!is_null($value))
         {
-            Helpers\Validate::table($this->name)->field($value);
+            $this->assertField($value);
         }
 
         $datas = [];
@@ -755,6 +818,9 @@ class Database implements \IteratorAggregate, \Countable {
 
             Helpers\Data::table($this->name)->put($data);
             Helpers\Config::table($this->name)->put($config);
+
+            // schema changed: drop the cached copy
+            $this->schema = null;
         }
     }
 
@@ -782,6 +848,9 @@ class Database implements \IteratorAggregate, \Countable {
 
         Helpers\Data::table($this->name)->put($data);
         Helpers\Config::table($this->name)->put($config);
+
+        // schema changed: drop the cached copy
+        $this->schema = null;
     }
 
     /**
@@ -808,16 +877,24 @@ class Database implements \IteratorAggregate, \Countable {
      */
     public function fields()
     {
-        return Helpers\Config::table($this->name)->fields();
+        return array_keys($this->schema());
     }
 
     /**
      * Returning assoc array with types of fields
+     *
+     * The schema is read from the config file once and cached on the instance.
+     *
      * @return array Fields type
      */
     public function schema(): array
     {
-        return Helpers\Config::table($this->name)->schema();
+        if ($this->schema === null)
+        {
+            $this->schema = Helpers\Config::table($this->name)->schema();
+        }
+
+        return $this->schema;
     }
 
     /**
@@ -825,7 +902,7 @@ class Database implements \IteratorAggregate, \Countable {
      * @param string|null $tableName
      * @return array Fields type
      */
-    public function relations(string $tableName = null)
+    public function relations(?string $tableName = null)
     {
         return Helpers\Config::table($this->name)->relations($tableName, true);
     }
@@ -862,6 +939,10 @@ class Database implements \IteratorAggregate, \Countable {
         if (!$this->currentId || $forceInsert)
         {
             $config = $this->config();
+            if (!isset($config->last_id)) {
+                $config->last_id = 0;
+            }
+            $config->last_id = (int) $config->last_id;
             $config->last_id++;
 
             $this->setField('id', $config->last_id);
@@ -985,6 +1066,25 @@ class Database implements \IteratorAggregate, \Countable {
         $this->data = $this->resetKeys ? array_values($this->data) : $this->data;
 
         return clone $this;
+    }
+
+    /**
+     * Return a clone of this table loaded with the given rows and no pending query.
+     *
+     * Used for eager loading of relations: a batched result set is split per
+     * parent row without re-reading or re-scanning the table for each parent.
+     *
+     * @param array $rows Rows to load
+     * @return self
+     */
+    public function withRows(array $rows): self
+    {
+        $clone       = clone $this;
+        $clone->data = array_values($rows);
+        $clone->setPending();
+        $clone->clearKeyInfo();
+
+        return $clone;
     }
 
     /**
