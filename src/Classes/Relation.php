@@ -307,82 +307,169 @@ class Relation {
     }
 
     /**
-     * Process query with joined data
-     * @param object $row One row of data
-     * @return Database
-     */
-    protected function join($row)
-    {
-        $keys['local']   = $this->keys['local'];
-        $keys['foreign'] = $this->keys['foreign'];
-
-        if ($this->relationType == 'hasAndBelongsToMany')
-        {
-            $join = Database::table($this->getJunction())
-                ->groupBy($this->tables['local'] . '_id')
-                ->where($this->tables['local'] . '_id', '=', $row->{$keys['local']})
-                ->findAll()
-                ->asArray(null, $this->tables['foreign'] . '_id');
-
-
-            if (empty($join))
-                return [];
-
-            return Database::table($this->tables['foreign'])
-                ->where($keys['foreign'], 'IN', $join[$row->{$keys['local']}]);
-        }
-
-        return Database::table($this->tables['foreign'])
-            ->where($keys['foreign'], '=', $row->{$keys['local']});
-    }
-
-    /**
      *
-     * @param array $array
+     * @param array  $array
      * @param string $part
      * @return array
      */
     public function build(array $array, $part)
     {
-        $return = [];
-        foreach ($array as $key => $row)
+        $name = ucfirst($part);
+
+        if ($this->relationType == 'hasAndBelongsToMany')
         {
-            if (is_object($row))
+            return $this->buildManyToMany($array, $name);
+        }
+
+        // Group the parent rows that still need the relation by their local key value
+        $grouped      = [];
+        $uniqueValues = [];
+
+        foreach ($array as $row)
+        {
+            if (!($row instanceof \stdClass) || isset($row->{$name}))
             {
-                if ($row instanceof \stdClass)
+                continue;
+            }
+
+            $value                = $row->{$this->keys['local']} ?? null;
+            $grouped[$value][]    = $row;
+            $uniqueValues[$value] = true;
+        }
+
+        // Fetch every related row with a single query instead of one per parent (N+1)
+        if (!empty($uniqueValues))
+        {
+            $foreign = Database::table($this->tables['foreign'])
+                ->where($this->keys['foreign'], 'IN', array_keys($uniqueValues))
+                ->findAll();
+
+            $index = [];
+            foreach ($foreign as $foreignRow)
+            {
+                $index[$foreignRow->{$this->keys['foreign']}][] = $foreignRow;
+            }
+
+            foreach ($grouped as $value => $rows)
+            {
+                $matches = $index[$value] ?? [];
+
+                foreach ($rows as $row)
                 {
-                    $part = ucfirst($part);
-
-                    if (!isset($row->{$part}))
-                    {
-                        $query = $this->join($row);
-
-                        if ($this->relationType == 'belongsTo')
-                        {
-                            $query = $query->find();
-                        }
-                        
-                        if ($this->relationType == 'hasMany')
-                        {
-                            $query = $query->findAll();
-                        }
-
-                        $row->{$part} = $query;
-                    }
-
-                    $array[$key] = $row->{$part};
-                    $return[]    = $row->{$part};
+                    $row->{$name} = ($this->relationType == 'belongsTo')
+                        ? ($matches[0] ?? null)
+                        : $foreign->withRows($matches);
                 }
-                else
+            }
+        }
+
+        return $this->collectRelated($array, $name);
+    }
+
+    /**
+     * Eagerly attach a many-to-many relation to every parent row.
+     *
+     * The junction table is read once for all parents; the related rows stay as a
+     * pending query (evaluated with findAll()) so where()/limit() can still be chained.
+     *
+     * @param array  $array
+     * @param string $name Property name to attach
+     * @return array Related rows for chaining
+     */
+    protected function buildManyToMany(array $array, string $name)
+    {
+        $localId   = $this->tables['local'] . '_id';
+        $foreignId = $this->tables['foreign'] . '_id';
+
+        $uniqueValues = [];
+        foreach ($array as $row)
+        {
+            if ($row instanceof \stdClass && !isset($row->{$name}))
+            {
+                $uniqueValues[$row->{$this->keys['local']} ?? null] = true;
+            }
+        }
+
+        // One query on the junction table for every parent row
+        $junctionIds = [];
+        if (!empty($uniqueValues))
+        {
+            $junction = Database::table($this->getJunction())
+                ->where($localId, 'IN', array_keys($uniqueValues))
+                ->findAll();
+
+            foreach ($junction as $junctionRow)
+            {
+                $junctionIds[$junctionRow->{$localId}][] = $junctionRow->{$foreignId};
+            }
+        }
+
+        $foreign = Database::table($this->tables['foreign']);
+
+        foreach ($array as $row)
+        {
+            if ($row instanceof \stdClass && !isset($row->{$name}))
+            {
+                $ids = $junctionIds[$row->{$this->keys['local']} ?? null] ?? [];
+
+                // Keep the query pending so the caller can still refine it before findAll()
+                $row->{$name} = (clone $foreign)->where($this->keys['foreign'], 'IN', $ids);
+            }
+        }
+
+        return $this->collectRelated($array, $name);
+    }
+
+    /**
+     * Flatten the related rows attached to every parent row.
+     *
+     * The result feeds the next hop of a chained with() call.
+     *
+     * @param array  $array
+     * @param string $name Property holding the related data
+     * @return array
+     */
+    protected function collectRelated(array $array, string $name)
+    {
+        $return = [];
+
+        foreach ($array as $row)
+        {
+            if ($row instanceof \stdClass)
+            {
+                $related = $row->{$name} ?? null;
+
+                if ($related instanceof Database)
                 {
-                    $row->with($part);
+                    if ($this->relationType != 'hasAndBelongsToMany')
+                    {
+                        foreach ($related as $relatedRow)
+                        {
+                            $return[] = $relatedRow;
+                        }
+                    }
+                }
+                elseif ($related !== null)
+                {
+                    $return[] = $related;
+                }
+            }
+            elseif ($row instanceof Database)
+            {
+                if ($this->relationType != 'hasAndBelongsToMany')
+                {
+                    foreach ($row as $relatedRow)
+                    {
+                        $return[] = $relatedRow;
+                    }
                 }
             }
             else
             {
-                $return = array_merge($return, $this->build($row, $part));
+                $return = array_merge($return, $this->build($row, $name));
             }
         }
+
         return $return;
     }
 
