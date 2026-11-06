@@ -323,7 +323,7 @@ class Database implements \IteratorAggregate, \Countable {
 
         if (Helpers\Data::table($name)->exists() || Helpers\Config::table($name)->exists())
         {
-            throw new LazerException('helper\Table "' . $name . '" already exists');
+            throw new LazerException('helper\Table "' . $name . '" or config file already exists');
         }
 
         $types = array_values($fields);

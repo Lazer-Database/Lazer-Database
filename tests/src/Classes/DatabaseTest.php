@@ -55,7 +55,7 @@ class DatabaseTest extends TestCase {
     public function testCreateExistingTable()
     {
         $this->expectException(LazerException::class);
-        $this->expectExceptionMessageMatches('#Table ".*" already exists#');
+        $this->expectExceptionMessageMatches('#Table ".*" or config file already exists#');
         $this->object->create('users', [
             'myInteger' => 'integer',
             'myString'  => 'string',
