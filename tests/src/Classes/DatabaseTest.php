@@ -375,7 +375,7 @@ class DatabaseTest extends TestCase {
         $fieldsAfter  = $table->fields();
 
         $this->assertArraySubset(['id', 'name', 'email'], $fieldsBefore, true);
-        $this->assertArraySubset(['id', 'name', 'email', 'new', 'fields'], $fieldsAfter, true);        
+        $this->assertArraySubset(['id', 'name', 'email', 'new', 'fields'], $fieldsAfter, true);
     }
 
     /**
@@ -599,6 +599,30 @@ class DatabaseTest extends TestCase {
         $table = $this->object->table('users');
         $table->setField('name', 'Johń');
         $this->assertEquals('Johń', $table->getField('name'));
+    }
+
+    /**
+     * @covers \Lazer\Classes\Database::setField
+     */
+    public function testSetFieldThrowsForUnknownField()
+    {
+        $this->expectException(LazerException::class);
+        $this->expectExceptionMessage('Field someField does not exists in table "users"');
+
+        $table = $this->object->table('users');
+        $table->setField('someField', 'value');
+    }
+
+    /**
+     * @covers \Lazer\Classes\Database::setField
+     */
+    public function testSetFieldThrowsForWrongType()
+    {
+        $this->expectException(LazerException::class);
+        $this->expectExceptionMessage('Wrong data type');
+
+        $table = $this->object->table('users');
+        $table->setField('id', 'not-an-integer');
     }
 
     /**

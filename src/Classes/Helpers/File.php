@@ -84,7 +84,19 @@ class File implements FileInterface {
      */
     public final function get(bool $assoc = false)
     {
-        return json_decode(file_get_contents($this->getPath()), $assoc);
+        $content = @file_get_contents($this->getPath());
+        if ($content === false)
+        {
+            throw new LazerException('Unable to read file: ' . $this->getPath());
+        }
+        
+        $data = json_decode($content, $assoc);
+        if (json_last_error() !== JSON_ERROR_NONE)
+        {
+            throw new LazerException('Invalid JSON in file: ' . $this->getPath() . ' - ' . json_last_error_msg());
+        }
+        
+        return $data;
     }
 
     /**
@@ -94,7 +106,19 @@ class File implements FileInterface {
      */
     public final function put($data)
     {
-        return file_put_contents($this->getPath(), json_encode($data));
+        $json = json_encode($data);
+        if (json_last_error() !== JSON_ERROR_NONE)
+        {
+            throw new LazerException('Invalid data for JSON encoding: ' . json_last_error_msg());
+        }
+        
+        $result = @file_put_contents($this->getPath(), $json);
+        if ($result === false)
+        {
+            throw new LazerException('Unable to write file: ' . $this->getPath());
+        }
+        
+        return $result;
     }
 
     /**
@@ -113,7 +137,7 @@ class File implements FileInterface {
      */
     public final function remove(): bool
     {
-        $type = ucfirst($this->type);
+        $type = ucfirst((string) $this->type);
         if ($this->exists())
         {
             if (unlink($this->getPath()))
